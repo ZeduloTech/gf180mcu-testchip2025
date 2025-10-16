@@ -1,6 +1,7 @@
 MAKEFILE_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-RUN_TAG = $(shell ls librelane/runs/ | tail -n 1)
+RUN_TAG ?= $(shell ls librelane/runs/ | tail -n 1)
+
 TOP = chip_top
 
 PDK_ROOT ?= $(MAKEFILE_DIR)/gf180mcu
@@ -27,6 +28,11 @@ librelane: ## Run librelane flow (synthesis, PnR, verification)
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk
 .PHONY: librelane
 
+caravel-librelane: ## Run librelane flow for caravel
+	make -C caravel librelane
+	make -C caravel copy-final
+.PHONY: caravel-librelane
+
 librelane-openroad: ## Open the last run in OpenROAD
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --last-run --flow OpenInOpenROAD
 .PHONY: librelane-openroad
@@ -50,4 +56,5 @@ sim-view: ## View simulation waveforms in GTKWave
 copy-final: ## Copy final output files from the last run
 	rm -rf final/
 	cp -r librelane/runs/${RUN_TAG}/final/ final/
+	gzip -f9 final/gds/chip_top.gds
 .PHONY: copy-final

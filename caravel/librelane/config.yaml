@@ -1,0 +1,178 @@
+############################## General #################################
+
+meta:
+  version: 2
+  flow: Classic
+  substituting_steps:
+    
+    # Not supported for gf180mcu
+    KLayout.DRC: null
+    Checker.KLayoutDRC: null
+    
+    # Save time
+    #OpenROAD.IRDropReport: null
+    #Magic.DRC: null
+    Magic.SpiceExtraction: null # https://github.com/librelane/librelane/issues/796
+    #Checker.MagicDRC: null
+    #KLayout.XOR: null
+    Netgen.LVS: null
+    Checker.LVS: null
+    
+    #Verilator.Lint: null
+    Checker.YosysSynthChecks: null  # Fails due to multisources in PLL
+
+DESIGN_NAME: caravel_core
+VERILOG_FILES:
+- dir::../verilog/defines.v
+- dir::../verilog/caravel_clocking.v
+- dir::../verilog/caravel_core.v
+- dir::../verilog/clock_div.v
+- dir::../verilog/digital_pll.v
+- dir::../verilog/gpio_defaults_block.v
+- dir::../verilog/gpio_control_block.v
+- dir::../verilog/GF180_RAM_512x32.v
+- dir::../verilog/mgmt_core.v
+- dir::../verilog/mgmt_core_wrapper.v
+- dir::../verilog/mgmt_protect.v
+- dir::../verilog/mprj_io_buffer.v
+- dir::../verilog/sram.v
+- dir::../verilog/VexRiscv_MinDebugCache.v
+         
+- dir::../verilog/housekeeping.v
+- dir::../verilog/housekeeping_spi.v
+
+MACROS:
+  gf180_ram_512x8_wrapper:
+    gds:
+      - dir::../../ip/sram/gf180_ram_512x8_wrapper.gds.gz
+    lef:
+      - dir::../../ip/sram/gf180_ram_512x8_wrapper.lef
+    nl:
+      - dir::../../ip/sram/gf180_ram_512x8_wrapper.v
+    lib:
+      "*tt*" : [ dir::../../ip/sram/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../../ip/sram/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../../ip/sram/gf180mcu_fd_ip_sram__sram512x8m8wm1__ff_n40C_5v50.lib ]
+      
+    instances:  
+      soc.core.sram.ram512x32.RAM00:
+        location: [219, 59]
+        orientation: N
+      soc.core.sram.ram512x32.RAM01:
+        location: [655.86, 59]
+        orientation: N
+      soc.core.sram.ram512x32.RAM02:
+        location: [1092.72, 59]
+        orientation: N
+      soc.core.sram.ram512x32.RAM03:
+        location: [1529.58, 59]
+        orientation: N
+
+  simple_por:
+    gds:
+      - dir::../../ip/simple_por/gds/simple_por.gds.gz
+    lef:
+      - dir::../../ip/simple_por/lef/simple_por.lef
+    nl:
+      - dir::../../ip/simple_por/verilog/simple_por.v
+    instances:  
+      por_inst:
+        location: [2617, 95]
+        orientation: MX
+
+# Slightly smaller file sizes
+PRIMARY_GDSII_STREAMOUT_TOOL: klayout
+
+# SDC files
+PNR_SDC_FILE: dir::constraint.sdc
+SIGNOFF_SDC_FILE: dir::constraint.sdc
+FALLBACK_SDC: dir::constraint.sdc
+
+# Power / ground nets
+VDD_NETS:
+- VDD
+GND_NETS:
+- VSS
+
+# We need to add gf180mcu_fd_io__bi_24t
+# due to the unused Y output for output only pads
+#IGNORE_DISCONNECTED_MODULES:
+#- gf180mcu_fd_io__bi_24t
+
+# Clock
+CLOCK_PORT: "clock_core"
+CLOCK_PERIOD: 50
+
+############################ Floorplanning ############################# 
+
+FP_SIZING: absolute
+DIE_AREA: [0, 0, 2900, 1000]
+CORE_AREA: [24, 26, 2875, 974]
+
+FP_PIN_ORDER_CFG: dir::pin.cfg
+
+################################ PDN ################################### 
+
+PDN_CORE_RING: True
+FP_PDN_SKIPTRIM: True
+FP_PDN_VERTICAL_HALO: 8
+FP_PDN_HORIZONTAL_HALO: -2
+FP_IO_MIN_DISTANCE: 10
+FP_IO_VEXTEND: 2
+FP_IO_HEXTEND: 2
+FP_PDN_CORE_RING_VWIDTH: 10
+FP_PDN_CORE_RING_HWIDTH: 10
+FP_PDN_CORE_RING_VSPACING: 2
+FP_PDN_CORE_RING_HSPACING: 2
+FP_PDN_CORE_RING_VOFFSET: 0
+FP_PDN_CORE_RING_HOFFSET: 0
+FP_PDN_VPITCH: 80
+FP_PDN_HPITCH: 60
+FP_PDN_VSPACING: 19
+FP_PDN_HSPACING: 27
+FP_PDN_VWIDTH: 3
+FP_PDN_HWIDTH: 3
+FP_PDN_HOFFSET: 30.65
+FP_PDN_VOFFSET: 3.5
+
+############################### Placement ############################## 
+
+PL_TARGET_DENSITY_PCT: 50
+PL_MAX_DISPLACEMENT_X: 2000
+PL_MAX_DISPLACEMENT_Y: 500
+PL_KEEP_RESIZE_BELOW_OVERFLOW: 0
+
+RSZ_DONT_TOUCH_RX: .*clk_buf
+
+################################## CTS ################################# 
+
+CTS_MAX_CAP: 0.1
+CTS_SINK_CLUSTERING_SIZE: 12
+CTS_SINK_CLUSTERING_MAX_DIAMETER: 30
+
+############################### Routing ################################
+
+RUN_POST_GRT_RESIZER_TIMING: true
+GRT_ALLOW_CONGESTION: true
+GRT_RESIZER_ALLOW_SETUP_VIOS: true
+
+PDN_CFG: dir::pdn_cfg.tcl
+
+############################### DRC/LVS ################################
+
+ERROR_ON_MAGIC_DRC: False
+
+# Prevent false positive DRC errors in I/O cells
+MAGIC_GDS_FLATGLOB:
+# For contacts
+- "*_CDNS_*"
+# COMP and Poly2 filler cells need to be 
+# flattened to form a "filltrans" layer
+- "COMP_fill_cell"
+- "Poly2_fill_cell"
+
+# Because we have multiple power pads for one power domain
+MAGIC_EXT_UNIQUE: notopports
+
+
+

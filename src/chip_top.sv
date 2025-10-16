@@ -206,6 +206,7 @@ module chip_top #(
     // Signal IO pad instances
 
     // Schmitt trigger
+    (* keep *)
     gf180mcu_fd_io__in_s clk_pad (
         `ifdef USE_POWER_PINS
         .DVDD   (VDD),
@@ -222,6 +223,7 @@ module chip_top #(
     );
     
     // Normal input
+    (* keep *)
     gf180mcu_fd_io__in_c rst_n_pad (
         `ifdef USE_POWER_PINS
         .DVDD   (VDD),
@@ -239,6 +241,7 @@ module chip_top #(
 
     generate
     for (genvar i=0; i<NUM_INPUT; i++) begin : inputs
+        (* keep *)
         gf180mcu_fd_io__in_c pad (
             `ifdef USE_POWER_PINS
             .DVDD   (VDD),
@@ -258,6 +261,7 @@ module chip_top #(
 
     generate
     for (genvar i=0; i<NUM_BIDIR; i++) begin : bidir
+        (* keep *)
         gf180mcu_fd_io__bi_24t pad (
             `ifdef USE_POWER_PINS
             .DVDD   (VDD),
@@ -287,6 +291,10 @@ module chip_top #(
         .NUM_INPUT  (NUM_INPUT),
         .NUM_BIDIR  (NUM_BIDIR)
     ) i_chip_core (
+    `ifdef USE_POWER_PINS
+        .VDD(VDD),		
+        .VSS(VSS),		
+    `endif
         .clk        (clk_PAD2CORE),
         .rst_n      (rst_n_PAD2CORE),
     
