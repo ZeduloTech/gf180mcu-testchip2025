@@ -433,7 +433,6 @@ module caravel_core (
     /* Connect user signals, from outside of Caravel    */
     /*--------------------------------------------------*/
 
-    //assign user_wb_clk_o = mprj_clock;
     (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_20 user_wb_clk_buf (
         .I(mprj_clock),
         .Z(user_wb_clk_o)
