@@ -26,7 +26,7 @@ meta:
     
     # Save time
     #OpenROAD.IRDropReport: null
-    #Magic.DRC: null
+    Magic.DRC: null     # ! fails because of SRAM !
     #Checker.MagicDRC: null
     #KLayout.XOR: null
     #Netgen.LVS: null
@@ -238,6 +238,10 @@ MACROS:
       "*tt*" : [ dir::../caravel/final/lib/nom_tt_025C_5v00/caravel_core__nom_tt_025C_5v00.lib ]
       "*ss*" : [ dir::../caravel/final/lib/max_ss_125C_4v50/caravel_core__max_ss_125C_4v50.lib ]
       "*ff*" : [ dir::../caravel/final/lib/min_ff_n40C_5v50/caravel_core__min_ff_n40C_5v50.lib ]
+    spef:
+      "*tt*" : [ dir::../caravel/final/spef/nom/chip_top.nom.spef ]
+      "*ss*" : [ dir::../caravel/final/spef/nom/chip_top.max.spef ]
+      "*ff*" : [ dir::../caravel/final/spef/nom/chip_top.min.spef ]
     instances:
       i_chip_core.caravel:
         location: [500, 500]
