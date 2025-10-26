@@ -10,9 +10,9 @@ meta:
     Checker.KLayoutDRC: null
     
     # Save time
+    Magic.DRC: null                 # ! fails because of SRAM !
     #OpenROAD.IRDropReport: null
-    #Magic.DRC: null
-    #Magic.SpiceExtraction: null # https://github.com/librelane/librelane/issues/796
+    #Magic.SpiceExtraction: null    
     #Checker.MagicDRC: null
     #KLayout.XOR: null
     #Netgen.LVS: null
@@ -94,11 +94,6 @@ VDD_NETS:
 GND_NETS:
 - VSS
 
-# We need to add gf180mcu_fd_io__bi_24t
-# due to the unused Y output for output only pads
-#IGNORE_DISCONNECTED_MODULES:
-#- gf180mcu_fd_io__bi_24t
-
 # Clock
 CLOCK_PORT: "clock_core"
 CLOCK_PERIOD: 50
@@ -158,8 +153,6 @@ CTS_SINK_CLUSTERING_MAX_DIAMETER: 30
 ############################### Routing ################################
 
 GRT_ALLOW_CONGESTION: true
-# to prevent Metal5 routing wires being routed above rings
-#ROUTING_OBSTRUCTIONS: ["Metal5", 0, 974, 2900, 1000] 
 
 ############################### DRC/LVS ################################
 

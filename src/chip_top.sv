@@ -41,9 +41,9 @@ module chip_top #(
     (* keep *)
     gf180mcu_fd_io__dvss dvss_south_0 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
 
@@ -51,72 +51,72 @@ module chip_top #(
     (* keep *)
     gf180mcu_ws_io__dvss dvss_east_0 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
     
     (* keep *)
     gf180mcu_ws_io__dvdd dvdd_east_0 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VSS    (VSS)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VSS    (VSS)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvss dvss_east_1 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvdd dvdd_east_1 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VSS    (VSS)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VSS    (VSS)
         `endif
     );
     
    (* keep *)
     gf180mcu_ws_io__dvss dvss_east_2 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvdd dvdd_east_2 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VSS    (VSS)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VSS    (VSS)
         `endif
     );
     
     (* keep *)
     gf180mcu_ws_io__dvss dvss_east_3 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvdd dvdd_east_3 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VSS    (VSS)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VSS    (VSS)
         `endif
     );
     
@@ -124,9 +124,9 @@ module chip_top #(
     (* keep *)
     gf180mcu_fd_io__dvss dvss_north_0 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
     
@@ -134,72 +134,72 @@ module chip_top #(
     (* keep *)
     gf180mcu_ws_io__dvdd dvdd_west_0 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VSS    (VSS)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VSS    (VSS)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvss dvss_west_0 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvdd dvdd_west_1 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VSS    (VSS)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VSS    (VSS)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvss dvss_west_1 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvss dvss_west_2 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvdd dvdd_west_2 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VSS    (VSS)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VSS    (VSS)
         `endif
     );
     
     (* keep *)
     gf180mcu_ws_io__dvss dvss_west_3 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VDD    (VDD)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD)
         `endif
     );
 
     (* keep *)
     gf180mcu_ws_io__dvdd dvdd_west_3 (
         `ifdef USE_POWER_PINS
-        	.DVDD   (VDD),
-	    .DVSS   (VSS),
-	    .VSS    (VSS)
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VSS    (VSS)
         `endif
     );
 
@@ -312,9 +312,13 @@ module chip_top #(
         .bidir_pd   (bidir_CORE2PAD_PD)
     );
     
-    // Die ID - do not remove, necessary for tapeout
+    // Chip ID - do not remove, necessary for tapeout
     (* keep *)
-    gf180mcu_ws_ip__id die_id ();
+    gf180mcu_ws_ip__id chip_id ();
+    
+    // wafer.space logo - can be removed
+    (* keep *)
+    gf180mcu_ws_ip__logo wafer_space_logo ();
 
 endmodule
 

@@ -44,6 +44,11 @@
     in {
       default = lib.callPackageWith pkgs (librelane.createOpenLaneShell {
         extra-packages = with pkgs; [
+          # Utilities
+          gnumake
+          gnugrep
+          gawk
+          
           # Simulation
           iverilog
           verilator
@@ -59,6 +64,9 @@
           
           # For KLayout Python DRC runner
           docopt
+          
+          # For logo generation
+          pillow
         ];
       }) {};
     });
