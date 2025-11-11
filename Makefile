@@ -16,7 +16,7 @@ help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 .PHONY: help
 
-all: librelane ## Build the project (runs librelane)
+all: librelane ## Build the project (runs LibreLane)
 .PHONY: all
 
 clone-pdk: ## Clone the GF180MCU PDK repository
@@ -24,7 +24,7 @@ clone-pdk: ## Clone the GF180MCU PDK repository
 	git clone https://github.com/wafer-space/gf180mcu.git $(MAKEFILE_DIR)/gf180mcu --depth 1
 .PHONY: clone-pdk
 
-librelane: ## Run librelane flow (synthesis, PnR, verification)
+librelane: ## Run LibreLane flow (synthesis, PnR, verification)
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk
 .PHONY: librelane
 
@@ -32,6 +32,18 @@ caravel-librelane: ## Run librelane flow for caravel
 	make -C caravel librelane
 	make -C caravel copy-final
 .PHONY: caravel-librelane
+
+librelane-nodrc: ## Run LibreLane flow without DRC checks
+	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --skip KLayout.DRC --skip Magic.DRC
+.PHONY: librelane-nodrc
+
+librelane-klayoutdrc: ## Run LibreLane flow without magic DRC checks
+	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --skip Magic.DRC
+.PHONY: librelane-klayoutdrc
+
+librelane-magicdrc: ## Run LibreLane flow without KLayout DRC checks
+	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --skip KLayout.DRC
+.PHONY: librelane-magicdrc
 
 librelane-openroad: ## Open the last run in OpenROAD
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --last-run --flow OpenInOpenROAD

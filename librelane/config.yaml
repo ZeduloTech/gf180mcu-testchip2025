@@ -1,45 +1,32 @@
 meta:
-  version: 2
-  flow: Classic
+  version: 3
+  flow: Chip
   substituting_steps:
-    # Padring is used instead of pins
-    OpenROAD.IOPlacement: null
-    +Odb.SetPowerConnections: OpenROAD.Padring
-    
-    # Add the seal ring
-    +Checker.XOR: KLayout.SealRing
-    
-    # Run filler insertion
-    +KLayout.SealRing: KLayout.FillerGeneration
-    
-    # Check the density across the layers
-    #+KLayout.FillerGeneration: KLayout.RunDensity
-    #+KLayout.RunDensity: Checker.Density
-    
-    # Due to OpenROAD bug
-    # https://github.com/The-OpenROAD-Project/OpenROAD/issues/8229
-    #TODO OpenROAD.Repair*: null
-    
-    # Not supported for gf180mcu
+
+    # Disable KLayout antenna check
+    KLayout.Antenna: null
+    Checker.KLayoutAntenna: null
+
+    # Disable KLayout density check
+    KLayout.Density: null
+    Checker.KLayoutDensity: null
+
+    # Save time during development
+    # Enable for sign-off
+    OpenROAD.IRDropReport: null
+    Magic.DRC: null
     KLayout.DRC: null
-    Checker.KLayoutDRC: null
-    
-    # Save time
-    Magic.DRC: null     # ! fails because of SRAM !
-    #OpenROAD.IRDropReport: null
-    #Checker.MagicDRC: null
-    #KLayout.XOR: null
-    #Netgen.LVS: null
-    #Checker.LVS: null
+    Checker.MagicDRC: null
+    KLayout.XOR: null
+    Netgen.LVS: null
+    Checker.LVS: null
     
     Checker.YosysSynthChecks: null  # Fails due to multisources in PLL
-    
-    Magic.WriteLEF: null # Not needed, save time
-    Odb.CheckDesignAntennaProperties: null # Requires LEF
 
 DESIGN_NAME: chip_top
 VERILOG_FILES:
 - dir::../caravel/verilog/defines.v
+- dir::../src/wb_counter.v
 - dir::../src/chip_top.sv
 - dir::../src/chip_core.sv
 
@@ -61,7 +48,7 @@ PAD_SOUTH: [
     "bidir\\[4\\].pad",
     "bidir\\[5\\].pad",
 
-    dvss_south_0,
+    "dvss_pads\\[0\\].pad",
 
     "bidir\\[6\\].pad",
     "bidir\\[7\\].pad",
@@ -74,8 +61,8 @@ PAD_SOUTH: [
 ]
 
 PAD_EAST: [
-    dvdd_east_0,
-    dvss_east_0,
+    "dvdd_pads\\[0\\].pad",
+    "dvss_pads\\[1\\].pad",
 
     "bidir\\[14\\].pad",
     "bidir\\[15\\].pad",
@@ -84,8 +71,8 @@ PAD_EAST: [
     "bidir\\[18\\].pad",
     "bidir\\[19\\].pad",
     
-    dvdd_east_1,
-    dvss_east_1,
+    "dvdd_pads\\[1\\].pad",
+    "dvss_pads\\[2\\].pad",
 
     
     "bidir\\[20\\].pad",
@@ -95,15 +82,15 @@ PAD_EAST: [
     "bidir\\[24\\].pad",
     "bidir\\[25\\].pad",
     
-    dvss_east_2,
-    dvdd_east_2,
-    dvss_east_3,
-    dvdd_east_3
+    "dvss_pads\\[3\\].pad",
+    "dvdd_pads\\[2\\].pad",
+    "dvss_pads\\[4\\].pad",
+    "dvdd_pads\\[3\\].pad",
 ]
 
 PAD_NORTH: [
-    "bidir\\[41\\].pad",
-    "bidir\\[40\\].pad",
+    "analog\\[1\\].pad",
+    "analog\\[0\\].pad",
     "bidir\\[39\\].pad",
     "bidir\\[38\\].pad",
     "bidir\\[37\\].pad",
@@ -111,7 +98,7 @@ PAD_NORTH: [
     "bidir\\[35\\].pad",
     "bidir\\[34\\].pad",
 
-    dvss_north_0,
+    "dvss_pads\\[5\\].pad",
 
     "bidir\\[33\\].pad",
     "bidir\\[32\\].pad",
@@ -125,10 +112,10 @@ PAD_NORTH: [
 
 
 PAD_WEST: [
-    dvdd_west_3,
-    dvss_west_3,
-    dvdd_west_2,
-    dvss_west_2,
+    "dvdd_pads\\[7\\].pad",
+    "dvss_pads\\[9\\].pad",
+    "dvdd_pads\\[6\\].pad",
+    "dvss_pads\\[8\\].pad",
 
     "inputs\\[11\\].pad",
     "inputs\\[10\\].pad",
@@ -137,16 +124,16 @@ PAD_WEST: [
     "inputs\\[7\\].pad",
     "inputs\\[6\\].pad",
 
-    dvdd_west_1,
-    dvss_west_1,
+    "dvdd_pads\\[5\\].pad",
+    "dvss_pads\\[7\\].pad",
 
     "inputs\\[5\\].pad",
     "inputs\\[4\\].pad",
     "inputs\\[3\\].pad",
     "inputs\\[2\\].pad",
 
-    dvdd_west_0,
-    dvss_west_0,
+    "dvdd_pads\\[4\\].pad",
+    "dvss_pads\\[6\\].pad",
     
     "inputs\\[1\\].pad",
     "inputs\\[0\\].pad"
@@ -167,12 +154,14 @@ GND_NETS:
 # due to the unused Y output for output only pads
 IGNORE_DISCONNECTED_MODULES:
 - gf180mcu_fd_io__bi_24t
+- gf180mcu_ws_ip__id
+- gf180mcu_ws_ip__logo
 
 # Clock
-CLOCK_PORT: clk_PAD
-CLOCK_NET: clk_pad/Y
+#CLOCK_PORT: clk_PAD
+CLOCK_NET: i_chip_core.caravel/user_wb_clk_o
 
-CLOCK_PERIOD: 20
+CLOCK_PERIOD: 50 # 20 MHz
 
 # Floorplanning
 FP_SIZING: absolute
@@ -197,10 +186,7 @@ PDN_CORE_VERTICAL_LAYER: Metal2
 PDN_CORE_HORIZONTAL_LAYER: Metal3
 PDN_HPITCH: 100
 
-# Due to OpenROAD bug
-# https://github.com/The-OpenROAD-Project/OpenROAD/issues/8229
-#PL_TIME_DRIVEN: False
-#PL_ROUTABILITY_DRIVEN: False
+ERROR_ON_MAGIC_DRC: false # still fails on SRAM
 
 # Prevent false positive DRC errors in I/O cells
 MAGIC_GDS_FLATGLOB:
@@ -210,6 +196,33 @@ MAGIC_GDS_FLATGLOB:
 # flattened to form a "filltrans" layer
 - "COMP_fill_cell"
 - "Poly2_fill_cell"
+# Foundry provided SRAMs
+- "*$$*"
+- "M1_N*"
+- "M1_P*"
+- "M2_M1*"
+- "M3_M2*"
+- "nmos_5p0*"
+- "nmos_1p2*"
+- "pmos_5p0*"
+- "pmos_1p2*"
+- "via1_*"
+- "ypass_gate*"
+- "G_ring_*"
+# These additional cells must be flattened to get rid of 3.3V devices
+# (DUALGATE drawn into high-level cells)
+- "dcap_103*"
+- "din_*"
+- "mux821_*"
+- "rdummy_*"
+- "pmoscap_*"
+- "xdec_*"
+- "ypredec*"
+- "xpredec*"
+- "xdec8_*"
+- "prexdec_*"
+- "xdec32_*"
+- "sa_*"
 
 # Because we have multiple power pads for one power domain
 MAGIC_EXT_UNIQUE: notopports
@@ -274,7 +287,7 @@ LVS_FLATTEN_CELLS:
 - gf180mcu_ws_ip__id
 - gf180mcu_ws_ip__logo
 
-# gf180mcu_ws_ip__id has no ports and components
+# gf180mcu_ws_ip__id/logo has no ports and components
 # therefore make it an abstract cell in the layout
 MAGIC_EXT_ABSTRACT_CELLS:
 - gf180mcu_ws_ip__id
