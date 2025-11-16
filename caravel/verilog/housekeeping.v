@@ -14,6 +14,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 `default_nettype none
+`include "defines.v"
 
 //-----------------------------------------------------------
 // Housekeeping interface for Caravel
@@ -248,6 +249,8 @@ module housekeeping #(
     wire [11:0] mfgr_id;
     wire [7:0]  prod_id;
     wire [31:0] mask_rev;
+    
+    wire hkspi_sck;
 
     // Housekeeping side 3-wire interface to GPIOs (see below)
 
@@ -265,7 +268,7 @@ module housekeeping #(
 
     assign pad_flash_csb = (pass_thru_mgmt_delay) ? mgmt_gpio_in[3] : spimemio_flash_csb;
     assign pad_flash_csb_oe = (pass_thru_mgmt_delay) ? 1'b1 : (~porb ? 1'b0 : 1'b1);
-    assign pad_flash_clk = (pass_thru_mgmt) ? mgmt_gpio_in[4] : spimemio_flash_clk;
+    assign pad_flash_clk = (pass_thru_mgmt) ? hkspi_sck : spimemio_flash_clk;
     assign pad_flash_clk_oe = (pass_thru_mgmt) ? 1'b1 : (~porb ? 1'b0 : 1'b1);
     assign pad_flash_io0_oe = (pass_thru_mgmt_delay) ? 1'b1 : ~spimemio_flash_io0_oeb;
     assign pad_flash_io1_oe = (pass_thru_mgmt) ? 1'b0 : ~spimemio_flash_io1_oeb;
@@ -599,6 +602,7 @@ module housekeeping #(
 
     wire spi_is_enabled = (gpio_configure[3][IE]) & (~hkspi_disable);
     wire spi_is_active = spi_is_enabled && (mgmt_gpio_in[3] == 1'b0);
+    wire spi_is_active_buf;
     wire spi_is_busy = spi_is_active && (rdstb || wrstb);
 	
     /* Wishbone back-door state machine and address translation */
@@ -718,10 +722,15 @@ module housekeeping #(
     end
 
     // Instantiate the SPI interface protocol module
-
+    
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 hkspi_clk_buf (
+        .I(mgmt_gpio_in[4]),
+        .Z(hkspi_sck)
+    );
+    
     housekeeping_spi hkspi (
-	.reset(~porb),
-    	.SCK(mgmt_gpio_in[4]),
+        .reset(~porb),
+    	.SCK(hkspi_sck),
     	.SDI(mgmt_gpio_in[2]),
     	.CSB((spi_is_enabled) ? mgmt_gpio_in[3] : 1'b1),
     	.SDO(sdo),
@@ -764,8 +773,10 @@ module housekeeping #(
     assign spimemio_flash_io2_di = mgmt_gpio_in[36];
 
     // SPI master is assigned to the other 4 bits of the data high word.
-    assign mgmt_gpio_out[32] = (spi_enabled) ? spi_sck : mgmt_gpio_data[32];
-    assign mgmt_gpio_out[33] = (spi_enabled) ? spi_csb : mgmt_gpio_data[33];
+    assign mgmt_gpio_out[32] = (spi_enabled) ? spi_sck : (clk2_output_dest == 1'b1) ? user_clock
+		: mgmt_gpio_data[32];
+    assign mgmt_gpio_out[33] = (spi_enabled) ? spi_csb : (clk1_output_dest == 1'b1) ? wb_clk_i
+		: mgmt_gpio_data[33];
     assign mgmt_gpio_out[34] = mgmt_gpio_data[34];
     assign mgmt_gpio_out[35] = (spi_enabled) ? spi_sdo : mgmt_gpio_data[35];
 
@@ -774,7 +785,7 @@ module housekeeping #(
 
     assign mgmt_gpio_out[10] = (pass_thru_user_delay) ? mgmt_gpio_in[2]
 			: mgmt_gpio_data[10];
-    assign mgmt_gpio_out[9] = (pass_thru_user) ? mgmt_gpio_in[4]
+    assign mgmt_gpio_out[9] = (pass_thru_user) ? hkspi_sck
 			: mgmt_gpio_data[9];
     assign mgmt_gpio_out[8] = (pass_thru_user_delay) ? mgmt_gpio_in[3]
 			: mgmt_gpio_data[8];
@@ -814,6 +825,7 @@ module housekeeping #(
     // so the pad being under control of the user area takes precedence
     // over the system monitoring function.
 
+    // Double clock monitoring pins on 32:33 for waferspace version
     assign mgmt_gpio_out[15] = (clk2_output_dest == 1'b1) ? user_clock
 		: mgmt_gpio_data[15];
     assign mgmt_gpio_out[14] = (clk1_output_dest == 1'b1) ? wb_clk_i
@@ -956,9 +968,15 @@ module housekeeping #(
     // wbbd state machine (see below).
 
     assign caddr = (wbbd_busy) ? wbbd_addr : iaddr;
-    assign csclk = (wbbd_busy) ? wbbd_sck : ((spi_is_active) ? mgmt_gpio_in[4] : 1'b0);
+    assign csclk = (wbbd_busy) ? wbbd_sck : ((spi_is_active_buf) ? hkspi_sck : 1'b0);
     assign cdata = (wbbd_busy) ? wbbd_data : idata;
     assign cwstb = (wbbd_busy) ? wbbd_write : wrstb;
+    
+    // buffer to disable timing and break look
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__buf_1 spi_is_active_clk_buf (
+        .I(spi_is_active),
+        .Z(spi_is_active_buf)
+    );
 
     assign odata = fdata(caddr);
 

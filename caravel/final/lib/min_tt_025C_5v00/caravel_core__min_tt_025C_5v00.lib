@@ -27,7 +27,7 @@ library (caravel_core) {
 
   lu_table_template(template_1) {
     variable_1 : total_output_net_capacitance;
-    index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
+    index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
   }
   type ("caravel_io_ie") {
     base_type : array;
@@ -136,82 +136,82 @@ library (caravel_core) {
   }
 
   cell ("caravel_core") {
-    area : 2594266.500 
+    area : 2639529.500 
     is_macro_cell : true;
     pin("clock_core") {
       direction : input;
-      capacitance : 0.3880;
+      capacitance : 0.0710;
     }
     pin("flash_clk_frame") {
       direction : output;
-      capacitance : 0.0766;
-      timing() {
-        related_pin : "flash_clk_frame";
-        timing_type : falling_edge;
-	cell_rise(template_1) {
-          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("-87.79103,-87.76892,-87.70784,-87.60402,-87.44484,-87.22039,-86.92442,-86.55061,-86.09460,-85.55042");
-	}
-	rise_transition(template_1) {
-          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("0.07327,0.09799,0.18177,0.35316,0.63394,1.03400,1.56000,2.22600,3.03518,4.00482");
-	}
-	cell_fall(template_1) {
-          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("8.57787,8.60196,8.66987,8.78187,8.94894,9.18241,9.49024,9.87768,10.35124,10.91624");
-	}
-	fall_transition(template_1) {
-          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("0.06968,0.09707,0.18371,0.34821,0.61981,1.00856,1.52256,2.17113,2.96344,3.91300");
-	}
-      }
+      capacitance : 0.0085;
       timing() {
         related_pin : "flash_clk_frame";
         timing_type : rising_edge;
 	cell_rise(template_1) {
           index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("8.48257,8.50469,8.56576,8.66959,8.82876,9.05322,9.34919,9.72301,10.17901,10.72319");
+          values("4.46955,4.49486,4.55982,4.66382,4.82090,5.04336,5.33826,5.71126,6.16648,6.70926");
 	}
 	rise_transition(template_1) {
           index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("0.07327,0.09799,0.18177,0.35316,0.63394,1.03400,1.56000,2.22600,3.03518,4.00482");
+          values("0.09425,0.11973,0.19767,0.36034,0.63617,1.03457,1.55900,2.22300,3.03265,3.99900");
 	}
 	cell_fall(template_1) {
           index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("-0.04929,-0.02520,0.04271,0.15471,0.32177,0.55525,0.86308,1.25052,1.72408,2.28908");
+          values("-0.00567,0.01925,0.08787,0.19985,0.36563,0.59801,0.90441,1.29234,1.76634,2.33041");
 	}
 	fall_transition(template_1) {
           index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("0.06968,0.09707,0.18371,0.34821,0.61981,1.00856,1.52256,2.17113,2.96344,3.91300");
+          values("0.08033,0.10780,0.19189,0.35239,0.62036,1.00900,1.52208,2.17200,2.96577,3.91392");
+	}
+      }
+      timing() {
+        related_pin : "flash_clk_frame";
+        timing_type : falling_edge;
+	cell_rise(template_1) {
+          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
+          values("-60.00576,-59.98045,-59.91549,-59.81149,-59.65441,-59.43195,-59.13705,-58.76405,-58.30883,-57.76605");
+	}
+	rise_transition(template_1) {
+          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
+          values("0.09425,0.11973,0.19767,0.36034,0.63617,1.03457,1.55900,2.22300,3.03265,3.99900");
+	}
+	cell_fall(template_1) {
+          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
+          values("4.36695,4.39188,4.46049,4.57247,4.73825,4.97063,5.27704,5.66496,6.13896,6.70304");
+	}
+	fall_transition(template_1) {
+          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
+          values("0.08033,0.10780,0.19189,0.35239,0.62036,1.00900,1.52208,2.17200,2.96577,3.91392");
 	}
       }
     }
     pin("flash_clk_oe") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0033;
     }
     pin("flash_csb_frame") {
       direction : output;
-      capacitance : 0.0035;
+      capacitance : 0.0033;
       timing() {
         related_pin : "caravel_io_in[3]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.03378,  0.14890,  0.36860,  0.71100,  1.19100,  1.82300,  2.62000,  3.59200,  4.75100");
-          values("7.72095,7.73841,7.79302,7.89427,8.05405,8.27893,8.57522,8.94913,9.40522,9.94804");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("3.18252,3.20392,3.26294,3.36243,3.51436,3.72814,4.01000,4.36500,4.79962,5.31662");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.03378,  0.14890,  0.36860,  0.71100,  1.19100,  1.82300,  2.62000,  3.59200,  4.75100");
-          values("0.05696,0.08150,0.16982,0.34889,0.63449,1.03482,1.56182,2.22654,3.03109,3.99518");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06985,0.09433,0.17380,0.33617,0.60346,0.98374,1.48400,2.11538,2.88825,3.80862");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.03378,  0.14890,  0.36860,  0.71100,  1.19100,  1.82300,  2.62000,  3.59200,  4.75100");
-          values("6.82366,6.84055,6.88681,6.95945,7.06315,7.20579,7.39332,7.62953,7.91805,8.26173");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("3.16732,3.19134,3.26025,3.37470,3.54601,3.78559,4.10035,4.49835,4.98335,5.56165");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.03378,  0.14890,  0.36860,  0.71100,  1.19100,  1.82300,  2.62000,  3.59200,  4.75100");
-          values("0.05485,0.07284,0.12675,0.22494,0.38495,0.61840,0.92987,1.32368,1.80436,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06744,0.09550,0.18463,0.35461,0.63449,1.03230,1.56000,2.22655,3.03885,4.00619");
 	}
       }
     }
@@ -225,40 +225,40 @@ library (caravel_core) {
     }
     pin("flash_io0_do") {
       direction : output;
-      capacitance : 0.0040;
+      capacitance : 0.0032;
       timing() {
         related_pin : "caravel_io_in[2]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02731,  0.11970,  0.29610,  0.57090,  0.95640,  1.46400,  2.10300,  2.88300,  3.81300");
-          values("10.17778,10.20074,10.26285,10.36650,10.52500,10.74874,11.04464,11.41813,11.87363,12.41764");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("4.21071,4.23222,4.29115,4.39049,4.54222,4.75597,5.03790,5.39290,5.82706,6.34406");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02731,  0.11970,  0.29610,  0.57090,  0.95640,  1.46400,  2.10300,  2.88300,  3.81300");
-          values("0.07846,0.10369,0.18549,0.35407,0.63410,1.03400,1.56100,2.22400,3.03351,4.00154");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07078,0.09499,0.17429,0.33638,0.60342,0.98367,1.48400,2.11584,2.88731,3.80816");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02731,  0.11970,  0.29610,  0.57090,  0.95640,  1.46400,  2.10300,  2.88300,  3.81300");
-          values("11.23770,11.26132,11.32799,11.43737,11.60005,11.82759,12.12749,12.50549,12.96749,13.51761");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("4.20375,4.22775,4.29660,4.41097,4.58224,4.82181,5.13653,5.53448,6.01953,6.59758");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02731,  0.11970,  0.29610,  0.57090,  0.95640,  1.46400,  2.10300,  2.88300,  3.81300");
-          values("0.06958,0.09631,0.18055,0.34045,0.60402,0.98180,1.48377,2.11700,2.89088,3.81288");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06763,0.09566,0.18469,0.35462,0.63450,1.03205,1.56000,2.22700,3.03895,4.00530");
 	}
       }
     }
     pin("flash_io0_ie") {
       direction : output;
-      capacitance : 0.0050;
+      capacitance : 0.0032;
     }
     pin("flash_io0_oe") {
       direction : output;
-      capacitance : 0.0050;
+      capacitance : 0.0031;
     }
     pin("flash_io1_di") {
       direction : input;
-      capacitance : 0.0085;
+      capacitance : 0.0094;
     }
     pin("flash_io1_do") {
       direction : output;
@@ -266,7 +266,7 @@ library (caravel_core) {
     }
     pin("flash_io1_ie") {
       direction : output;
-      capacitance : 0.0031;
+      capacitance : 0.0029;
     }
     pin("flash_io1_oe") {
       direction : output;
@@ -274,11 +274,11 @@ library (caravel_core) {
     }
     pin("gpio_in_core") {
       direction : input;
-      capacitance : 0.0065;
+      capacitance : 0.0099;
     }
     pin("gpio_inenb_core") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0033;
     }
     pin("gpio_out_core") {
       direction : output;
@@ -286,104 +286,104 @@ library (caravel_core) {
     }
     pin("gpio_outenb_core") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0033;
     }
     pin("rstb") {
       direction : input;
-      capacitance : 0.0075;
+      capacitance : 0.0086;
     }
     pin("user_clock2") {
       direction : output;
-      capacitance : 0.0031;
+      capacitance : 0.0036;
       timing() {
         related_pin : "clock_core";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("9.95235,9.96980,10.02440,10.12623,10.28588,10.51141,10.80816,11.18034,11.63816,12.18316");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("3.89327,3.91500,3.97375,4.07284,4.22416,4.43788,4.71994,5.07494,5.50821,6.02522");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05582,0.08004,0.16852,0.34821,0.63312,1.03364,1.56182,2.22218,3.03254,3.99900");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07252,0.09623,0.17521,0.33677,0.60333,0.98354,1.48400,2.11672,2.88556,3.80728");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("7.54529,7.56231,7.60861,7.68111,7.78471,7.92745,8.11499,8.35132,8.63998,8.98398");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("4.06931,4.09328,4.16190,4.27609,4.44721,4.68662,5.00145,5.39914,5.88445,6.46275");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05370,0.07177,0.12540,0.22370,0.38351,0.61791,0.93057,1.32300,1.80326,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06839,0.09627,0.18515,0.35475,0.63453,1.03231,1.56000,2.22700,3.03869,4.00683");
 	}
       }
     }
     pin("user_irq_core") {
       direction : input;
-      capacitance : 0.0054;
+      capacitance : 0.0091;
     }
     pin("user_wb_ack_i") {
       direction : input;
-      capacitance : 0.0063;
+      capacitance : 0.0089;
     }
     pin("user_wb_clk_o") {
       direction : output;
-      capacitance : 0.0029;
-      timing() {
-        related_pin : "user_wb_clk_o";
-        timing_type : rising_edge;
-	cell_rise(template_1) {
-          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("7.81811,7.84303,7.90743,8.01124,8.16861,8.39133,8.68643,9.05942,9.51486,10.05742");
-	}
-	rise_transition(template_1) {
-          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("0.09139,0.11683,0.19532,0.35907,0.63553,1.03413,1.55900,2.22300,3.03331,3.99900");
-	}
-	cell_fall(template_1) {
-          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("-0.00150,0.02432,0.09431,0.20684,0.37235,0.60407,0.91023,1.29775,1.77127,2.33479");
-	}
-	fall_transition(template_1) {
-          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("0.08758,0.11561,0.19888,0.35745,0.62165,1.00900,1.52248,2.17200,2.96504,3.91064");
-	}
-      }
+      capacitance : 0.0040;
       timing() {
         related_pin : "user_wb_clk_o";
         timing_type : falling_edge;
 	cell_rise(template_1) {
           index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("-25.00145,-24.97653,-24.91212,-24.80832,-24.65095,-24.42822,-24.13313,-23.76013,-23.30470,-22.76213");
+          values("-15.00227,-14.97733,-14.91288,-14.80906,-14.65171,-14.42901,-14.13393,-13.76093,-13.30551,-12.76293");
 	}
 	rise_transition(template_1) {
           index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("0.09139,0.11683,0.19532,0.35907,0.63553,1.03413,1.55900,2.22300,3.03331,3.99900");
+          values("0.09160,0.11704,0.19549,0.35916,0.63558,1.03416,1.55900,2.22300,3.03326,3.99900");
 	}
 	cell_fall(template_1) {
           index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("8.11672,8.14253,8.21253,8.32506,8.49056,8.72229,9.02844,9.41596,9.88948,10.45300");
+          values("3.08473,3.11057,3.18060,3.29315,3.45865,3.69036,3.99651,4.38402,4.85752,5.42103");
 	}
 	fall_transition(template_1) {
           index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
-          values("0.08758,0.11561,0.19888,0.35745,0.62165,1.00900,1.52248,2.17200,2.96504,3.91064");
+          values("0.08776,0.11580,0.19906,0.35758,0.62168,1.00900,1.52249,2.17200,2.96501,3.91055");
+	}
+      }
+      timing() {
+        related_pin : "user_wb_clk_o";
+        timing_type : rising_edge;
+	cell_rise(template_1) {
+          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
+          values("2.97097,2.99592,3.06036,3.16418,3.32153,3.54424,3.83932,4.21232,4.66774,5.21032");
+	}
+	rise_transition(template_1) {
+          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
+          values("0.09160,0.11704,0.19549,0.35916,0.63558,1.03416,1.55900,2.22300,3.03326,3.99900");
+	}
+	cell_fall(template_1) {
+          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
+          values("6.44596,6.47179,6.54183,6.65437,6.81987,7.05158,7.35773,7.74524,8.21874,8.78225");
+	}
+	fall_transition(template_1) {
+          index_1("0.00100,  0.03382,  0.14900,  0.36900,  0.71180,  1.19300,  1.82600,  2.62300,  3.59600,  4.75600");
+          values("0.08776,0.11580,0.19906,0.35758,0.62168,1.00900,1.52249,2.17200,2.96501,3.91055");
 	}
       }
     }
     pin("user_wb_cyc_o") {
       direction : output;
-      capacitance : 0.0047;
+      capacitance : 0.0034;
     }
     pin("user_wb_rst_o") {
       direction : output;
-      capacitance : 0.0040;
+      capacitance : 0.0030;
     }
     pin("user_wb_stb_o") {
       direction : output;
-      capacitance : 0.0044;
+      capacitance : 0.0032;
     }
     pin("user_wb_we_o") {
       direction : output;
-      capacitance : 0.0046;
+      capacitance : 0.0029;
     }
     bus("caravel_io_ie") {
       bus_type : caravel_io_ie;
@@ -391,23 +391,23 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("caravel_io_ie[12]") {
       direction : output;
-      capacitance : 0.0028;
+      capacitance : 0.0027;
     }
     pin("caravel_io_ie[11]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0130;
     }
     pin("caravel_io_ie[10]") {
       direction : output;
-      capacitance : 0.0033;
+      capacitance : 0.0105;
     }
     pin("caravel_io_ie[9]") {
       direction : output;
-      capacitance : 0.0050;
+      capacitance : 0.0122;
     }
     pin("caravel_io_ie[8]") {
       direction : output;
-      capacitance : 0.0037;
+      capacitance : 0.0238;
     }
     pin("caravel_io_ie[7]") {
       direction : output;
@@ -415,31 +415,31 @@ library (caravel_core) {
     }
     pin("caravel_io_ie[6]") {
       direction : output;
-      capacitance : 0.0039;
+      capacitance : 0.0064;
     }
     pin("caravel_io_ie[5]") {
       direction : output;
-      capacitance : 0.0052;
+      capacitance : 0.0033;
     }
     pin("caravel_io_ie[4]") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0026;
     }
     pin("caravel_io_ie[3]") {
       direction : output;
-      capacitance : 0.0285;
+      capacitance : 0.0694;
     }
     pin("caravel_io_ie[2]") {
       direction : output;
-      capacitance : 0.0816;
+      capacitance : 0.0515;
     }
     pin("caravel_io_ie[1]") {
       direction : output;
-      capacitance : 0.0476;
+      capacitance : 0.0106;
     }
     pin("caravel_io_ie[0]") {
       direction : output;
-      capacitance : 0.0113;
+      capacitance : 0.0025;
     }
     }
     bus("caravel_io_in") {
@@ -448,55 +448,55 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("caravel_io_in[12]") {
       direction : input;
-      capacitance : 0.0000;
+      capacitance : 0.0885;
     }
     pin("caravel_io_in[11]") {
       direction : input;
-      capacitance : 0.0200;
+      capacitance : 0.0228;
     }
     pin("caravel_io_in[10]") {
       direction : input;
-      capacitance : 0.2014;
+      capacitance : 0.0347;
     }
     pin("caravel_io_in[9]") {
       direction : input;
-      capacitance : 0.2290;
+      capacitance : 0.0737;
     }
     pin("caravel_io_in[8]") {
       direction : input;
-      capacitance : 0.2287;
+      capacitance : 0.1113;
     }
     pin("caravel_io_in[7]") {
       direction : input;
-      capacitance : 0.0078;
+      capacitance : 0.0725;
     }
     pin("caravel_io_in[6]") {
       direction : input;
-      capacitance : 0.0080;
+      capacitance : 0.0109;
     }
     pin("caravel_io_in[5]") {
       direction : input;
-      capacitance : 0.0076;
+      capacitance : 0.0163;
     }
     pin("caravel_io_in[4]") {
       direction : input;
-      capacitance : 0.0080;
+      capacitance : 0.2227;
     }
     pin("caravel_io_in[3]") {
       direction : input;
-      capacitance : 0.0079;
+      capacitance : 0.0108;
     }
     pin("caravel_io_in[2]") {
       direction : input;
-      capacitance : 0.0078;
+      capacitance : 0.0129;
     }
     pin("caravel_io_in[1]") {
       direction : input;
-      capacitance : 0.0123;
+      capacitance : 0.0272;
     }
     pin("caravel_io_in[0]") {
       direction : input;
-      capacitance : 0.0214;
+      capacitance : 0.0151;
     }
     }
     bus("caravel_io_oe") {
@@ -505,75 +505,75 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("caravel_io_oe[12]") {
       direction : output;
-      capacitance : 0.0045;
+      capacitance : 0.0044;
     }
     pin("caravel_io_oe[11]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0104;
     }
     pin("caravel_io_oe[10]") {
       direction : output;
-      capacitance : 0.0043;
+      capacitance : 0.0098;
     }
     pin("caravel_io_oe[9]") {
       direction : output;
-      capacitance : 0.0031;
+      capacitance : 0.0124;
     }
     pin("caravel_io_oe[8]") {
       direction : output;
-      capacitance : 0.0046;
+      capacitance : 0.0176;
     }
     pin("caravel_io_oe[7]") {
       direction : output;
-      capacitance : 0.0046;
+      capacitance : 0.0028;
     }
     pin("caravel_io_oe[6]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0159;
     }
     pin("caravel_io_oe[5]") {
       direction : output;
-      capacitance : 0.0030;
+      capacitance : 0.0088;
     }
     pin("caravel_io_oe[4]") {
       direction : output;
-      capacitance : 0.0035;
+      capacitance : 0.0044;
     }
     pin("caravel_io_oe[3]") {
       direction : output;
-      capacitance : 0.0043;
+      capacitance : 0.0609;
     }
     pin("caravel_io_oe[2]") {
       direction : output;
-      capacitance : 0.1058;
+      capacitance : 0.0603;
     }
     pin("caravel_io_oe[1]") {
       direction : output;
-      capacitance : 0.0540;
+      capacitance : 0.0177;
       timing() {
         related_pin : "caravel_io_in[3]";
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02077,  0.09015,  0.22260,  0.42910,  0.71870,  1.10000,  1.58000,  2.16600,  2.86500");
-          values("16.84076,16.86600,16.93080,17.03437,17.19166,17.41448,17.70930,18.08230,18.53784,19.08064");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("8.30989,8.33258,8.39243,8.49133,8.64211,8.85518,9.13712,9.49212,9.92512,10.44160");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02077,  0.09015,  0.22260,  0.42910,  0.71870,  1.10000,  1.58000,  2.16600,  2.86500");
-          values("0.09172,0.11805,0.19552,0.35810,0.63479,1.03373,1.56073,2.22153,3.03373,3.99986");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07874,0.10223,0.17944,0.33858,0.60372,0.98397,1.48453,2.11753,2.88552,3.80595");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02077,  0.09015,  0.22260,  0.42910,  0.71870,  1.10000,  1.58000,  2.16600,  2.86500");
-          values("16.92263,16.94728,17.01517,17.12533,17.28866,17.51741,17.81968,18.20068,18.66591,19.22114");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("8.13051,8.15443,8.22255,8.33634,8.50712,8.74620,9.06125,9.45838,9.94425,10.52312");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02077,  0.09015,  0.22260,  0.42910,  0.71870,  1.10000,  1.58000,  2.16600,  2.86500");
-          values("0.07705,0.10425,0.18746,0.34538,0.60890,0.99094,1.49500,2.13500,2.91546,3.84392");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07006,0.09760,0.18616,0.35503,0.63459,1.03287,1.56000,2.22700,3.03813,4.01019");
 	}
       }
     }
     pin("caravel_io_oe[0]") {
       direction : output;
-      capacitance : 0.0240;
+      capacitance : 0.0026;
     }
     }
     bus("caravel_io_out") {
@@ -582,116 +582,137 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("caravel_io_out[12]") {
       direction : output;
-      capacitance : 0.0044;
+      capacitance : 0.0034;
     }
     pin("caravel_io_out[11]") {
       direction : output;
-      capacitance : 0.0030;
+      capacitance : 0.0072;
     }
     pin("caravel_io_out[10]") {
       direction : output;
-      capacitance : 0.0046;
+      capacitance : 0.0059;
     }
     pin("caravel_io_out[9]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0144;
     }
     pin("caravel_io_out[8]") {
       direction : output;
-      capacitance : 0.0037;
+      capacitance : 0.0043;
     }
     pin("caravel_io_out[7]") {
       direction : output;
-      capacitance : 0.0033;
+      capacitance : 0.0030;
+      timing() {
+        related_pin : "clock_core";
+        timing_sense : positive_unate;
+        timing_type : combinational;
+	cell_rise(template_1) {
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("5.63932,5.66104,5.71980,5.81890,5.97025,6.18396,6.46601,6.82101,7.25434,7.77134");
+	}
+	rise_transition(template_1) {
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07243,0.09616,0.17516,0.33675,0.60333,0.98355,1.48400,2.11668,2.88565,3.80732");
+	}
+	cell_fall(template_1) {
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("5.84784,5.87181,5.94045,6.05465,6.22577,6.46520,6.78001,7.17772,7.66301,8.24130");
+	}
+	fall_transition(template_1) {
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06834,0.09623,0.18512,0.35474,0.63453,1.03229,1.56000,2.22700,3.03871,4.00674");
+	}
+      }
     }
     pin("caravel_io_out[6]") {
       direction : output;
-      capacitance : 0.0039;
+      capacitance : 0.0059;
       timing() {
         related_pin : "caravel_io_in[0]";
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("12.25117,12.26887,12.32357,12.42478,12.58392,12.80900,13.10550,13.47750,13.93517,14.47985");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("5.00486,5.02637,5.08530,5.18464,5.33636,5.55011,5.83204,6.18704,6.62118,7.13819");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05926,0.08294,0.17010,0.34865,0.63336,1.03367,1.56135,2.22167,3.03200,3.99867");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07081,0.09501,0.17430,0.33639,0.60341,0.98367,1.48400,2.11586,2.88728,3.80814");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("9.67419,9.69135,9.73774,9.81024,9.91375,10.05642,10.24389,10.48016,10.76898,11.11299");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("4.93160,4.95560,5.02445,5.13882,5.31009,5.54966,5.86438,6.26233,6.74738,7.32543");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05563,0.07350,0.12657,0.22433,0.38394,0.61771,0.93044,1.32300,1.80459,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06763,0.09566,0.18469,0.35462,0.63450,1.03205,1.56000,2.22700,3.03895,4.00529");
 	}
       }
     }
     pin("caravel_io_out[5]") {
       direction : output;
-      capacitance : 0.0053;
+      capacitance : 0.0034;
     }
     pin("caravel_io_out[4]") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0051;
     }
     pin("caravel_io_out[3]") {
       direction : output;
-      capacitance : 0.0043;
+      capacitance : 0.0313;
     }
     pin("caravel_io_out[2]") {
       direction : output;
-      capacitance : 0.0708;
+      capacitance : 0.0669;
     }
     pin("caravel_io_out[1]") {
       direction : output;
-      capacitance : 0.0533;
+      capacitance : 0.0208;
       timing() {
         related_pin : "flash_io1_di";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("27.57495,27.59656,27.65508,27.75558,27.91299,28.13589,28.42999,28.80099,29.25599,29.79997");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("11.41982,11.44374,11.50543,11.60442,11.75453,11.96681,12.24814,12.60314,13.03614,13.55214");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.08506,0.10807,0.18805,0.36044,0.64085,1.03604,1.56002,2.22499,3.03001,3.99400");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.08715,0.11078,0.18591,0.34146,0.60472,0.98455,1.48525,2.11726,2.88674,3.80475");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("24.70141,24.72112,24.77185,24.84770,24.95215,25.09438,25.28097,25.51640,25.80462,26.14784");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("11.08772,11.11196,11.18037,11.29407,11.46432,11.70298,12.01805,12.41505,12.90067,13.47967");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.07857,0.09734,0.14779,0.24023,0.39172,0.62047,0.93027,1.32378,1.80422,2.38056");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07414,0.10168,0.18927,0.35682,0.63464,1.03337,1.56000,2.22625,3.03875,4.01212");
 	}
       }
       timing() {
         related_pin : "caravel_io_in[3]";
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("32.76126,32.78287,32.84138,32.94189,33.09930,33.32220,33.61629,33.98730,34.44229,34.98628");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("14.29012,14.31404,14.37573,14.47472,14.62483,14.83711,15.11844,15.47344,15.90644,16.42244");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.08506,0.10807,0.18805,0.36044,0.64085,1.03604,1.56002,2.22499,3.03001,3.99400");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.08715,0.11078,0.18591,0.34146,0.60472,0.98455,1.48525,2.11726,2.88674,3.80475");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("28.01233,28.03203,28.08277,28.15862,28.26307,28.40530,28.59188,28.82732,29.11554,29.45876");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("13.98341,14.00765,14.07606,14.18976,14.36001,14.59867,14.91373,15.31073,15.79636,16.37536");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.07857,0.09734,0.14779,0.24023,0.39172,0.62047,0.93027,1.32378,1.80422,2.38056");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07414,0.10168,0.18927,0.35682,0.63464,1.03337,1.56000,2.22625,3.03875,4.01212");
 	}
       }
     }
     pin("caravel_io_out[0]") {
       direction : output;
-      capacitance : 0.0251;
+      capacitance : 0.0039;
     }
     }
     bus("caravel_io_pulldown_sel") {
@@ -700,55 +721,55 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("caravel_io_pulldown_sel[12]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0043;
     }
     pin("caravel_io_pulldown_sel[11]") {
       direction : output;
-      capacitance : 0.0033;
+      capacitance : 0.0067;
     }
     pin("caravel_io_pulldown_sel[10]") {
       direction : output;
-      capacitance : 0.0039;
+      capacitance : 0.0125;
     }
     pin("caravel_io_pulldown_sel[9]") {
       direction : output;
-      capacitance : 0.0045;
+      capacitance : 0.0163;
     }
     pin("caravel_io_pulldown_sel[8]") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0122;
     }
     pin("caravel_io_pulldown_sel[7]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0104;
     }
     pin("caravel_io_pulldown_sel[6]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0054;
     }
     pin("caravel_io_pulldown_sel[5]") {
       direction : output;
-      capacitance : 0.0049;
+      capacitance : 0.0043;
     }
     pin("caravel_io_pulldown_sel[4]") {
       direction : output;
-      capacitance : 0.0053;
+      capacitance : 0.0058;
     }
     pin("caravel_io_pulldown_sel[3]") {
       direction : output;
-      capacitance : 0.0039;
+      capacitance : 0.0363;
     }
     pin("caravel_io_pulldown_sel[2]") {
       direction : output;
-      capacitance : 0.0855;
+      capacitance : 0.0163;
     }
     pin("caravel_io_pulldown_sel[1]") {
       direction : output;
-      capacitance : 0.0695;
+      capacitance : 0.0321;
     }
     pin("caravel_io_pulldown_sel[0]") {
       direction : output;
-      capacitance : 0.0256;
+      capacitance : 0.0032;
     }
     }
     bus("caravel_io_pullup_sel") {
@@ -761,51 +782,51 @@ library (caravel_core) {
     }
     pin("caravel_io_pullup_sel[11]") {
       direction : output;
-      capacitance : 0.0029;
+      capacitance : 0.0058;
     }
     pin("caravel_io_pullup_sel[10]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0060;
     }
     pin("caravel_io_pullup_sel[9]") {
       direction : output;
-      capacitance : 0.0028;
+      capacitance : 0.0135;
     }
     pin("caravel_io_pullup_sel[8]") {
       direction : output;
-      capacitance : 0.0040;
+      capacitance : 0.0119;
     }
     pin("caravel_io_pullup_sel[7]") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0094;
     }
     pin("caravel_io_pullup_sel[6]") {
       direction : output;
-      capacitance : 0.0035;
+      capacitance : 0.0030;
     }
     pin("caravel_io_pullup_sel[5]") {
       direction : output;
-      capacitance : 0.0040;
+      capacitance : 0.0086;
     }
     pin("caravel_io_pullup_sel[4]") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0041;
     }
     pin("caravel_io_pullup_sel[3]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0167;
     }
     pin("caravel_io_pullup_sel[2]") {
       direction : output;
-      capacitance : 0.0756;
+      capacitance : 0.0617;
     }
     pin("caravel_io_pullup_sel[1]") {
       direction : output;
-      capacitance : 0.0726;
+      capacitance : 0.0345;
     }
     pin("caravel_io_pullup_sel[0]") {
       direction : output;
-      capacitance : 0.0361;
+      capacitance : 0.0034;
     }
     }
     bus("caravel_io_schmitt_sel") {
@@ -814,55 +835,55 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("caravel_io_schmitt_sel[12]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0037;
     }
     pin("caravel_io_schmitt_sel[11]") {
       direction : output;
-      capacitance : 0.0040;
+      capacitance : 0.0068;
     }
     pin("caravel_io_schmitt_sel[10]") {
       direction : output;
-      capacitance : 0.0039;
+      capacitance : 0.0061;
     }
     pin("caravel_io_schmitt_sel[9]") {
       direction : output;
-      capacitance : 0.0043;
+      capacitance : 0.0154;
     }
     pin("caravel_io_schmitt_sel[8]") {
       direction : output;
-      capacitance : 0.0045;
+      capacitance : 0.0064;
     }
     pin("caravel_io_schmitt_sel[7]") {
       direction : output;
-      capacitance : 0.0033;
+      capacitance : 0.0139;
     }
     pin("caravel_io_schmitt_sel[6]") {
       direction : output;
-      capacitance : 0.0037;
+      capacitance : 0.0038;
     }
     pin("caravel_io_schmitt_sel[5]") {
       direction : output;
-      capacitance : 0.0035;
+      capacitance : 0.0059;
     }
     pin("caravel_io_schmitt_sel[4]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0036;
     }
     pin("caravel_io_schmitt_sel[3]") {
       direction : output;
-      capacitance : 0.0060;
+      capacitance : 0.0095;
     }
     pin("caravel_io_schmitt_sel[2]") {
       direction : output;
-      capacitance : 0.0490;
+      capacitance : 0.0587;
     }
     pin("caravel_io_schmitt_sel[1]") {
       direction : output;
-      capacitance : 0.0800;
+      capacitance : 0.0418;
     }
     pin("caravel_io_schmitt_sel[0]") {
       direction : output;
-      capacitance : 0.0369;
+      capacitance : 0.0047;
     }
     }
     bus("caravel_io_slew_sel") {
@@ -871,27 +892,27 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("caravel_io_slew_sel[12]") {
       direction : output;
-      capacitance : 0.0028;
+      capacitance : 0.0033;
     }
     pin("caravel_io_slew_sel[11]") {
       direction : output;
-      capacitance : 0.0042;
+      capacitance : 0.0041;
     }
     pin("caravel_io_slew_sel[10]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0093;
     }
     pin("caravel_io_slew_sel[9]") {
       direction : output;
-      capacitance : 0.0044;
+      capacitance : 0.0153;
     }
     pin("caravel_io_slew_sel[8]") {
       direction : output;
-      capacitance : 0.0031;
+      capacitance : 0.0076;
     }
     pin("caravel_io_slew_sel[7]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0223;
     }
     pin("caravel_io_slew_sel[6]") {
       direction : output;
@@ -899,27 +920,27 @@ library (caravel_core) {
     }
     pin("caravel_io_slew_sel[5]") {
       direction : output;
-      capacitance : 0.0043;
+      capacitance : 0.0067;
     }
     pin("caravel_io_slew_sel[4]") {
       direction : output;
-      capacitance : 0.0062;
+      capacitance : 0.0036;
     }
     pin("caravel_io_slew_sel[3]") {
       direction : output;
-      capacitance : 0.0053;
+      capacitance : 0.0068;
     }
     pin("caravel_io_slew_sel[2]") {
       direction : output;
-      capacitance : 0.0658;
+      capacitance : 0.0529;
     }
     pin("caravel_io_slew_sel[1]") {
       direction : output;
-      capacitance : 0.0646;
+      capacitance : 0.0431;
     }
     pin("caravel_io_slew_sel[0]") {
       direction : output;
-      capacitance : 0.0478;
+      capacitance : 0.0076;
     }
     }
     bus("user_gpio_in") {
@@ -928,305 +949,326 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("user_gpio_in[12]") {
       direction : output;
-      capacitance : 0.0043;
+      capacitance : 0.0037;
       timing() {
-        related_pin : "caravel_io_in[10]";
+        related_pin : "caravel_io_in[12]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("8.56769,8.58566,8.64050,8.74115,8.89992,9.12425,9.42062,9.79262,10.24983,10.79404");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.60658,1.62862,1.68763,1.78660,1.93769,2.15122,2.43328,2.78828,3.22128,3.73814");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06274,0.08597,0.17182,0.34944,0.63401,1.03321,1.56042,2.22121,3.03200,3.99821");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07459,0.09812,0.17655,0.33735,0.60341,0.98363,1.48414,2.11714,2.88514,3.80672");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("6.82232,6.83999,6.88720,6.96021,7.06369,7.20618,7.39339,7.62948,7.91848,8.26248");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.65923,1.68318,1.75160,1.86562,2.03660,2.27588,2.59080,2.98826,3.47380,4.05233");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06136,0.07920,0.13127,0.22729,0.38543,0.61816,0.93012,1.32300,1.80563,2.38026");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06907,0.09681,0.18556,0.35487,0.63455,1.03253,1.56000,2.22700,3.03847,4.00820");
 	}
       }
     }
     pin("user_gpio_in[11]") {
       direction : output;
-      capacitance : 0.0036;
+      capacitance : 0.0042;
       timing() {
-        related_pin : "caravel_io_in[9]";
+        related_pin : "caravel_io_in[11]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("8.56490,8.58288,8.63772,8.73837,8.89713,9.12146,9.41782,9.78982,10.24703,10.79124");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.90735,1.92894,1.98781,2.08707,2.23865,2.45239,2.73437,3.08937,3.52322,4.04022");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06276,0.08599,0.17183,0.34945,0.63401,1.03321,1.56041,2.22121,3.03200,3.99821");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07137,0.09541,0.17460,0.33651,0.60339,0.98363,1.48400,2.11614,2.88671,3.80786");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("6.82874,6.84641,6.89362,6.96664,7.07012,7.21261,7.39982,7.63591,7.92491,8.26891");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.93853,1.96251,2.03125,2.14552,2.31671,2.55620,2.87098,3.26880,3.75398,4.33216");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06140,0.07925,0.13131,0.22731,0.38545,0.61817,0.93011,1.32300,1.80563,2.38025");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06802,0.09597,0.18493,0.35469,0.63452,1.03218,1.56000,2.22700,3.03882,4.00609");
 	}
       }
     }
     pin("user_gpio_in[10]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0032;
       timing() {
-        related_pin : "caravel_io_in[8]";
+        related_pin : "caravel_io_in[10]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("8.59021,8.60822,8.66307,8.76366,8.92239,9.14664,9.44299,9.81499,10.27215,10.81630");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.91650,1.93811,1.99697,2.09620,2.24774,2.46148,2.74347,3.09847,3.53224,4.04924");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06313,0.08631,0.17201,0.34953,0.63408,1.03316,1.56032,2.22116,3.03200,3.99816");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07155,0.09553,0.17469,0.33655,0.60338,0.98362,1.48400,2.11623,2.88654,3.80777");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("6.85623,6.87392,6.92118,6.99424,7.09772,7.24020,7.42740,7.66348,7.95248,8.29648");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.02809,2.05207,2.12079,2.23505,2.40622,2.64570,2.96048,3.35828,3.84348,4.42169");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06166,0.07951,0.13155,0.22747,0.38552,0.61822,0.93010,1.32300,1.80560,2.38020");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06809,0.09603,0.18497,0.35470,0.63452,1.03220,1.56000,2.22700,3.03880,4.00623");
 	}
       }
     }
     pin("user_gpio_in[9]") {
       direction : output;
-      capacitance : 0.0042;
+      capacitance : 0.0033;
       timing() {
-        related_pin : "caravel_io_in[7]";
+        related_pin : "caravel_io_in[9]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("10.09169,10.10959,10.16439,10.26519,10.42406,10.64860,10.94500,11.31700,11.77434,12.31867");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.84896,1.87057,1.92942,2.02865,2.18019,2.39393,2.67591,3.03091,3.46467,3.98167");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06180,0.08515,0.17136,0.34923,0.63383,1.03334,1.56067,2.22134,3.03200,3.99834");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07158,0.09556,0.17471,0.33656,0.60338,0.98361,1.48400,2.11625,2.88651,3.80775");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("8.10008,8.11737,8.16387,8.23637,8.33977,8.48238,8.66978,8.90598,9.19498,9.53898");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.90751,1.93149,2.00020,2.11446,2.28563,2.52511,2.83989,3.23768,3.72289,4.30110");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05757,0.07524,0.12775,0.22497,0.38438,0.61751,0.93031,1.32300,1.80594,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06810,0.09604,0.18498,0.35470,0.63452,1.03221,1.56000,2.22700,3.03879,4.00625");
 	}
       }
     }
     pin("user_gpio_in[8]") {
       direction : output;
-      capacitance : 0.0027;
+      capacitance : 0.0040;
+      timing() {
+        related_pin : "caravel_io_in[8]";
+        timing_sense : positive_unate;
+        timing_type : combinational;
+	cell_rise(template_1) {
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.83855,1.86014,1.91901,2.01826,2.16984,2.38359,2.66556,3.02056,3.45440,3.97140");
+	}
+	rise_transition(template_1) {
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07140,0.09543,0.17461,0.33652,0.60338,0.98363,1.48400,2.11616,2.88669,3.80784");
+	}
+	cell_fall(template_1) {
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.91213,1.93611,2.00485,2.11912,2.29031,2.52980,2.84457,3.24239,3.72757,4.30576");
+	}
+	fall_transition(template_1) {
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06803,0.09598,0.18493,0.35469,0.63452,1.03218,1.56000,2.22700,3.03882,4.00611");
+	}
+      }
     }
     pin("user_gpio_in[7]") {
       direction : output;
-      capacitance : 0.0044;
+      capacitance : 0.0031;
       timing() {
         related_pin : "caravel_io_in[7]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("10.08496,10.10282,10.15761,10.25847,10.41738,10.64201,10.93843,11.31042,11.76781,12.31220");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.82442,1.84601,1.90488,2.00413,2.15571,2.36946,2.65143,3.00643,3.44027,3.95727");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06140,0.08480,0.17116,0.34914,0.63375,1.03339,1.56078,2.22139,3.03200,3.99839");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07140,0.09543,0.17461,0.33652,0.60338,0.98363,1.48400,2.11616,2.88669,3.80784");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("8.09383,8.11110,8.15759,8.23009,8.33350,8.47612,8.66353,8.89974,9.18871,9.53271");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("1.89044,1.91443,1.98316,2.09743,2.26862,2.50811,2.82288,3.22070,3.70588,4.28407");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05730,0.07500,0.12758,0.22488,0.38432,0.61754,0.93032,1.32300,1.80575,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06803,0.09598,0.18493,0.35469,0.63452,1.03218,1.56000,2.22700,3.03882,4.00611");
 	}
       }
     }
     pin("user_gpio_in[6]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0033;
       timing() {
         related_pin : "caravel_io_in[6]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("10.02389,10.04176,10.09655,10.19741,10.35631,10.58092,10.87734,11.24934,11.70672,12.25110");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.53778,2.55941,2.61825,2.71746,2.86897,3.08270,3.36470,3.71970,4.15338,4.67038");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06145,0.08485,0.17119,0.34915,0.63376,1.03338,1.56076,2.22138,3.03200,3.99838");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07171,0.09565,0.17478,0.33659,0.60337,0.98360,1.48400,2.11631,2.88637,3.80769");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("8.02364,8.04092,8.08740,8.15990,8.26332,8.40593,8.59334,8.82955,9.11852,9.46252");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.57288,2.59686,2.66556,2.77980,2.95096,3.19043,3.50522,3.90299,4.38822,4.96644");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05734,0.07503,0.12760,0.22489,0.38433,0.61753,0.93032,1.32300,1.80578,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06816,0.09608,0.18501,0.35471,0.63452,1.03223,1.56000,2.22700,3.03877,4.00636");
 	}
       }
     }
     pin("user_gpio_in[5]") {
       direction : output;
-      capacitance : 0.0046;
+      capacitance : 0.0029;
       timing() {
         related_pin : "caravel_io_in[5]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("9.97567,9.99356,10.04835,10.14918,10.30807,10.53264,10.82904,11.20104,11.65840,12.20276");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.58913,2.61075,2.66960,2.76881,2.92033,3.13407,3.41606,3.77106,4.20477,4.72177");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06165,0.08502,0.17128,0.34919,0.63380,1.03336,1.56071,2.22136,3.03200,3.99836");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07166,0.09561,0.17475,0.33658,0.60337,0.98361,1.48400,2.11629,2.88643,3.80771");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("7.99305,8.01033,8.05682,8.12932,8.23273,8.37534,8.56275,8.79895,9.08794,9.43194");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.60929,2.63327,2.70197,2.81622,2.98739,3.22685,3.54164,3.93942,4.42464,5.00286");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05747,0.07515,0.12768,0.22494,0.38436,0.61752,0.93031,1.32300,1.80587,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06814,0.09606,0.18500,0.35471,0.63452,1.03222,1.56000,2.22700,3.03878,4.00632");
 	}
       }
     }
     pin("user_gpio_in[4]") {
       direction : output;
-      capacitance : 0.0029;
+      capacitance : 0.0038;
       timing() {
         related_pin : "caravel_io_in[4]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("13.55523,13.57250,13.62710,13.72971,13.89020,14.11549,14.41271,14.78549,15.24271,15.78771");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.31094,2.33256,2.39140,2.49062,2.64214,2.85588,3.13787,3.49287,3.92659,4.44359");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05249,0.07746,0.16727,0.34857,0.63383,1.03245,1.56122,2.22278,3.03433,3.99900");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07165,0.09561,0.17475,0.33658,0.60337,0.98361,1.48400,2.11628,2.88644,3.80772");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("11.85175,11.86865,11.91486,11.98739,12.09111,12.23390,12.42150,12.65791,12.94639,13.29051");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.38756,2.41154,2.48024,2.59449,2.76566,3.00513,3.31992,3.71770,4.20292,4.78114");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05186,0.07011,0.12430,0.22308,0.38317,0.61802,0.93053,1.32300,1.80223,2.38055");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06813,0.09606,0.18499,0.35471,0.63452,1.03222,1.56000,2.22700,3.03878,4.00631");
 	}
       }
     }
     pin("user_gpio_in[3]") {
       direction : output;
-      capacitance : 0.0031;
+      capacitance : 0.0025;
       timing() {
         related_pin : "caravel_io_in[3]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("10.65174,10.66923,10.72383,10.82549,10.98496,11.21054,11.50718,11.87923,12.33718,12.88218");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("3.20817,3.22961,3.28860,3.38803,3.53987,3.75365,4.03553,4.39053,4.82497,5.34197");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05655,0.08061,0.16880,0.34813,0.63296,1.03390,1.56195,2.22205,3.03214,3.99900");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07022,0.09460,0.17399,0.33625,0.60344,0.98372,1.48400,2.11556,2.88787,3.80844");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("8.64514,8.66218,8.70849,8.78099,8.88458,9.02731,9.21484,9.45116,9.73984,10.08384");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("3.27034,3.29434,3.36325,3.47767,3.64897,3.88857,4.20329,4.60129,5.08629,5.66440");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05394,0.07199,0.12555,0.22378,0.38356,0.61789,0.93056,1.32300,1.80343,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06746,0.09552,0.18461,0.35461,0.63449,1.03211,1.56000,2.22683,3.03894,4.00544");
 	}
       }
     }
     pin("user_gpio_in[2]") {
       direction : output;
-      capacitance : 0.0035;
+      capacitance : 0.0026;
       timing() {
         related_pin : "caravel_io_in[2]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("10.47638,10.49385,10.54845,10.65018,10.80973,11.03529,11.33197,11.70407,12.16197,12.70697");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("3.42814,3.44954,3.50856,3.60804,3.75996,3.97374,4.25560,4.61060,5.04519,5.56219");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05625,0.08038,0.16868,0.34816,0.63302,1.03380,1.56190,2.22210,3.03231,3.99900");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06991,0.09437,0.17383,0.33618,0.60346,0.98374,1.48400,2.11541,2.88819,3.80859");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("8.48218,8.49921,8.54551,8.61801,8.72161,8.86434,9.05188,9.28821,9.57688,9.92088");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("3.44814,3.47215,3.54107,3.65551,3.82682,4.06641,4.38116,4.77916,5.26416,5.84243");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05376,0.07183,0.12544,0.22372,0.38352,0.61790,0.93057,1.32300,1.80330,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06744,0.09550,0.18463,0.35461,0.63449,1.03227,1.56000,2.22659,3.03886,4.00609");
 	}
       }
     }
     pin("user_gpio_in[1]") {
       direction : output;
-      capacitance : 0.0044;
+      capacitance : 0.0037;
       timing() {
         related_pin : "caravel_io_in[1]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("9.67046,9.68831,9.74309,9.84398,10.00291,10.22757,10.52400,10.89600,11.35341,11.89782");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.85337,2.87504,2.93385,3.03300,3.18444,3.39816,3.68018,4.03518,4.46870,4.98570");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06122,0.08465,0.17107,0.34910,0.63372,1.03341,1.56083,2.22141,3.03200,3.99841");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07205,0.09589,0.17496,0.33667,0.60335,0.98358,1.48400,2.11648,2.88603,3.80752");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("7.70600,7.72326,7.76974,7.84224,7.94566,8.08828,8.27570,8.51192,8.80087,9.14487");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.94737,2.97134,3.04000,3.15421,3.32534,3.56478,3.87959,4.27732,4.76259,5.34086");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05717,0.07488,0.12750,0.22484,0.38429,0.61755,0.93033,1.32300,1.80566,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06829,0.09619,0.18509,0.35474,0.63453,1.03227,1.56000,2.22700,3.03873,4.00663");
 	}
       }
     }
     pin("user_gpio_in[0]") {
       direction : output;
-      capacitance : 0.0049;
+      capacitance : 0.0039;
       timing() {
         related_pin : "caravel_io_in[0]";
         timing_sense : positive_unate;
         timing_type : combinational;
 	cell_rise(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("9.35625,9.37411,9.42890,9.52977,9.68868,9.91331,10.20973,10.58173,11.03913,11.58352");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.93225,2.95395,3.01273,3.11185,3.26322,3.47694,3.75898,4.11398,4.54737,5.06437");
 	}
 	rise_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.06137,0.08477,0.17114,0.34913,0.63375,1.03339,1.56079,2.22139,3.03200,3.99839");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.07231,0.09607,0.17509,0.33673,0.60334,0.98356,1.48400,2.11661,2.88577,3.80739");
 	}
 	cell_fall(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("7.46707,7.48435,7.53083,7.60333,7.70675,7.84936,8.03677,8.27298,8.56195,8.90595");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("2.93302,2.95699,3.02561,3.13980,3.31091,3.55033,3.86515,4.26284,4.74815,5.32646");
 	}
 	fall_transition(template_1) {
-          index_1("0.00100,  0.02076,  0.09010,  0.22250,  0.42880,  0.71830,  1.09900,  1.57900,  2.16500,  2.86300");
-          values("0.05738,0.07507,0.12763,0.22491,0.38434,0.61753,0.93032,1.32300,1.80580,2.38100");
+          index_1("0.00100,  0.01355,  0.05761,  0.14170,  0.27280,  0.45670,  0.69870,  1.00400,  1.37600,  1.81900");
+          values("0.06840,0.09627,0.18515,0.35475,0.63453,1.03231,1.56000,2.22700,3.03869,4.00685");
 	}
       }
     }
@@ -1237,55 +1279,55 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("user_gpio_oeb[12]") {
       direction : input;
-      capacitance : 0.0000;
+      capacitance : 0.0090;
     }
     pin("user_gpio_oeb[11]") {
       direction : input;
-      capacitance : 0.0000;
+      capacitance : 0.0091;
     }
     pin("user_gpio_oeb[10]") {
       direction : input;
-      capacitance : 0.0080;
+      capacitance : 0.0092;
     }
     pin("user_gpio_oeb[9]") {
       direction : input;
-      capacitance : 0.0078;
+      capacitance : 0.0089;
     }
     pin("user_gpio_oeb[8]") {
       direction : input;
-      capacitance : 0.0076;
+      capacitance : 0.0089;
     }
     pin("user_gpio_oeb[7]") {
       direction : input;
-      capacitance : 0.0077;
+      capacitance : 0.0088;
     }
     pin("user_gpio_oeb[6]") {
       direction : input;
-      capacitance : 0.0077;
+      capacitance : 0.0088;
     }
     pin("user_gpio_oeb[5]") {
       direction : input;
-      capacitance : 0.0076;
+      capacitance : 0.0092;
     }
     pin("user_gpio_oeb[4]") {
       direction : input;
-      capacitance : 0.0077;
+      capacitance : 0.0088;
     }
     pin("user_gpio_oeb[3]") {
       direction : input;
-      capacitance : 0.0120;
+      capacitance : 0.0088;
     }
     pin("user_gpio_oeb[2]") {
       direction : input;
-      capacitance : 0.0120;
+      capacitance : 0.0088;
     }
     pin("user_gpio_oeb[1]") {
       direction : input;
-      capacitance : 0.0064;
+      capacitance : 0.0106;
     }
     pin("user_gpio_oeb[0]") {
       direction : input;
-      capacitance : 0.0056;
+      capacitance : 0.0097;
     }
     }
     bus("user_gpio_out") {
@@ -1294,55 +1336,55 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("user_gpio_out[12]") {
       direction : input;
-      capacitance : 0.0000;
+      capacitance : 0.0087;
     }
     pin("user_gpio_out[11]") {
       direction : input;
-      capacitance : 0.0000;
+      capacitance : 0.0087;
     }
     pin("user_gpio_out[10]") {
       direction : input;
-      capacitance : 0.0075;
+      capacitance : 0.0090;
     }
     pin("user_gpio_out[9]") {
       direction : input;
-      capacitance : 0.0082;
+      capacitance : 0.0089;
     }
     pin("user_gpio_out[8]") {
       direction : input;
-      capacitance : 0.0077;
+      capacitance : 0.0089;
     }
     pin("user_gpio_out[7]") {
       direction : input;
-      capacitance : 0.0076;
+      capacitance : 0.0088;
     }
     pin("user_gpio_out[6]") {
       direction : input;
-      capacitance : 0.0055;
+      capacitance : 0.0068;
     }
     pin("user_gpio_out[5]") {
       direction : input;
-      capacitance : 0.0077;
+      capacitance : 0.0088;
     }
     pin("user_gpio_out[4]") {
       direction : input;
-      capacitance : 0.0076;
+      capacitance : 0.0088;
     }
     pin("user_gpio_out[3]") {
       direction : input;
-      capacitance : 0.0076;
+      capacitance : 0.0088;
     }
     pin("user_gpio_out[2]") {
       direction : input;
-      capacitance : 0.0120;
+      capacitance : 0.0088;
     }
     pin("user_gpio_out[1]") {
       direction : input;
-      capacitance : 0.0057;
+      capacitance : 0.0093;
     }
     pin("user_gpio_out[0]") {
       direction : input;
-      capacitance : 0.0056;
+      capacitance : 0.0088;
     }
     }
     bus("user_wb_adr_o") {
@@ -1351,11 +1393,11 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("user_wb_adr_o[31]") {
       direction : output;
-      capacitance : 0.0039;
+      capacitance : 0.0042;
     }
     pin("user_wb_adr_o[30]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0037;
     }
     pin("user_wb_adr_o[29]") {
       direction : output;
@@ -1363,59 +1405,59 @@ library (caravel_core) {
     }
     pin("user_wb_adr_o[28]") {
       direction : output;
-      capacitance : 0.0044;
+      capacitance : 0.0031;
     }
     pin("user_wb_adr_o[27]") {
       direction : output;
-      capacitance : 0.0036;
+      capacitance : 0.0030;
     }
     pin("user_wb_adr_o[26]") {
       direction : output;
-      capacitance : 0.0042;
+      capacitance : 0.0038;
     }
     pin("user_wb_adr_o[25]") {
       direction : output;
-      capacitance : 0.0055;
+      capacitance : 0.0028;
     }
     pin("user_wb_adr_o[24]") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0028;
     }
     pin("user_wb_adr_o[23]") {
       direction : output;
-      capacitance : 0.0036;
+      capacitance : 0.0028;
     }
     pin("user_wb_adr_o[22]") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0028;
     }
     pin("user_wb_adr_o[21]") {
       direction : output;
-      capacitance : 0.0058;
+      capacitance : 0.0027;
     }
     pin("user_wb_adr_o[20]") {
       direction : output;
-      capacitance : 0.0036;
+      capacitance : 0.0027;
     }
     pin("user_wb_adr_o[19]") {
       direction : output;
-      capacitance : 0.0036;
+      capacitance : 0.0026;
     }
     pin("user_wb_adr_o[18]") {
       direction : output;
-      capacitance : 0.0032;
+      capacitance : 0.0026;
     }
     pin("user_wb_adr_o[17]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0025;
     }
     pin("user_wb_adr_o[16]") {
       direction : output;
-      capacitance : 0.0030;
+      capacitance : 0.0025;
     }
     pin("user_wb_adr_o[15]") {
       direction : output;
-      capacitance : 0.0035;
+      capacitance : 0.0025;
     }
     pin("user_wb_adr_o[14]") {
       direction : output;
@@ -1423,55 +1465,55 @@ library (caravel_core) {
     }
     pin("user_wb_adr_o[13]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0025;
     }
     pin("user_wb_adr_o[12]") {
       direction : output;
-      capacitance : 0.0030;
+      capacitance : 0.0032;
     }
     pin("user_wb_adr_o[11]") {
       direction : output;
-      capacitance : 0.0033;
+      capacitance : 0.0038;
     }
     pin("user_wb_adr_o[10]") {
       direction : output;
-      capacitance : 0.0028;
+      capacitance : 0.0032;
     }
     pin("user_wb_adr_o[9]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0032;
     }
     pin("user_wb_adr_o[8]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0032;
     }
     pin("user_wb_adr_o[7]") {
       direction : output;
-      capacitance : 0.0030;
+      capacitance : 0.0032;
     }
     pin("user_wb_adr_o[6]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0032;
     }
     pin("user_wb_adr_o[5]") {
       direction : output;
-      capacitance : 0.0031;
+      capacitance : 0.0038;
     }
     pin("user_wb_adr_o[4]") {
       direction : output;
-      capacitance : 0.0036;
+      capacitance : 0.0044;
     }
     pin("user_wb_adr_o[3]") {
       direction : output;
-      capacitance : 0.0030;
+      capacitance : 0.0032;
     }
     pin("user_wb_adr_o[2]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0031;
     }
     pin("user_wb_adr_o[1]") {
       direction : output;
-      capacitance : 0.0027;
+      capacitance : 0.0026;
     }
     pin("user_wb_adr_o[0]") {
       direction : output;
@@ -1484,131 +1526,131 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("user_wb_dat_i[31]") {
       direction : input;
-      capacitance : 0.0059;
+      capacitance : 0.0088;
     }
     pin("user_wb_dat_i[30]") {
       direction : input;
-      capacitance : 0.0063;
+      capacitance : 0.0090;
     }
     pin("user_wb_dat_i[29]") {
       direction : input;
-      capacitance : 0.0055;
+      capacitance : 0.0087;
     }
     pin("user_wb_dat_i[28]") {
       direction : input;
-      capacitance : 0.0055;
+      capacitance : 0.0087;
     }
     pin("user_wb_dat_i[27]") {
       direction : input;
-      capacitance : 0.0060;
+      capacitance : 0.0087;
     }
     pin("user_wb_dat_i[26]") {
       direction : input;
-      capacitance : 0.0059;
+      capacitance : 0.0104;
     }
     pin("user_wb_dat_i[25]") {
       direction : input;
-      capacitance : 0.0059;
+      capacitance : 0.0087;
     }
     pin("user_wb_dat_i[24]") {
       direction : input;
-      capacitance : 0.0066;
+      capacitance : 0.0087;
     }
     pin("user_wb_dat_i[23]") {
       direction : input;
-      capacitance : 0.0055;
+      capacitance : 0.0096;
     }
     pin("user_wb_dat_i[22]") {
       direction : input;
-      capacitance : 0.0055;
+      capacitance : 0.0088;
     }
     pin("user_wb_dat_i[21]") {
       direction : input;
-      capacitance : 0.0055;
+      capacitance : 0.0088;
     }
     pin("user_wb_dat_i[20]") {
       direction : input;
-      capacitance : 0.0056;
+      capacitance : 0.0096;
     }
     pin("user_wb_dat_i[19]") {
       direction : input;
-      capacitance : 0.0063;
+      capacitance : 0.0092;
     }
     pin("user_wb_dat_i[18]") {
       direction : input;
-      capacitance : 0.0061;
+      capacitance : 0.0099;
     }
     pin("user_wb_dat_i[17]") {
       direction : input;
-      capacitance : 0.0071;
+      capacitance : 0.0088;
     }
     pin("user_wb_dat_i[16]") {
       direction : input;
-      capacitance : 0.0065;
+      capacitance : 0.0088;
     }
     pin("user_wb_dat_i[15]") {
       direction : input;
-      capacitance : 0.0065;
+      capacitance : 0.0088;
     }
     pin("user_wb_dat_i[14]") {
       direction : input;
-      capacitance : 0.0066;
+      capacitance : 0.0088;
     }
     pin("user_wb_dat_i[13]") {
       direction : input;
-      capacitance : 0.0056;
+      capacitance : 0.0088;
     }
     pin("user_wb_dat_i[12]") {
       direction : input;
-      capacitance : 0.0063;
+      capacitance : 0.0096;
     }
     pin("user_wb_dat_i[11]") {
       direction : input;
-      capacitance : 0.0057;
+      capacitance : 0.0088;
     }
     pin("user_wb_dat_i[10]") {
       direction : input;
-      capacitance : 0.0060;
+      capacitance : 0.0096;
     }
     pin("user_wb_dat_i[9]") {
       direction : input;
-      capacitance : 0.0058;
+      capacitance : 0.0089;
     }
     pin("user_wb_dat_i[8]") {
       direction : input;
-      capacitance : 0.0059;
+      capacitance : 0.0090;
     }
     pin("user_wb_dat_i[7]") {
       direction : input;
-      capacitance : 0.0076;
+      capacitance : 0.0094;
     }
     pin("user_wb_dat_i[6]") {
       direction : input;
-      capacitance : 0.0062;
+      capacitance : 0.0105;
     }
     pin("user_wb_dat_i[5]") {
       direction : input;
-      capacitance : 0.0064;
+      capacitance : 0.0098;
     }
     pin("user_wb_dat_i[4]") {
       direction : input;
-      capacitance : 0.0061;
+      capacitance : 0.0094;
     }
     pin("user_wb_dat_i[3]") {
       direction : input;
-      capacitance : 0.0061;
+      capacitance : 0.0102;
     }
     pin("user_wb_dat_i[2]") {
       direction : input;
-      capacitance : 0.0061;
+      capacitance : 0.0102;
     }
     pin("user_wb_dat_i[1]") {
       direction : input;
-      capacitance : 0.0064;
+      capacitance : 0.0098;
     }
     pin("user_wb_dat_i[0]") {
       direction : input;
-      capacitance : 0.0064;
+      capacitance : 0.0116;
     }
     }
     bus("user_wb_dat_o") {
@@ -1617,131 +1659,131 @@ library (caravel_core) {
       capacitance : 0.0000;
     pin("user_wb_dat_o[31]") {
       direction : output;
-      capacitance : 0.0036;
+      capacitance : 0.0041;
     }
     pin("user_wb_dat_o[30]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0033;
     }
     pin("user_wb_dat_o[29]") {
       direction : output;
-      capacitance : 0.0037;
+      capacitance : 0.0033;
     }
     pin("user_wb_dat_o[28]") {
       direction : output;
-      capacitance : 0.0063;
+      capacitance : 0.0034;
     }
     pin("user_wb_dat_o[27]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0034;
     }
     pin("user_wb_dat_o[26]") {
       direction : output;
-      capacitance : 0.0037;
+      capacitance : 0.0033;
     }
     pin("user_wb_dat_o[25]") {
       direction : output;
-      capacitance : 0.0045;
+      capacitance : 0.0034;
     }
     pin("user_wb_dat_o[24]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0033;
     }
     pin("user_wb_dat_o[23]") {
       direction : output;
-      capacitance : 0.0047;
+      capacitance : 0.0044;
     }
     pin("user_wb_dat_o[22]") {
       direction : output;
-      capacitance : 0.0047;
+      capacitance : 0.0042;
     }
     pin("user_wb_dat_o[21]") {
       direction : output;
-      capacitance : 0.0047;
+      capacitance : 0.0034;
     }
     pin("user_wb_dat_o[20]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0031;
     }
     pin("user_wb_dat_o[19]") {
       direction : output;
-      capacitance : 0.0045;
+      capacitance : 0.0031;
     }
     pin("user_wb_dat_o[18]") {
       direction : output;
-      capacitance : 0.0041;
+      capacitance : 0.0055;
     }
     pin("user_wb_dat_o[17]") {
       direction : output;
-      capacitance : 0.0045;
+      capacitance : 0.0031;
     }
     pin("user_wb_dat_o[16]") {
       direction : output;
-      capacitance : 0.0046;
+      capacitance : 0.0031;
     }
     pin("user_wb_dat_o[15]") {
       direction : output;
-      capacitance : 0.0044;
+      capacitance : 0.0031;
     }
     pin("user_wb_dat_o[14]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0031;
     }
     pin("user_wb_dat_o[13]") {
       direction : output;
-      capacitance : 0.0039;
+      capacitance : 0.0031;
     }
     pin("user_wb_dat_o[12]") {
       direction : output;
-      capacitance : 0.0035;
+      capacitance : 0.0032;
     }
     pin("user_wb_dat_o[11]") {
       direction : output;
-      capacitance : 0.0046;
+      capacitance : 0.0031;
     }
     pin("user_wb_dat_o[10]") {
       direction : output;
-      capacitance : 0.0042;
+      capacitance : 0.0033;
     }
     pin("user_wb_dat_o[9]") {
       direction : output;
-      capacitance : 0.0036;
+      capacitance : 0.0039;
     }
     pin("user_wb_dat_o[8]") {
       direction : output;
-      capacitance : 0.0043;
+      capacitance : 0.0036;
     }
     pin("user_wb_dat_o[7]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0056;
     }
     pin("user_wb_dat_o[6]") {
       direction : output;
-      capacitance : 0.0040;
+      capacitance : 0.0055;
     }
     pin("user_wb_dat_o[5]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0049;
     }
     pin("user_wb_dat_o[4]") {
       direction : output;
-      capacitance : 0.0039;
+      capacitance : 0.0046;
     }
     pin("user_wb_dat_o[3]") {
       direction : output;
-      capacitance : 0.0034;
+      capacitance : 0.0049;
     }
     pin("user_wb_dat_o[2]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0048;
     }
     pin("user_wb_dat_o[1]") {
       direction : output;
-      capacitance : 0.0035;
+      capacitance : 0.0053;
     }
     pin("user_wb_dat_o[0]") {
       direction : output;
-      capacitance : 0.0057;
+      capacitance : 0.0040;
     }
     }
     bus("user_wb_sel_o") {
@@ -1754,15 +1796,15 @@ library (caravel_core) {
     }
     pin("user_wb_sel_o[2]") {
       direction : output;
-      capacitance : 0.0038;
+      capacitance : 0.0031;
     }
     pin("user_wb_sel_o[1]") {
       direction : output;
-      capacitance : 0.0030;
+      capacitance : 0.0029;
     }
     pin("user_wb_sel_o[0]") {
       direction : output;
-      capacitance : 0.0033;
+      capacitance : 0.0028;
     }
     }
   }

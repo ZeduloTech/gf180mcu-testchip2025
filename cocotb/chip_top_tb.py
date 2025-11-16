@@ -12,12 +12,11 @@ from cocotb.triggers import Timer, Edge, RisingEdge, FallingEdge, ClockCycles
 from cocotb_tools.runner import get_runner
 
 sim = os.getenv("SIM", "icarus")
-pdk_root = os.getenv("PDK_ROOT", Path("~/.ciel").expanduser())
+pdk_root = os.getenv("PDK_ROOT", Path("../gf180mcu").absolute())
 pdk = os.getenv("PDK", "gf180mcuD")
 scl = os.getenv("SCL", "gf180mcu_fd_sc_mcu7t5v0")
 gl = os.getenv("GL", False)
-
-hdl_toplevel = "chip_top"
+sdf = os.getenv("SDF", False)
 
 async def set_defaults(dut):
     dut.input_PAD.value = 0
@@ -52,31 +51,14 @@ async def start_up(dut):
     await reset(dut.rst_n_PAD)
 
 
-@cocotb.test()
-async def test_counter(dut):
-    """Run the counter test"""
+@cocotb.test(timeout_time=10000, timeout_unit="us")
+async def test_caravel(dut):
+    """Run the Caravel test"""
 
     # Create a logger for this testbench
-    logger = logging.getLogger("my_testbench")
-
-    logger.info("Startup sequence...")
-
-    # Start up
-    await start_up(dut)
-
-    logger.info("Running the test...")
-
-    # Wait for some time...
-    await ClockCycles(dut.clk_PAD, 10)
-
-    # Start the counter by setting all inputs to 1
-    dut.input_PAD.value = -1
-
-    # Wait for a number of clock cycles
-    await ClockCycles(dut.clk_PAD, 100)
-
-    # Check the end result of the counter
-    assert dut.bidir_PAD.value == 100 - 1
+    logger = logging.getLogger("testbench")
+    
+    await RisingEdge(dut.test_success)
 
     logger.info("Done!")
 
@@ -89,18 +71,38 @@ def chip_top_runner():
     defines = {}
     includes = []
 
+    defines.update({
+        "SIM" : 1, 
+        "HEX_PREFIX" : str(proj_path / "../caravel/sim/caravel_sw") + "/",
+        "FINAL_PREFIX" : str(proj_path / "../final") + "/",
+        "CARAVEL_FINAL_PREFIX" : str(proj_path / "../caravel/final") + "/",
+    })
+
+    sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")
+    sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / "primitives.v")
+
     if gl:
         # SCL models
-        sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")
-        sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / "primitives.v")
 
-        # We use the powered netlist
-        sources.append(proj_path / f"../final/pnl/{hdl_toplevel}.pnl.v")
+        # Use the powered netlist
+        sources.append(proj_path / "../caravel/ring_osc2x13/final/pnl/ring_osc2x13.pnl.v")
+        sources.append(proj_path / "../caravel/final/pnl/caravel_core.pnl.v")
+        sources.append(proj_path / "../final/pnl/chip_top.pnl.v")
 
-        defines = {"FUNCTIONAL": True, "USE_POWER_PINS": True}
+        defines.update({"USE_POWER_PINS": 1})
+        if sdf:
+            defines.update({"ENABLE_SDF" : 1})
     else:
         sources.append(proj_path / "../src/chip_top.sv")
         sources.append(proj_path / "../src/chip_core.sv")
+        sources.append(proj_path / "../src/wb_counter.v")
+
+        sources += (proj_path / "../caravel/verilog/").glob("*.v")
+
+        defines.update({"FUNCTIONAL": 1})
+
+    includes.append(proj_path / "../src")
+    includes.append(proj_path / "../caravel/verilog/")
 
     sources += [
         # IO pad models
@@ -109,11 +111,18 @@ def chip_top_runner():
         
         # SRAM macros
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
+
+        # Caravel IP
+        proj_path / "../ip/sram/gf180_ram_512x8_wrapper.v",
+        proj_path / "../ip/simple_por/verilog/simple_por.v",
         
         # Custom IP
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",
         proj_path / "../ip/gf180mcu_ws_ip__logo/vh/gf180mcu_ws_ip__logo.v",
     ]
+
+    # Add Caravel sim Verilog helpers
+    sources += (proj_path / "../caravel/sim/common/").glob("*.v")
 
     build_args = []
 
@@ -125,25 +134,32 @@ def chip_top_runner():
     if sim == "verilator":
         build_args = ["--timing", "--trace", "--trace-fst", "--trace-structs"]
 
-    runner = get_runner(sim)
-    runner.build(
-        sources=sources,
-        hdl_toplevel=hdl_toplevel,
-        defines=defines,
-        always=True,
-        includes=includes,
-        build_args=build_args,
-        waves=True,
-    )
+    # for caravel_test in ["wbcounter", "hkspi", "pll", "mprj_bitbang", "uart"]:
+    for caravel_test in ["wbcounter", "hkspi"]:
 
-    plusargs = []
+        top = f"{caravel_test}_tb"
 
-    runner.test(
-        hdl_toplevel=hdl_toplevel,
-        test_module="chip_top_tb,",
-        plusargs=plusargs,
-        waves=True,
-    )
+        # print(sources)
+
+        runner = get_runner(sim)
+        runner.build(
+            sources=sources + [proj_path / f"../caravel/sim/caravel_tb/{top}.v"],
+            hdl_toplevel=top,
+            defines=defines,
+            always=True,
+            includes=includes,
+            build_args=build_args,
+            waves=True,
+        )
+
+        plusargs = []
+
+        runner.test(
+            hdl_toplevel=top,
+            test_module="chip_top_tb,",
+            plusargs=plusargs,
+            waves=True,
+        )
 
 
 if __name__ == "__main__":

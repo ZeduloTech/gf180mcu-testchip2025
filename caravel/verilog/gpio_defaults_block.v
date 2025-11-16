@@ -37,18 +37,9 @@ module gpio_defaults_block #(
     wire [9:0] gpio_defaults_high;
     wire [9:0] gpio_defaults_low;
 
-    // Replaced original TIEs with a simple const because 
+    // Replaced original TIEs with a simple assign because 
     // it complicated synthesys and there is no via programming anymore.
-    assign gpio_defaults_low = 10'b0;
-    assign gpio_defaults_high = 10'b1;
-
-    genvar i;
-    generate
-        for (i = 0; i < 10; i = i+1) begin
-    	    assign gpio_defaults[i] = (GPIO_CONFIG_INIT & (10'h001 << i)) ?
-			gpio_defaults_high[i] : gpio_defaults_low[i];
-	end
-    endgenerate
+    assign gpio_defaults = GPIO_CONFIG_INIT;
 
 endmodule
 `default_nettype wire

@@ -14,6 +14,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 `default_nettype none
+`timescale 1 ns / 1 ps
 // Tunable ring oscillator---synthesizable (physical) version.
 //
 // NOTE:  This netlist cannot be simulated correctly due to lack
@@ -27,49 +28,58 @@ module delay_stage(in, trim, out);
     wire d0, d1, d2, ts;
     wire trim0b, trim1b;
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__inv_1 trim0bar (
 	.I(trim[0]),
 	.ZN(trim0b)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__inv_1 trim1bar (
 	.I(trim[1]),
 	.ZN(trim1b)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkbuf_2 delaybuf0 (
 	.I(in),
 	.Z(ts)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 delaybuf1 (
 	.I(ts),
 	.Z(d0)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_2 delayen1 (
 	.I(d0),
 	.EN(trim[1]),
 	.ZN(d1)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_4 delayenb1 (
 	.I(ts),
 	.EN(trim1b),
 	.ZN(d1)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkinv_2 delayint0 (
 	.I(d1),
 	.ZN(d2)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_2 delayen0 (
 	.I(d2),
 	.EN(trim[0]),
 	.ZN(out)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_8 delayenb0 (
 	.I(ts),
 	.EN(trim0b),
@@ -87,57 +97,67 @@ module start_stage(in, trim, reset, out);
     wire d0, d1, d2, ctrl0b, one;
     wire trim1b;
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__inv_1 trim1bar (
 	.I(trim[1]),
 	.ZN(trim1b)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 delaybuf0 (
 	.I(in),
 	.Z(d0)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_2 delayen1 (
 	.I(d0),
 	.EN(trim[1]),
 	.ZN(d1)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_4 delayenb1 (
 	.I(in),
 	.EN(trim1b),
 	.ZN(d1)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkinv_1 delayint0 (
 	.I(d1),
 	.ZN(d2)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_2 delayen0 (
 	.I(d2),
 	.EN(trim[0]),
 	.ZN(out)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_8 delayenb0 (
 	.I(in),
 	.EN(ctrl0b),
 	.ZN(out)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_1 reseten0 (
 	.I(one),
 	.EN(reset),
 	.ZN(out)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__nor2_2 ctrlen0 (
 	.A1(reset),
 	.A2(trim[0]),
 	.ZN(ctrl0b)
     );
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__tieh const1 (
 	.Z(one)
     );
@@ -243,18 +263,22 @@ module ring_osc2x13(reset, trim, clockp);
 
     // Buffered outputs a 0 and 90 degrees phase (approximately)
 
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkinv_2 ibufp00 (
 	.I(d[0]),
 	.ZN(c[0])
     );
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkinv_8 ibufp01 (
 	.I(c[0]),
 	.ZN(clockp[0])
     );
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkinv_2 ibufp10 (
 	.I(d[6]),
 	.ZN(c[1])
     );
+    (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkinv_8 ibufp11 (
 	.I(c[1]),
 	.ZN(clockp[1])

@@ -2,33 +2,35 @@ meta:
   version: 3
   flow: Chip
   substituting_steps:
-
+  
     # Disable KLayout antenna check
     KLayout.Antenna: null
     Checker.KLayoutAntenna: null
 
     # Disable KLayout density check
-    KLayout.Density: null
-    Checker.KLayoutDensity: null
+    #KLayout.Density: null
+    #Checker.KLayoutDensity: null
 
     # Save time during development
     # Enable for sign-off
-    OpenROAD.IRDropReport: null
-    Magic.DRC: null
-    KLayout.DRC: null
-    Checker.MagicDRC: null
-    KLayout.XOR: null
-    Netgen.LVS: null
-    Checker.LVS: null
+    #KLayout.DRC: null
+    #Checker.KLayoutDRC: null
+    #OpenROAD.IRDropReport: null
+    #Magic.DRC: null
+    #Checker.MagicDRC: null
+    #KLayout.XOR: null
+    #Netgen.LVS: null
+    #Checker.LVS: null
     
     Checker.YosysSynthChecks: null  # Fails due to multisources in PLL
 
 DESIGN_NAME: chip_top
 VERILOG_FILES:
-- dir::../caravel/verilog/defines.v
 - dir::../src/wb_counter.v
 - dir::../src/chip_top.sv
 - dir::../src/chip_core.sv
+
+VERILOG_INCLUDE_DIRS: [ dir::../caravel/verilog/ ]
 
 # Enable plugin for better SystemVerilog support
 # USE_SLANG: True
@@ -264,8 +266,6 @@ MACROS:
         location: [500, 500]
         orientation: N
         
-
-
   gf180mcu_ws_ip__logo:
     gds:
       - dir::../ip/gf180mcu_ws_ip__logo/gds/gf180mcu_ws_ip__logo.gds

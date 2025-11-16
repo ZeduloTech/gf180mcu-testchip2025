@@ -16,8 +16,9 @@ help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 .PHONY: help
 
-all: librelane ## Build the project (runs LibreLane)
+all: caravel-librelane librelane copy-final ## Build the project (runs LibreLane)
 .PHONY: all
+.NOTPARALLEL: all
 
 clone-pdk: ## Clone the GF180MCU PDK repository
 	rm -rf $(MAKEFILE_DIR)/gf180mcu
@@ -28,7 +29,7 @@ librelane: ## Run LibreLane flow (synthesis, PnR, verification)
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk
 .PHONY: librelane
 
-caravel-librelane: ## Run librelane flow for caravel
+caravel-librelane: ## Run LibreLane flow for caravel
 	make -C caravel librelane
 	make -C caravel copy-final
 .PHONY: caravel-librelane

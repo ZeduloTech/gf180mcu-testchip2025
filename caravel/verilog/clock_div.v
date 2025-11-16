@@ -15,6 +15,7 @@
 
 /* Integer-N clock divider */
 `default_nettype none
+`include "defines.v"
  
 module clock_div #(
     parameter SIZE = 3		// Number of bits for the divider value

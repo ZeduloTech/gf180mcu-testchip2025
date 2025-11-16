@@ -1,6 +1,3 @@
- `ifdef SIM
- `default_nettype wire
- `endif
 // SPDX-FileCopyrightText: 2020 Efabless Corporation
 //                         2025 egorxe
 //
@@ -38,6 +35,11 @@
 /* user project moved outside.                                  */
 /*                                                              */
 /*--------------------------------------------------------------*/
+
+ `ifdef SIM
+ `default_nettype wire
+ `endif
+`include "defines.v"
 
 module caravel_core (
 
@@ -218,8 +220,8 @@ module caravel_core (
 
     // Various clocks
     wire caravel_clk;
-    wire caravel_clk_prebuf;
     wire clock_core_postbuf;
+    wire clock_core_buf;
     wire flash_clk_frame_prebuf;
     wire clock_core_forpll;
     wire caravel_clk2;
@@ -286,14 +288,16 @@ module caravel_core (
     wire trap;
     
      // Connect legacy mprj to the actual IO
-    assign mprj_io_in = {caravel_io_in[`CARAVEL_IO_PADS-1:`MPRJ_TO_CARAVEL_LO], {(`MPRJ_IO_PADS-`CARAVEL_IO_PADS){1'b0}}, caravel_io_in[`MPRJ_TO_CARAVEL_LO:0]};
-    assign caravel_io_out = {mprj_io_out[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_out[`MPRJ_TO_CARAVEL_LO:0]};
-    assign caravel_io_oe = {mprj_io_oe[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_oe[`MPRJ_TO_CARAVEL_LO:0]};
-    assign caravel_io_ie = {mprj_io_ie[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_ie[`MPRJ_TO_CARAVEL_LO:0]};
-    assign caravel_io_schmitt_sel = {mprj_io_schmitt_sel[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_schmitt_sel[`MPRJ_TO_CARAVEL_LO:0]};
-    assign caravel_io_pullup_sel = {mprj_io_pullup_sel[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_pullup_sel[`MPRJ_TO_CARAVEL_LO:0]};
-    assign caravel_io_pulldown_sel = {mprj_io_pulldown_sel[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_pulldown_sel[`MPRJ_TO_CARAVEL_LO:0]};
-    assign caravel_io_slew_sel = {mprj_io_slew_sel[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_slew_sel[`MPRJ_TO_CARAVEL_LO:0]};
+    assign mprj_io_in = {caravel_io_in[`CARAVEL_IO_PADS-1:`MPRJ_TO_CARAVEL_LO], {(`MPRJ_IO_PADS-`CARAVEL_IO_PADS){1'b0}}, caravel_io_in[`MPRJ_TO_CARAVEL_LO-1:0]};
+    assign caravel_io_out = {mprj_io_out[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_out[`MPRJ_TO_CARAVEL_LO-1:0]};
+    assign caravel_io_oe = {mprj_io_oe[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_oe[`MPRJ_TO_CARAVEL_LO-1:0]};
+    assign caravel_io_ie = {mprj_io_ie[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_ie[`MPRJ_TO_CARAVEL_LO-1:0]};
+    assign caravel_io_schmitt_sel = {mprj_io_schmitt_sel[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_schmitt_sel[`MPRJ_TO_CARAVEL_LO-1:0]};
+    assign caravel_io_pullup_sel = {mprj_io_pullup_sel[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_pullup_sel[`MPRJ_TO_CARAVEL_LO-1:0]};
+    assign caravel_io_pulldown_sel = {mprj_io_pulldown_sel[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_pulldown_sel[`MPRJ_TO_CARAVEL_LO-1:0]};
+    assign caravel_io_slew_sel = {mprj_io_slew_sel[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], mprj_io_slew_sel[`MPRJ_TO_CARAVEL_LO-1:0]};
+    
+    assign mask_rev = '0;
     
     // Management processor (wrapper).  Any management core
     // implementation must match this pinout.
@@ -451,9 +455,9 @@ module caravel_core (
     
     assign user_clock2 = mprj_clock2;
     
-    assign user_io_out = {user_gpio_out[`CARAVEL_IO_PADS-1:`MPRJ_TO_CARAVEL_LO], {(`MPRJ_IO_PADS-`CARAVEL_IO_PADS){1'b0}}, user_gpio_out[`MPRJ_TO_CARAVEL_LO:0]};
-    assign user_io_oeb = {user_gpio_oeb[`CARAVEL_IO_PADS-1:`MPRJ_TO_CARAVEL_LO], {(`MPRJ_IO_PADS-`CARAVEL_IO_PADS){1'b1}}, user_gpio_oeb[`MPRJ_TO_CARAVEL_LO:0]};
-    assign user_gpio_in = {user_io_in[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], user_io_in[`MPRJ_TO_CARAVEL_LO:0]};
+    assign user_io_out = {user_gpio_out[`CARAVEL_IO_PADS-1:`MPRJ_TO_CARAVEL_LO], {(`MPRJ_IO_PADS-`CARAVEL_IO_PADS){1'b0}}, user_gpio_out[`MPRJ_TO_CARAVEL_LO-1:0]};
+    assign user_io_oeb = {user_gpio_oeb[`CARAVEL_IO_PADS-1:`MPRJ_TO_CARAVEL_LO], {(`MPRJ_IO_PADS-`CARAVEL_IO_PADS){1'b1}}, user_gpio_oeb[`MPRJ_TO_CARAVEL_LO-1:0]};
+    assign user_gpio_in = {user_io_in[`MPRJ_IO_PADS-1:`MPRJ_IO_PADS-`MPRJ_TO_CARAVEL_HI], user_io_in[`MPRJ_TO_CARAVEL_LO-1:0]};
 
     /*------------------------------------------*/
     /* Clocking & housekeeping                  */
@@ -532,26 +536,27 @@ module caravel_core (
         .sel(spi_pll_sel),
         .sel2(spi_pll90_sel),
         .ext_reset(ext_reset),  // From housekeeping SPI
-        .core_clk(caravel_clk_prebuf),
+        .core_clk(caravel_clk),
         .user_clk(caravel_clk2),
         .resetb_sync(caravel_rstn),
         .resetb_async(async_rstn)
     );
     
-    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 core_clk_buf (
+    // these buffers have to be x16 to reduce antenna
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 coreclkin_clkmovable_buf (
         .I(clock_core),
-        .Z(clock_core_postbuf)
+        .Z(clock_core_buf)
     );
     
-    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_8 caravel_clk_buf (
-        .I(caravel_clk_prebuf),
-        .Z(caravel_clk)
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 core_clk_buf (
+        .I(clock_core_buf),
+        .Z(clock_core_postbuf)
     );
 
     // DCO/Digital Locked Loop
 
-    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_8 pll_in_clk_buf (
-        .I(clock_core),
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 pll_in_clk_buf (
+        .I(clock_core_buf),
         .Z(clock_core_forpll)
     );
     

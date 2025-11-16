@@ -1,0 +1,145 @@
+############################## General #################################
+
+meta:
+  version: 2
+  flow: Classic
+  substituting_steps:
+    
+    Checker.SetupViolations: null
+    Checker.YosysSynthChecks: null  # Fails due to multisources in oscillator
+
+DESIGN_NAME: ring_osc2x13
+VERILOG_FILES:
+#- dir::../verilog/digital_pll.v
+- dir::../verilog/ring_osc2x13.v
+
+# Slightly smaller file sizes
+PRIMARY_GDSII_STREAMOUT_TOOL: klayout
+
+# SDC files
+PNR_SDC_FILE: dir::osc.sdc
+SIGNOFF_SDC_FILE: dir::osc.sdc
+FALLBACK_SDC: dir::osc.sdc
+
+# Power / ground nets
+VDD_NETS:
+- VDD
+GND_NETS:
+- VSS
+
+# Clock
+#CLOCK_PORT: "osc"
+#CLOCK_NET: "clockp[0]"
+#CLOCK_PERIOD: 20
+
+############################ Floorplanning ############################# 
+
+FP_CORE_UTIL: 80
+#FP_SIZING: absolute
+#DIE_AREA: [0, 0, 2900, 1000]
+#CORE_AREA: [24, 26, 2875, 974]
+
+#FP_PIN_ORDER_CFG: dir::pin.cfg
+#FP_IO_MIN_DISTANCE: 10
+#FP_IO_VTHICKNESS_MULT: 4
+#FP_IO_HTHICKNESS_MULT: 4
+
+#FP_MACRO_VERTICAL_HALO: 5
+
+################################ PDN ################################### 
+
+FP_PDN_MULTILAYER: False
+#PDN_CORE_RING: True
+#PDN_SKIPTRIM: True
+#PDN_VERTICAL_HALO: 8
+#PDN_HORIZONTAL_HALO: -2
+#PDN_CORE_RING_VWIDTH: 9
+#PDN_CORE_RING_HWIDTH: 9
+#PDN_CORE_RING_VSPACING: 2
+#PDN_CORE_RING_HSPACING: 2
+PDN_CORE_RING_VOFFSET: 5
+#PDN_CORE_RING_HOFFSET: 7
+PDN_VPITCH: 30
+#PDN_HPITCH: 60
+#PDN_VSPACING: 19
+#PDN_HSPACING: 27
+#PDN_VWIDTH: 2.5
+#PDN_HWIDTH: 2.5
+#PDN_HOFFSET: 30.65
+#PDN_VOFFSET: 3.5
+
+BOTTOM_MARGIN_MULT: 1
+TOP_MARGIN_MULT: 1
+LEFT_MARGIN_MULT: 4
+RIGHT_MARGIN_MULT: 4
+FP_PIN_ORDER_CFG: dir::pin.cfg
+
+#PDN_CFG: dir::pdn_cfg.tcl
+
+############################### Placement ############################## 
+
+#CTS_ROOT_BUFFER: gf180mcu_fd_sc_mcu7t5v0__clkbuf_4
+#PL_TARGET_DENSITY_PCT: 50
+RUN_POST_CTS_RESIZER_TIMING: False
+DESIGN_REPAIR_BUFFER_INPUT_PORTS: False
+DESIGN_REPAIR_BUFFER_OUTPUT_PORTS: False
+PL_KEEP_RESIZE_BELOW_OVERFLOW: 0
+#PL_RESIZER_ALLOW_SETUP_VIOS: True
+#PL_RESIZER_HOLD_SLACK_MARGIN: 0.2
+#PL_RESIZER_SETUP_SLACK_MARGIN: 0.1
+
+RSZ_DONT_TOUCH_RX: .*clk_buf
+
+#DESIGN_REPAIR_MAX_WIRE_LENGTH: 700
+#DESIGN_REPAIR_MAX_SLEW_PCT: 25
+
+############################### Routing ################################
+
+# following is required to fix antennas
+#RUN_HEURISTIC_DIODE_INSERTION: True  
+#HEURISTIC_ANTENNA_THRESHOLD: 250
+DIODE_ON_PORTS: in
+#GRT_ANTENNA_ITERS: 10
+
+############################### DRC/LVS ################################
+
+ERROR_ON_MAGIC_DRC: False
+
+# Prevent false positive DRC errors in I/O cells
+MAGIC_GDS_FLATGLOB:
+# For contacts
+- "*_CDNS_*"
+# COMP and Poly2 filler cells need to be 
+# flattened to form a "filltrans" layer
+- "COMP_fill_cell"
+- "Poly2_fill_cell"
+# Foundry provided SRAMs
+- "*$$*"
+- "M1_N*"
+- "M1_P*"
+- "M2_M1*"
+- "M3_M2*"
+- "nmos_5p0*"
+- "nmos_1p2*"
+- "pmos_5p0*"
+- "pmos_1p2*"
+- "via1_*"
+- "ypass_gate*"
+- "G_ring_*"
+# These additional cells must be flattened to get rid of 3.3V devices
+# (DUALGATE drawn into high-level cells)
+- "dcap_103*"
+- "din_*"
+- "mux821_*"
+- "rdummy_*"
+- "pmoscap_*"
+- "xdec_*"
+- "ypredec*"
+- "xpredec*"
+- "xdec8_*"
+- "prexdec_*"
+- "xdec32_*"
+- "sa_*"
+
+# Because we have multiple power pads for one power domain
+MAGIC_EXT_UNIQUE: notopports

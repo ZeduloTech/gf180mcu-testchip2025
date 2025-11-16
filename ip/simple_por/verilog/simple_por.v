@@ -34,8 +34,10 @@ module simple_por(
 
     initial begin
         inode = 1'bx;
+        `ifdef USE_POWER_PINS
         if (VDD !== 1'b1)
             @(posedge VDD); 
+        `endif
         inode = 1'b0; 
         #PoR_DURATION;
         inode = 1'b1; 

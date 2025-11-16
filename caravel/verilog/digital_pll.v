@@ -17,11 +17,6 @@
 // Digital PLL (ring oscillator + controller)
 // Technically this is a frequency locked loop, not a phase locked loop.
 
-`ifndef SIM
-`include "digital_pll_controller.v"
-`include "ring_osc2x13.v"
-`endif
-
 module digital_pll(
 `ifdef USE_POWER_PINS
     VDD,
@@ -42,6 +37,7 @@ module digital_pll(
     input [25:0] ext_trim;	// External trim for DCO mode
 
     output [1:0] clockp;	// Two 90 degree clock phases
+    wire [1:0] clockp_prebuf;
 
     wire [25:0]  itrim;		// Internally generated trim bits
     wire [25:0]  otrim;		// Trim bits applied to the ring oscillator
@@ -54,11 +50,21 @@ module digital_pll(
 
     assign itrim = (dco == 1'b0) ? otrim : ext_trim;
     assign creset = (dco == 1'b0) ? ireset : 1'b1;
+    
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_4 ringosc0_clk_buf (
+        .I(clockp_prebuf[0]),
+        .Z(clockp[0])
+    );
+    
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_4 ringosc1_clk_buf (
+        .I(clockp_prebuf[1]),
+        .Z(clockp[1])
+    );
 
     ring_osc2x13 ringosc (
         .reset(ireset),
         .trim(itrim),
-        .clockp(clockp)
+        .clockp(clockp_prebuf)
     );
 
     digital_pll_controller pll_control (

@@ -3,6 +3,7 @@
 
 `default_nettype none
 `include "pinout.vh"
+`include "defines.v" // from Caravel
 
 module chip_core #(
     parameter NUM_INPUT_PADS,

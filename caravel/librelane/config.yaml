@@ -5,12 +5,9 @@ meta:
   flow: Classic
   substituting_steps:
     
-    # Not supported for gf180mcu
-    KLayout.DRC: null
-    Checker.KLayoutDRC: null
-    
     # Save time
-    Magic.DRC: null                 # ! fails because of SRAM !
+    #Magic.DRC: null                 # ! fails because of SRAM !
+    #KLayout.DRC: null
     #OpenROAD.IRDropReport: null
     #Magic.SpiceExtraction: null    
     #Checker.MagicDRC: null
@@ -28,6 +25,7 @@ VERILOG_FILES:
 - dir::../verilog/caravel_core.v
 - dir::../verilog/clock_div.v
 - dir::../verilog/digital_pll.v
+- dir::../verilog/digital_pll_controller.v
 - dir::../verilog/gpio_defaults_block.v
 - dir::../verilog/gpio_control_block.v
 - dir::../verilog/GF180_RAM_512x32.v
@@ -37,7 +35,6 @@ VERILOG_FILES:
 - dir::../verilog/mprj_io_buffer.v
 - dir::../verilog/sram.v
 - dir::../verilog/VexRiscv_MinDebugCache.v
-         
 - dir::../verilog/housekeeping.v
 - dir::../verilog/housekeeping_spi.v
 
@@ -56,16 +53,36 @@ MACROS:
       
     instances:  
       soc.core.sram.ram512x32.RAM00:
-        location: [219, 59]
-        orientation: N
+        location: [119, 85]
+        orientation: S
       soc.core.sram.ram512x32.RAM01:
-        location: [655.86, 59]
-        orientation: N
+        location: [555.86, 85]
+        orientation: S
       soc.core.sram.ram512x32.RAM02:
-        location: [1092.72, 59]
-        orientation: N
+        location: [992.72, 85]
+        orientation: S
       soc.core.sram.ram512x32.RAM03:
-        location: [1529.58, 59]
+        location: [1429.58, 85]
+        orientation: S
+
+  ring_osc2x13:
+    gds:
+      - dir::../ring_osc2x13/final/gds/ring_osc2x13.gds
+    lef:
+      - dir::../ring_osc2x13/final/lef/ring_osc2x13.lef
+    nl:
+      - dir::../ring_osc2x13/final/nl/ring_osc2x13.nl.v
+    lib:
+      "*tt*" : [ dir::../ring_osc2x13/final/lib/nom_tt_025C_5v00/ring_osc2x13__nom_tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ring_osc2x13/final/lib/nom_ss_125C_4v50/ring_osc2x13__nom_ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ring_osc2x13/final/lib/nom_ff_n40C_5v50/ring_osc2x13__nom_ff_n40C_5v50.lib ]
+    spef:
+      "*tt*" : [ dir::../ring_osc2x13/final/spef/nom/ring_osc2x13.nom.spef]
+      "*ss*" : [ dir::../ring_osc2x13/final/spef/max/ring_osc2x13.max.spef]
+      "*ff*" : [ dir::../ring_osc2x13/final/spef/min/ring_osc2x13.min.spef]
+    instances:  
+      pll.ringosc:
+        location: [2500, 95]
         orientation: N
 
   simple_por:
@@ -96,7 +113,7 @@ GND_NETS:
 
 # Clock
 CLOCK_PORT: "clock_core"
-CLOCK_PERIOD: 50
+CLOCK_PERIOD: 30
 
 ############################ Floorplanning ############################# 
 
@@ -108,6 +125,8 @@ FP_PIN_ORDER_CFG: dir::pin.cfg
 FP_IO_MIN_DISTANCE: 10
 FP_IO_VTHICKNESS_MULT: 4
 FP_IO_HTHICKNESS_MULT: 4
+
+FP_MACRO_VERTICAL_HALO: 5
 
 ################################ PDN ################################### 
 
@@ -135,24 +154,23 @@ PDN_CFG: dir::pdn_cfg.tcl
 ############################### Placement ############################## 
 
 PL_TARGET_DENSITY_PCT: 50
-PL_MAX_DISPLACEMENT_X: 2000
-PL_MAX_DISPLACEMENT_Y: 500
 PL_KEEP_RESIZE_BELOW_OVERFLOW: 0
 PL_RESIZER_ALLOW_SETUP_VIOS: True
-PL_RESIZER_HOLD_SLACK_MARGIN: 0.3
-PL_RESIZER_SETUP_SLACK_MARGIN: 0.1
+PL_RESIZER_HOLD_SLACK_MARGIN: 0.5
+PL_RESIZER_SETUP_SLACK_MARGIN: 0.2
 
 RSZ_DONT_TOUCH_RX: .*clk_buf
 
-################################## CTS ################################# 
-
-CTS_MAX_CAP: 0.1
-CTS_SINK_CLUSTERING_SIZE: 12
-CTS_SINK_CLUSTERING_MAX_DIAMETER: 30
+DESIGN_REPAIR_MAX_WIRE_LENGTH: 700
+DESIGN_REPAIR_MAX_SLEW_PCT: 25
 
 ############################### Routing ################################
 
-GRT_ALLOW_CONGESTION: true
+# following is required to fix antennas
+RUN_HEURISTIC_DIODE_INSERTION: True  
+HEURISTIC_ANTENNA_THRESHOLD: 250
+DIODE_ON_PORTS: in
+GRT_ANTENNA_ITERS: 10
 
 ############################### DRC/LVS ################################
 
@@ -166,9 +184,33 @@ MAGIC_GDS_FLATGLOB:
 # flattened to form a "filltrans" layer
 - "COMP_fill_cell"
 - "Poly2_fill_cell"
+# Foundry provided SRAMs
+- "*$$*"
+- "M1_N*"
+- "M1_P*"
+- "M2_M1*"
+- "M3_M2*"
+- "nmos_5p0*"
+- "nmos_1p2*"
+- "pmos_5p0*"
+- "pmos_1p2*"
+- "via1_*"
+- "ypass_gate*"
+- "G_ring_*"
+# These additional cells must be flattened to get rid of 3.3V devices
+# (DUALGATE drawn into high-level cells)
+- "dcap_103*"
+- "din_*"
+- "mux821_*"
+- "rdummy_*"
+- "pmoscap_*"
+- "xdec_*"
+- "ypredec*"
+- "xpredec*"
+- "xdec8_*"
+- "prexdec_*"
+- "xdec32_*"
+- "sa_*"
 
 # Because we have multiple power pads for one power domain
 MAGIC_EXT_UNIQUE: notopports
-
-
-

@@ -16,8 +16,9 @@ help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 .PHONY: help
 
-all: librelane ## Build the project (runs librelane)
+all: osc-librelane librelane copy-final ## Build the project (runs librelane)
 .PHONY: all
+.NOTPARALLEL: all
 
 librelane: ## Run librelane flow (synthesis, PnR, verification)
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk
@@ -29,6 +30,10 @@ librelane-openroad: ## Open the last run in OpenROAD
 
 librelane-klayout: ## Open the last run in KLayout
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --last-run --flow OpenInKLayout
+.PHONY: librelane-klayout
+
+osc-librelane: ## Implement oscillator
+	make -C ring_osc2x13 all
 .PHONY: librelane-klayout
 
 sim: ## Run RTL simulation 

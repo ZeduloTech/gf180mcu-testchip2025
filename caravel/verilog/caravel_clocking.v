@@ -44,6 +44,12 @@ module caravel_clocking(
     reg  use_pll_second;
     reg	 ext_clk_syncd_pre;
     reg	 ext_clk_syncd;
+    
+    wire core_clk_prebuf;
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_8 caravel_clk_buf (
+        .I(core_clk_prebuf),
+        .Z(core_clk)
+    );
 
     assign pll_clk_sel = ~ext_clk_sel;
 
@@ -95,7 +101,7 @@ module caravel_clocking(
     // Multiplex the clock output
 
     assign core_ext_clk = (use_pll_first) ? ext_clk_syncd : ext_clk;
-    assign core_clk = (use_pll_second) ? pll_clk_divided : core_ext_clk;
+    assign core_clk_prebuf = (use_pll_second) ? pll_clk_divided : core_ext_clk;
     assign user_clk = (use_pll_second) ? pll_clk90_divided : core_ext_clk;
 
     // Staged-delay synchronous reset
