@@ -20,24 +20,60 @@
 // NOTE:  This netlist cannot be simulated correctly due to lack
 // of accurate timing in the digital cell verilog models.
 
-module delay_stage(in, trim, out);
+// Changes for waferspace version: added trim latches for glitch avoidance
+
+module delay_stage(in, trim, out, prev_in, nreset);
     input in;
     input [1:0] trim;
     output out;
+    input prev_in;
+    input nreset;
 
     wire d0, d1, d2, ts;
-    wire trim0b, trim1b;
+
+    wire not_edge, out_del;
+    wire [1:0] ltrim;
+    wire [1:0] ldtrim;
+    wire [1:0] lddtrim;
+    wire [1:0] ldotrim;
+    wire [1:0] ltrimb;
+    wire [1:0] ltrimbd;
+    wire [1:0] ltrimbdd;
 
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__inv_1 trim0bar (
-	.I(trim[0]),
-	.ZN(trim0b)
+	.I(ltrim[0]),
+	.ZN(ltrimb[0])
     );
 
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__inv_1 trim1bar (
-	.I(trim[1]),
-	.ZN(trim1b)
+	.I(ltrim[1]),
+	.ZN(ltrimb[1])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 trim0bar_del0 (
+	.I(ltrimb[0]),
+	.Z(ltrimbd[0])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 trim0bar_del1 (
+	.I(ltrimbd[0]),
+	.Z(ltrimbdd[0])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 trim1bar_del0 (
+	.I(ltrimb[1]),
+	.Z(ltrimbd[1])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 trim1bar_del1 (
+	.I(ltrimbd[1]),
+	.Z(ltrimbdd[1])
     );
 
     (* keep, dont_touch *)
@@ -55,14 +91,14 @@ module delay_stage(in, trim, out);
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_2 delayen1 (
 	.I(d0),
-	.EN(trim[1]),
+	.EN(ldotrim[1]),
 	.ZN(d1)
     );
 
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_4 delayenb1 (
 	.I(ts),
-	.EN(trim1b),
+	.EN(ltrimbdd[1]),
 	.ZN(d1)
     );
 
@@ -75,31 +111,106 @@ module delay_stage(in, trim, out);
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_2 delayen0 (
 	.I(d2),
-	.EN(trim[0]),
+	.EN(ldotrim[0]),
 	.ZN(out)
     );
 
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_8 delayenb0 (
 	.I(ts),
-	.EN(trim0b),
+	.EN(ltrimbdd[0]),
 	.ZN(out)
     );
 
+    // Latch trim values, inhibit change near edges
+    // and ensure EN signals always overlap to remove glitches & Z's
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_2 deglitch_buf (
+	.I(out),
+	.Z(out_del)
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__xor2_1 trim_inhibit (
+    .A1(prev_in),
+    .A2(out_del),
+    .Z(not_edge)
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 t0l_delay (
+    .I(ltrim[0]),
+    .Z(ldtrim[0])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 t1l_delay (
+    .I(ltrim[1]),
+    .Z(ldtrim[1])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 t0l_delay2 (
+    .I(ldtrim[0]),
+    .Z(lddtrim[0])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 t1l_delay2 (
+    .I(ldtrim[1]),
+    .Z(lddtrim[1])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__or2_2 t0ld_or (
+    .A1(lddtrim[0]),
+    .A2(ltrim[0]),
+    .Z(ldotrim[0])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__or2_2 t1ld_or (
+    .A1(lddtrim[1]),
+    .A2(ltrim[1]),
+    .Z(ldotrim[1])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__latrnq_1 t0_latch (
+    .RN(nreset),
+    .D(trim[0]),
+    .E(not_edge),
+    .Q(ltrim[0])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__latrnq_1 t1_latch (
+    .RN(nreset),
+    .D(trim[1]),
+    .E(not_edge),
+    .Q(ltrim[1])
+    );
+    
+
 endmodule
 
-module start_stage(in, trim, reset, out);
+module start_stage(in, trim, reset, out, prev_in, nreset);
     input in;
     input [1:0] trim;
     input reset;
     output out;
+    input prev_in;
+    input nreset;
 
-    wire d0, d1, d2, ctrl0b, one;
+    wire d0, d1, d2, ctrl0b, one, zero;
     wire trim1b;
+    
+    wire not_edge, nreset_del, out_del, out_precg;
+    wire [1:0] ltrim;
 
     (* keep, dont_touch *)
-    gf180mcu_fd_sc_mcu7t5v0__inv_1 trim1bar (
-	.I(trim[1]),
+    gf180mcu_fd_sc_mcu7t5v0__inv_2 trim1bar (
+	.I(ltrim[1]),
 	.ZN(trim1b)
     );
 
@@ -112,7 +223,7 @@ module start_stage(in, trim, reset, out);
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_2 delayen1 (
 	.I(d0),
-	.EN(trim[1]),
+	.EN(ltrim[1]),
 	.ZN(d1)
     );
 
@@ -132,34 +243,77 @@ module start_stage(in, trim, reset, out);
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_2 delayen0 (
 	.I(d2),
-	.EN(trim[0]),
-	.ZN(out)
+	.EN(ltrim[0]),
+	.ZN(out_precg)
     );
 
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_8 delayenb0 (
 	.I(in),
 	.EN(ctrl0b),
-	.ZN(out)
+	.ZN(out_precg)
     );
 
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__invz_1 reseten0 (
 	.I(one),
 	.EN(reset),
-	.ZN(out)
+	.ZN(out_precg)
     );
 
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__nor2_2 ctrlen0 (
 	.A1(reset),
-	.A2(trim[0]),
+	.A2(ltrim[0]),
 	.ZN(ctrl0b)
     );
 
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__tieh const1 (
 	.Z(one)
+    );
+
+    // latch trim and inhibit change near the edge to remove glitches
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__clkbuf_2 deglitch_buf (
+	.I(out),
+	.Z(out_del)
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__xor2_1 trim_inhibit (
+    .A1(prev_in),
+    .A2(out_del),
+    .Z(not_edge)
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__latrnq_1 t0_latch (
+    .RN(nreset),
+    .D(trim[0]),
+    .E(not_edge),
+    .Q(ltrim[0])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__latrnq_1 t1_latch (
+    .RN(nreset),
+    .D(trim[1]),
+    .E(not_edge),
+    .Q(ltrim[1])
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__dlyb_1 nreset_delay (
+    .I(nreset),
+    .Z(nreset_del)
+    );
+
+    (* keep, dont_touch *)
+    gf180mcu_fd_sc_mcu7t5v0__and2_2 cg_and (
+    .A1(out_precg),
+    .A2(nreset_del),
+    .Z(out)
     );
 
 endmodule
@@ -176,7 +330,7 @@ endmodule
 // reached over all PVT conditions.
 //
 // Frequency of this ring oscillator under SPICE simulations at
-// nominal PVT is maximum 214 MHz (trim 0), minimum 90 MHz (trim 24).
+// nominal PVT is maximum 73.3 MHz (trim 0), minimum 32.7 MHz (trim 24).
 
 module ring_osc2x13(reset, trim, clockp);
     input reset;
@@ -203,8 +357,8 @@ module ring_osc2x13(reset, trim, clockp);
 	delay = 3.0;
     end
 
-    // Fastest operation is 214 MHz = 4.67ns
-    // Delay per trim is 0.02385
+    // Fastest operation at tt is 53.5 MHz = 18.7ns, slowest - 25.5 MHz = 39.3ns
+    // Delay per trim is 0.7923
     // Run "hiclock" at 2x this rate, then use positive and negative
     // edges to derive the 0 and 90 degree phase clocks.
 
@@ -212,9 +366,9 @@ module ring_osc2x13(reset, trim, clockp);
 	hiclock <= (hiclock === 1'b0);
     end
 
-    always @(trim) begin
+    always @(bcount) begin
     	// Implement trim as a variable delay, one delay per trim bit
-	delay = 1.168 + 0.012 * $itor(bcount);
+	delay = 4.675 + 0.198 * $itor(bcount);
     end
 
     always @(posedge hiclock or posedge reset) begin
@@ -240,14 +394,32 @@ module ring_osc2x13(reset, trim, clockp);
     wire [1:0] c;
 
     // Main oscillator loop stages
+
+    delay_stage id0 (
+    .in(d[0]),
+    .trim({trim[13], trim[0]}),
+    .out(d[1]),
+    .prev_in(d[11]),
+    .nreset(~reset)
+    );
+
+    delay_stage id1 (
+    .in(d[1]),
+    .trim({trim[14], trim[1]}),
+    .out(d[2]),
+    .prev_in(d[12]),
+    .nreset(~reset)
+    );
  
     genvar i;
     generate
-	for (i = 0; i < 12; i = i + 1) begin : dstage
+	for (i = 2; i < 12; i = i + 1) begin : dstage
 	    delay_stage id (
 		.in(d[i]),
 		.trim({trim[i+13], trim[i]}),
-		.out(d[i+1])
+		.out(d[i+1]),
+		.prev_in(d[i-2]),
+        .nreset(~reset)
 	    );
 	end
     endgenerate
@@ -258,10 +430,12 @@ module ring_osc2x13(reset, trim, clockp);
 	.in(d[12]),
 	.trim({trim[25], trim[12]}),
 	.reset(reset),
-	.out(d[0])
+	.out(d[0]),
+	.prev_in(d[10]),
+    .nreset(~reset)
     );
 
-    // Buffered outputs a 0 and 90 degrees phase (approximately)
+    // Buffered outputs at 0 and 90 degrees phase (approximately)
 
     (* keep, dont_touch *)
     gf180mcu_fd_sc_mcu7t5v0__clkinv_2 ibufp00 (

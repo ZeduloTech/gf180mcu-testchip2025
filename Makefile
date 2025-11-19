@@ -30,8 +30,7 @@ librelane: ## Run LibreLane flow (synthesis, PnR, verification)
 .PHONY: librelane
 
 caravel-librelane: ## Run LibreLane flow for caravel
-	make -C caravel librelane
-	make -C caravel copy-final
+	make -C caravel all
 .PHONY: caravel-librelane
 
 librelane-nodrc: ## Run LibreLane flow without DRC checks
@@ -55,16 +54,12 @@ librelane-klayout: ## Open the last run in KLayout
 .PHONY: librelane-klayout
 
 sim: ## Run RTL simulation with cocotb
-	cd cocotb; PDK_ROOT=${PDK_ROOT} PDK=${PDK} python3 chip_top_tb.py
+	cd cocotb; PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -v chip_top_tb.py
 .PHONY: sim
 
 sim-gl: ## Run gate-level simulation with cocotb
-	cd cocotb; GL=1 PDK_ROOT=${PDK_ROOT} PDK=${PDK} python3 chip_top_tb.py
+	cd cocotb; GL=1 PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -v chip_top_tb.py
 .PHONY: sim-gl
-
-sim-view: ## View simulation waveforms in GTKWave
-	gtkwave cocotb/sim_build/chip_top.fst
-.PHONY: sim-view
 
 copy-final: ## Copy final output files from the last run
 	rm -rf final/

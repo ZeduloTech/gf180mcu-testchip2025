@@ -32,16 +32,8 @@ librelane-klayout: ## Open the last run in KLayout
 	librelane config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --last-run --flow OpenInKLayout
 .PHONY: librelane-klayout
 
-sim: ## Run RTL simulation 
-	cd sim && ./iverilog.sh
-.PHONY: sim
-
-sim-gl: ## Run gate-level simulation with cocotb
-	cd sim && ./iverilog-gl.sh
-.PHONY: sim-gl
-
 copy-final: ## Copy final output files from the last run
 	rm -rf final/
 	cp -r runs/${RUN_TAG}/final/ final/
-	gzip -f9 final/gds/caravel_core.gds
+	gzip -f9 final/gds/ring_osc2x13.gds
 .PHONY: copy-final

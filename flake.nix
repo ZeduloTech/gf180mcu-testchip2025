@@ -41,6 +41,17 @@
     
     devShells = nix-eda.forAllSystems (system: let
       pkgs = (self.legacyPackages.${system});
+      cocotbext-uart = pkgs.python3Packages.buildPythonPackage rec {
+        pname = "cocotbext-uart";
+        version = "0.1.4";
+      
+        src = pkgs.fetchFromGitHub {
+          owner = "alexforencich";
+          repo = "cocotbext-uart";
+          rev = "3f8c2602367940110bdb8204d4d36d33a4e383a6";
+          sha256 = "13dw8s6xgf92w79hx2i0c6yawyjx9flwgwgiswfcrvyraw3f5rd9";
+        };
+      };
     in {
       default = lib.callPackageWith pkgs (librelane.createOpenLaneShell {
         extra-packages = with pkgs; [
@@ -61,6 +72,8 @@
         extra-python-packages = with pkgs.python3.pkgs; [
           # Verification
           cocotb
+          cocotbext-uart
+          pytest
           
           # For KLayout Python DRC runner
           docopt

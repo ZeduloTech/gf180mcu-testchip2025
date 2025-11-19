@@ -9,6 +9,7 @@ from pathlib import Path
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import Timer, Edge, RisingEdge, FallingEdge, ClockCycles
+from cocotbext.uart import UartSink
 from cocotb_tools.runner import get_runner
 
 sim = os.getenv("SIM", "icarus")
@@ -17,38 +18,21 @@ pdk = os.getenv("PDK", "gf180mcuD")
 scl = os.getenv("SCL", "gf180mcu_fd_sc_mcu7t5v0")
 gl = os.getenv("GL", False)
 sdf = os.getenv("SDF", False)
+test_env = os.getenv("TEST", "all")
+add_build_args = os.getenv("ADD_BUILD_ARGS", "").split()
+add_plus_args = os.getenv("ADD_PLUS_ARGS", "").split()
 
-async def set_defaults(dut):
-    dut.input_PAD.value = 0
-
-async def enable_power(dut):
-    dut.VDD.value = 1
-    dut.VSS.value = 0
-
-async def start_clock(clock, freq=50):
-    """Start the clock @ freq MHz"""
-    c = Clock(clock, 1 / freq * 1000, "ns")
-    cocotb.start_soon(c.start())
-
-
-async def reset(reset, active_low=True, time_ns=1000):
-    """Reset dut"""
-    cocotb.log.info("Reset asserted...")
-
-    reset.value = not active_low
-    await Timer(time_ns, "ns")
-    reset.value = active_low
-
-    cocotb.log.info("Reset deasserted.")
-
-
-async def start_up(dut):
-    """Startup sequence"""
-    await set_defaults(dut)
-    if gl:
-        await enable_power(dut)
-    await start_clock(dut.clk_PAD)
-    await reset(dut.rst_n_PAD)
+uart_recv = ""
+async def uart_monitor(uart_sink):
+    global uart_recv
+    while True:
+        uart_byte = await uart_sink.read()
+        if int.from_bytes(uart_byte) != 0:
+            if int.from_bytes(uart_byte) != 0xd:    # ignore CR
+                uart_recv += uart_byte.decode("utf-8")
+        else:
+            # allow zero bytes at the beginning
+            assert(not uart_recv)
 
 
 @cocotb.test(timeout_time=10000, timeout_unit="us")
@@ -57,13 +41,25 @@ async def test_caravel(dut):
 
     # Create a logger for this testbench
     logger = logging.getLogger("testbench")
+
+    # Connect UART
+    uart_sink = UartSink(dut.uart_tx, baud=19200, bits=8)
+    cocotb.start_soon(uart_monitor(uart_sink))
     
     await RisingEdge(dut.test_success)
+
+    uart = os.getenv("EXPECT_UART")
+    if uart:
+        while len(uart_recv) < len(uart):
+            logger.warning("Waiting for UART data to arrive...")
+            await Timer(100, "us")
+        logger.warning(f"Checking received UART data: got {uart_recv}, expected {uart}")
+        assert(uart == uart_recv)
 
     logger.info("Done!")
 
 
-def chip_top_runner():
+def test_chip_top_runner(test : str):
 
     proj_path = Path(__file__).resolve().parent
 
@@ -76,6 +72,7 @@ def chip_top_runner():
         "HEX_PREFIX" : str(proj_path / "../caravel/sim/caravel_sw") + "/",
         "FINAL_PREFIX" : str(proj_path / "../final") + "/",
         "CARAVEL_FINAL_PREFIX" : str(proj_path / "../caravel/final") + "/",
+        "OSC_FINAL_PREFIX" : str(proj_path / "../caravel/ring_osc2x13/final") + "/",
     })
 
     sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")
@@ -131,15 +128,21 @@ def chip_top_runner():
         # build_args = ["-Winfloop", "-pfileline=1"]
         pass
 
+    build_args += add_build_args
+
     if sim == "verilator":
         build_args = ["--timing", "--trace", "--trace-fst", "--trace-structs"]
 
-    # for caravel_test in ["wbcounter", "hkspi", "pll", "mprj_bitbang", "uart"]:
-    for caravel_test in ["wbcounter", "hkspi"]:
+    if test != "all":
+        tests = [ test ]
+    else:
+        tests = ["wbcounter", "hkspi", "mprj_bitbang", "uart", "pll"]
+        
+    for caravel_test in tests:
 
         top = f"{caravel_test}_tb"
 
-        # print(sources)
+        uart = "Hi\n" if caravel_test == "uart" else ""
 
         runner = get_runner(sim)
         runner.build(
@@ -152,15 +155,15 @@ def chip_top_runner():
             waves=True,
         )
 
-        plusargs = []
+        plusargs = add_plus_args
 
         runner.test(
             hdl_toplevel=top,
             test_module="chip_top_tb,",
             plusargs=plusargs,
             waves=True,
+            extra_env = {"EXPECT_UART" : uart}
         )
 
-
 if __name__ == "__main__":
-    chip_top_runner()
+    test_chip_top_runner(test_env)

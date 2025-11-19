@@ -34,15 +34,7 @@ librelane-klayout: ## Open the last run in KLayout
 
 osc-librelane: ## Implement oscillator
 	make -C ring_osc2x13 all
-.PHONY: librelane-klayout
-
-sim: ## Run RTL simulation 
-	cd sim && ./iverilog.sh
-.PHONY: sim
-
-sim-gl: ## Run gate-level simulation with cocotb
-	cd sim && ./iverilog-gl.sh
-.PHONY: sim-gl
+.PHONY: osc-librelane
 
 copy-final: ## Copy final output files from the last run
 	rm -rf final/

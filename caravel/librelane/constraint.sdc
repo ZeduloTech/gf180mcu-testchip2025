@@ -5,6 +5,7 @@
 ## DEFINES
 
 set clk_period $::env(CLOCK_PERIOD)
+set osc_period 12
 set hkspi_clk_period [expr $clk_period * 2]
 
 # if set to 1 - analyse housekeeping registers clocking from SPI, 0 - from WB (can't have both in CTS)
@@ -32,8 +33,8 @@ if {$analyse_hkspi == 1} {
 }
 
 # Oscilator clocks
-create_clock -name osc_clk0 -period $clk_period [get_pins {pll.ringosc0_clk_buf/Z}] 
-create_clock -name osc_clk1 -period $clk_period [get_pins {pll.ringosc1_clk_buf/Z}] 
+create_clock -name osc_clk0 -period $osc_period [get_pins {pll.ringosc0_clk_buf/Z}] 
+create_clock -name osc_clk1 -period $osc_period [get_pins {pll.ringosc1_clk_buf/Z}] 
 
 # hk_serial_clk period is x2 core clock
 create_generated_clock -name hk_serial_clk -source [get_pins serial_clk_buf/I] -divide_by 2 -master clk [get_pins serial_clk_buf/Z]

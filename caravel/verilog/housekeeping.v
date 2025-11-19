@@ -999,8 +999,8 @@ module housekeeping #(
             reset_reg <= 1'b0;
 
 	    // System monitoring signals
-	    clk1_output_dest <= 1'b0;
-	    clk2_output_dest <= 1'b0;
+	    clk1_output_dest <= 1'b1;       // changed to output clock by default
+	    clk2_output_dest <= 1'b1;       // changed to output clock by default
 	    trap_output_dest <= 1'b0;
 	    irq_1_inputsrc <= 1'b0;
 	    irq_2_inputsrc <= 1'b0;
