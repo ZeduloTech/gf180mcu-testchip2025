@@ -18,11 +18,7 @@ if { [info exists ::env(MAX_CAPACITANCE_CONSTRAINT)] } {
     set_max_capacitance $::env(MAX_CAPACITANCE_CONSTRAINT) [current_design]
 }
 
-set clk_input [get_port $clock_port]
 set clocks [get_clocks $clock_port]
-
-# Clock pad
-set_driving_cell -lib_cell gf180mcu_fd_io__in_s -pin PAD $clk_input
 
 # Bidirectional pads
 set clk_core_inout_ports [get_ports { 
@@ -40,6 +36,7 @@ set clk_core_input_ports [get_ports {
 }] 
 
 
+# Output load
 set cap_load [expr $::env(OUTPUT_CAP_LOAD) / 1000.0]
 puts "\[INFO] Setting load to: $cap_load"
 set_load $cap_load [all_outputs]
