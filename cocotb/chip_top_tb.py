@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+import sys
 import random
 import logging
 from pathlib import Path
@@ -59,7 +60,7 @@ async def test_caravel(dut):
     logger.info("Done!")
 
 
-def test_chip_top_runner(test : str):
+def test_chip_top_runner(test : str, is_pytest : bool = True):
 
     proj_path = Path(__file__).resolve().parent
 
@@ -139,6 +140,15 @@ def test_chip_top_runner(test : str):
         tests = ["wbcounter", "hkspi", "mprj_bitbang", "uart", "pll"]
         
     for caravel_test in tests:
+        
+        # skip PLL test in GL without SDF (oscillator ring obviously hangs without delays)
+        if (caravel_test == "pll") and (not sdf and gl):
+            if is_pytest:
+                from pytest import skip
+                skip("PLL test can't be run with gate level netlist without SDF")
+            else:
+                print("PLL test can't be run with gate level netlist without SDF", is_pytest)
+                continue
 
         top = f"{caravel_test}_tb"
 
@@ -166,4 +176,4 @@ def test_chip_top_runner(test : str):
         )
 
 if __name__ == "__main__":
-    test_chip_top_runner(test_env)
+    test_chip_top_runner(test_env, False)
