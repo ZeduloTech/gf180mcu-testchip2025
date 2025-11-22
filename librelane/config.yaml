@@ -160,10 +160,9 @@ IGNORE_DISCONNECTED_MODULES:
 - gf180mcu_ws_ip__logo
 
 # Clock
-#CLOCK_PORT: clk_PAD
 CLOCK_NET: i_chip_core.caravel/user_wb_clk_o
 
-CLOCK_PERIOD: 50 # 20 MHz
+CLOCK_PERIOD: 40 # 25 MHz
 
 # Floorplanning
 FP_SIZING: absolute
@@ -250,17 +249,16 @@ MACROS:
       - dir::../caravel/final/gds/caravel_core.gds.gz
     lef:
       - dir::../caravel/final/lef/caravel_core.lef
-    nl:
+    pnl:
       - dir::../caravel/final/pnl/caravel_core.pnl.v
     lib:
       "*tt*" : [ dir::../caravel/final/lib/nom_tt_025C_5v00/caravel_core__nom_tt_025C_5v00.lib ]
       "*ss*" : [ dir::../caravel/final/lib/max_ss_125C_4v50/caravel_core__max_ss_125C_4v50.lib ]
       "*ff*" : [ dir::../caravel/final/lib/min_ff_n40C_5v50/caravel_core__min_ff_n40C_5v50.lib ]
-    # uncomment if implementing manually as spefs are prefered, but take a lot of space in the repo
-    #spef:
-      #"*tt*" : [ dir::../caravel/final/spef/nom/caravel_core.nom.spef ]
-      #"*ss*" : [ dir::../caravel/final/spef/max/caravel_core.max.spef ]
-      #"*ff*" : [ dir::../caravel/final/spef/min/caravel_core.min.spef ]
+    spef:
+      "*tt*" : [ dir::../caravel/final/spef/nom/caravel_core.nom.spef.gz ]
+      "*ss*" : [ dir::../caravel/final/spef/max/caravel_core.max.spef.gz ]
+      "*ff*" : [ dir::../caravel/final/spef/min/caravel_core.min.spef.gz ]
     instances:
       i_chip_core.caravel:
         location: [500, 500]

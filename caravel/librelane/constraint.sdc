@@ -8,6 +8,8 @@ set clk_period $::env(CLOCK_PERIOD)
 set osc_period 12
 set hkspi_clk_period [expr $clk_period * 2]
 
+source [file dirname [info script]]/sdc_defs.tcl
+
 # if set to 1 - analyse housekeeping registers clocking from SPI, 0 - from WB (can't have both in CTS)
 set analyse_hkspi 0
 
@@ -21,8 +23,8 @@ proc get_driver {net_pattern} {
 ## CLOCKS
 
 # MASTER CLOCK (start from the pin of caravel_clocking)
-create_clock -name clk -period $clk_period [get_pins {clock_ctrl.caravel_clk_buf/Z}] 
-create_generated_clock -name wbbd_sck -source [get_pins {clock_ctrl.caravel_clk_buf/Z}] -divide_by 2 -master_clock clk [get_driver {housekeeping.wbbd_sck}]
+create_clock -name clk -period $clk_period [get_pins $caravel_clk_start] 
+create_generated_clock -name wbbd_sck -source [get_pins $caravel_clk_start] -divide_by 2 -master_clock clk [get_driver {housekeeping.wbbd_sck}]
 
 # Housekeeping SPI clock (do not confuse with hk_serial)
 create_clock -name hkspi_clk -period $hkspi_clk_period [get_pins {housekeeping.hkspi_clk_buf/Z}] 
@@ -69,20 +71,21 @@ set_disable_timing [get_cells housekeeping.spi_is_active_clk_buf]
 set_disable_timing [get_driver {clock_ctrl.divider*.out}]
 
 ## INPUT/OUTPUT DELAYS
-set input_delay_value [expr $clk_period * 0.1]
-set output_delay_value [expr $clk_period * 0.25]
-
-puts "\[INFO\]: Setting output delay to: $output_delay_value"
-puts "\[INFO\]: Setting input delay to: $input_delay_value"
+puts "\[INFO\]: Setting output WB delay to: $caravel_out_max_delay"
+puts "\[INFO\]: Setting input WB delay to: $caravel_in_max_delay"
 
 # Wishbone IO constraints
-set_output_delay $output_delay_value -clock [get_clocks {user_wb_clk}] -reference [get_ports user_wb_clk_o] [get_ports [list user_wb_adr_o* user_wb_sel_o* user_wb_dat_o* user_wb_cyc_o user_wb_stb_o user_wb_we_o]]
-set_input_delay $input_delay_value -clock [get_clocks {user_wb_clk}] -reference [get_ports user_wb_clk_o] [get_ports user_wb*_i*]
+set wb_out [get_ports [list user_wb_adr_o* user_wb_sel_o* user_wb_dat_o* user_wb_cyc_o user_wb_stb_o user_wb_we_o]]
+set wb_in [get_ports user_wb_*_i*]
+set_output_delay $caravel_out_min_delay -min -clock [get_clocks {user_wb_clk}] -reference [get_ports user_wb_clk_o] $wb_out
+set_output_delay $caravel_out_max_delay -max -clock [get_clocks {user_wb_clk}] -reference [get_ports user_wb_clk_o] $wb_out
+set_input_delay $caravel_in_min_delay -min -clock [get_clocks {user_wb_clk}] -reference [get_ports user_wb_clk_o] $wb_in
+set_input_delay $caravel_in_max_delay -max -clock [get_clocks {user_wb_clk}] -reference [get_ports user_wb_clk_o] $wb_in
 
 ## Flash IO constraints, flash clock period is 4x of system and strobed at falling edge
 set_output_delay -min [expr $clk_period * 0.3] -clock [get_clocks {flash_clk}] -reference [get_ports flash_clk_frame] [get_ports [list flash_csb* flash_io*_do flash_io*_*e]]
 set_output_delay -max [expr $clk_period * 0.6] -clock [get_clocks {flash_clk}] -reference [get_ports flash_clk_frame] [get_ports [list flash_csb* flash_io*_do flash_io*_*e]]
-set_input_delay  $input_delay_value -clock [get_clocks {flash_clk}] -reference [get_ports flash_clk_frame] [get_ports flash_io*_di]
+set_input_delay  $caravel_in_max_delay -clock [get_clocks {flash_clk}] -reference [get_ports flash_clk_frame] [get_ports flash_io*_di]
 
 ## MAX FANOUT
 set_max_fanout $::env(MAX_FANOUT_CONSTRAINT) [current_design]

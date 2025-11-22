@@ -40,4 +40,7 @@ copy-final: ## Copy final output files from the last run
 	rm -rf final/
 	cp -r librelane/runs/${RUN_TAG}/final/ final/
 	gzip -f9 final/gds/caravel_core.gds
+	gzip -f9 final/spef/nom/*.spef
+	gzip -f9 final/spef/max/*.spef
+	gzip -f9 final/spef/min/*.spef
 .PHONY: copy-final
