@@ -42,9 +42,29 @@ module chip_core #(
     wire user_wb_we;
     wire [3:0]  user_wb_sel;
     wire [31:0] user_wb_adr;
-    wire [31:0] user_wb_dat_in;
-    wire [31:0] user_wb_dat_out;
+    wire [31:0] user_wb_dat_wr;
+    wire [31:0] user_wb_dat_rd;
     wire user_wb_ack;
+
+    // Wishbone for first efuse block
+    wire ef0_wb_cyc;
+    wire ef0_wb_stb;
+    wire ef0_wb_we;
+    wire [3:0]  ef0_wb_sel;
+    wire [31:0] ef0_wb_adr;
+    wire [31:0] ef0_wb_dat_wr;
+    wire [31:0] ef0_wb_dat_rd;
+    wire ef0_wb_ack;
+
+    // Wishbone for second efuse block
+    wire ef1_wb_cyc;
+    wire ef1_wb_stb;
+    wire ef1_wb_we;
+    wire [3:0]  ef1_wb_sel;
+    wire [31:0] ef1_wb_adr;
+    wire [31:0] ef1_wb_dat_wr;
+    wire [31:0] ef1_wb_dat_rd;
+    wire ef1_wb_ack;
     
     // Disable pull-up and pull-down for input
     assign input_pu = '0;
@@ -62,16 +82,80 @@ module chip_core #(
     assign bidir_sl[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
     assign bidir_cs[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
     
-    wb_counter counter (
+    // eFuse Wishbone memory
+    efuse_wb_mem_64x8 efuse_wb_64x8_0 (
         .wb_clk_i(user_wb_clk),
         .wb_rst_i(user_wb_rst),
-        .wb_stb_i(user_wb_stb),
-        .wb_cyc_i(user_wb_cyc),
-        .wb_adr_i(user_wb_adr),
-        .wb_dat_i(user_wb_dat_in),
-        .wb_we_i (user_wb_we),
-        .wb_dat_o(user_wb_dat_out),
-        .wb_ack_o(user_wb_ack)
+        .wb_stb_i(ef0_wb_stb),
+        .wb_cyc_i(ef0_wb_cyc),
+        .wb_adr_i(ef0_wb_adr[9:2]),
+        .wb_dat_i(ef0_wb_dat_wr[7:0]),
+        .wb_we_i (ef0_wb_we),
+        .wb_dat_o(ef0_wb_dat_rd[7:0]),
+        .wb_ack_o(ef0_wb_ack),
+        .write_disable_i(1'b0)
+    );
+    assign ef0_wb_dat_rd[31:8] = 24'b0;    
+    
+    efuse_wb_mem_64x8 efuse_wb_64x8_1 (
+        .wb_clk_i(user_wb_clk),
+        .wb_rst_i(user_wb_rst),
+        .wb_stb_i(ef1_wb_stb),
+        .wb_cyc_i(ef1_wb_cyc),
+        .wb_adr_i(ef1_wb_adr[9:2]),
+        .wb_dat_i(ef1_wb_dat_wr[7:0]),
+        .wb_we_i (ef1_wb_we),
+        .wb_dat_o(ef1_wb_dat_rd[7:0]),
+        .wb_ack_o(ef1_wb_ack),
+        .write_disable_i(1'b0)
+    );
+    assign ef1_wb_dat_rd[31:8] = 24'b0;
+
+    // Wishbone mux
+    wb_mux_2 wb_mux (
+        // General signals
+        .clk(user_wb_clk),
+        .rst(user_wb_rst),
+                
+        // Address config
+        .wbs0_addr(32'h30000000),     // Slave address prefix
+        .wbs0_addr_msk(32'hFFF00000), // Slave address prefix mask
+        .wbs1_addr(32'h30100000),     // Slave address prefix
+        .wbs1_addr_msk(32'hFFF00000), // Slave address prefix mask
+
+        // Master
+        .wbm_adr_i(user_wb_adr),     // ADR_I() address input
+        .wbm_dat_i(user_wb_dat_wr),     // DAT_I() data in
+        .wbm_dat_o(user_wb_dat_rd),     // DAT_O() data out
+        .wbm_we_i (user_wb_we),      // WE_I write enable input
+        .wbm_sel_i(user_wb_sel),     // SEL_I() select input
+        .wbm_stb_i(user_wb_stb),     // STB_I strobe input
+        .wbm_ack_o(user_wb_ack),     // ACK_O acknowledge output
+        .wbm_cyc_i(user_wb_cyc),     // CYC_I cycle input
+
+        // First slave
+        .wbs0_adr_o(ef0_wb_adr),    // ADR_O() address output
+        .wbs0_dat_i(ef0_wb_dat_rd),    // DAT_I() data in
+        .wbs0_dat_o(ef0_wb_dat_wr),    // DAT_O() data out
+        .wbs0_we_o (ef0_wb_we),     // WE_O write enable output
+        .wbs0_sel_o(ef0_wb_sel),    // SEL_O() select output
+        .wbs0_stb_o(ef0_wb_stb),    // STB_O strobe output
+        .wbs0_ack_i(ef0_wb_ack),    // ACK_I acknowledge input
+        .wbs0_err_i('0),    // ERR_I error input
+        .wbs0_rty_i('0),    // RTY_I retry input
+        .wbs0_cyc_o(ef0_wb_cyc),    // CYC_O cycle output
+
+        // Second slave
+        .wbs1_adr_o(ef1_wb_adr),    // ADR_O() address output
+        .wbs1_dat_i(ef1_wb_dat_rd),    // DAT_I() data in
+        .wbs1_dat_o(ef1_wb_dat_wr),    // DAT_O() data out
+        .wbs1_we_o (ef1_wb_we),     // WE_O write enable output
+        .wbs1_sel_o(ef1_wb_sel),    // SEL_O() select output
+        .wbs1_stb_o(ef1_wb_stb),    // STB_O strobe output
+        .wbs1_ack_i(ef1_wb_ack),    // ACK_I acknowledge input
+        .wbs1_err_i('0),    // ERR_I error input
+        .wbs1_rty_i('0),    // RTY_I retry input
+        .wbs1_cyc_o(ef1_wb_cyc)    // CYC_O cycle output
     );
     
     caravel_core caravel (
@@ -117,8 +201,8 @@ module chip_core #(
         .user_wb_we_o (user_wb_we),
         .user_wb_sel_o(user_wb_sel),
         .user_wb_adr_o(user_wb_adr),
-        .user_wb_dat_o(user_wb_dat_in),
-        .user_wb_dat_i(user_wb_dat_out),
+        .user_wb_dat_o(user_wb_dat_wr),
+        .user_wb_dat_i(user_wb_dat_rd),
         .user_wb_ack_i(user_wb_ack),
         
         .user_irq_core(1'b0),

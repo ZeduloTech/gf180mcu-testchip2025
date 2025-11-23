@@ -17,6 +17,7 @@ meta:
     #Checker.KLayoutDRC: null
     #OpenROAD.IRDropReport: null
     #Magic.DRC: null
+    #Magic.Streamout: null
     #Checker.MagicDRC: null
     #KLayout.XOR: null
     #Netgen.LVS: null
@@ -26,9 +27,9 @@ meta:
 
 DESIGN_NAME: chip_top
 VERILOG_FILES:
-- dir::../src/wb_counter.v
 - dir::../src/chip_top.sv
 - dir::../src/chip_core.sv
+- dir::../src/wb_mux_2.v
 
 VERILOG_INCLUDE_DIRS: [ dir::../caravel/verilog/ ]
 
@@ -162,7 +163,7 @@ IGNORE_DISCONNECTED_MODULES:
 # Clock
 CLOCK_NET: i_chip_core.caravel/user_wb_clk_o
 
-CLOCK_PERIOD: 40 # 25 MHz
+CLOCK_PERIOD: 50 # 20 MHz
 
 # Fix hold violations
 PL_RESIZER_HOLD_SLACK_MARGIN: 0.2
@@ -192,6 +193,7 @@ PDN_CORE_HORIZONTAL_LAYER: Metal3
 PDN_HPITCH: 100
 
 ERROR_ON_MAGIC_DRC: false # still fails on SRAM
+ERROR_ON_ILLEGAL_OVERLAPS: false
 
 # Prevent false positive DRC errors in I/O cells
 MAGIC_GDS_FLATGLOB:
@@ -267,6 +269,25 @@ MACROS:
       i_chip_core.caravel:
         location: [500, 500]
         orientation: N
+        
+  efuse_wb_mem_64x8:
+    gds:
+      - dir::../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.gds
+    lef:
+      - dir::../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.lef
+    pnl:
+      - dir::../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.pnl.v
+    lib:
+      "*tt*" : [ dir::../ip/efuse_wb_mem_64x8/min_tt_025C_5v00/efuse_wb_mem_64x8__min_tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/efuse_wb_mem_64x8/max_ss_125C_4v50/efuse_wb_mem_64x8__max_ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/efuse_wb_mem_64x8/max_ff_n40C_5v50/efuse_wb_mem_64x8__max_ff_n40C_5v50.lib ]
+    instances:
+      i_chip_core.efuse_wb_64x8_0:
+        location: [500, 1700]
+        orientation: S
+      i_chip_core.efuse_wb_64x8_1:
+        location: [1000, 1700]
+        orientation: S
         
   gf180mcu_ws_ip__logo:
     gds:

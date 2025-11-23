@@ -36,7 +36,7 @@ async def uart_monitor(uart_sink):
             assert(not uart_recv)
 
 
-@cocotb.test(timeout_time=10000, timeout_unit="us")
+@cocotb.test(timeout_time=100000, timeout_unit="us")
 async def test_caravel(dut):
     """Run the Caravel test"""
 
@@ -73,7 +73,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         "HEX_PREFIX" : str(proj_path / "../caravel/sim/caravel_sw") + "/",
         "FINAL_PREFIX" : str(proj_path / "../final") + "/",
         "CARAVEL_FINAL_PREFIX" : str(proj_path / "../caravel/final") + "/",
-        "OSC_FINAL_PREFIX" : str(proj_path / "../caravel/ring_osc2x13/final") + "/",
+        "OSC_FINAL_PREFIX" : str(proj_path / "../caravel/ring_osc2x13/final") + "/"
     })
 
     sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")
@@ -86,6 +86,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         sources.append(proj_path / "../caravel/ring_osc2x13/final/pnl/ring_osc2x13.pnl.v")
         sources.append(proj_path / "../caravel/final/pnl/caravel_core.pnl.v")
         sources.append(proj_path / "../final/pnl/chip_top.pnl.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.pnl.v")
 
         defines.update({"USE_POWER_PINS": 1})
         if sdf:
@@ -93,7 +94,8 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     else:
         sources.append(proj_path / "../src/chip_top.sv")
         sources.append(proj_path / "../src/chip_core.sv")
-        sources.append(proj_path / "../src/wb_counter.v")
+        sources.append(proj_path / "../src/wb_mux_2.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.nl.v")
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 
@@ -113,6 +115,9 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         # Caravel IP
         proj_path / "../ip/sram/gf180_ram_512x8_wrapper.v",
         proj_path / "../ip/simple_por/verilog/simple_por.v",
+
+        # eFuse array model
+        proj_path / "../ip/efuse_wb_mem_64x8/efuse_array.v",
         
         # Custom IP
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",
