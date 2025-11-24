@@ -22,6 +22,7 @@ meta:
     #KLayout.XOR: null
     #Netgen.LVS: null
     #Checker.LVS: null
+    #Verilator.Lint: null
     
     Checker.YosysSynthChecks: null  # Fails due to multisources in PLL
 
@@ -191,6 +192,9 @@ PDN_ENABLE_PINS: False
 PDN_CORE_VERTICAL_LAYER: Metal2
 PDN_CORE_HORIZONTAL_LAYER: Metal3
 PDN_HPITCH: 100
+PDN_VPITCH: 50
+
+PDN_MACRO_CONNECTIONS: ["i_chip_core.efuse_wb.* VDD VSS VDD VSS"]
 
 ERROR_ON_MAGIC_DRC: false # still fails on SRAM
 ERROR_ON_ILLEGAL_OVERLAPS: false

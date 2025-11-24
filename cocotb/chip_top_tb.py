@@ -142,7 +142,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     if test != "all":
         tests = [ test ]
     else:
-        tests = ["wbcounter", "hkspi", "mprj_bitbang", "uart", "pll"]
+        tests = ["efuse_rw", "hkspi", "mprj_bitbang", "uart", "pll"]
         
     for caravel_test in tests:
         

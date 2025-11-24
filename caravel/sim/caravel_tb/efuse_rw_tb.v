@@ -36,7 +36,8 @@ module efuse_rw_tb;
         $sdf_annotate({`FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/chip_top__nom_tt_025C_5v00.sdf"}, uut.chip );
         $sdf_annotate({`CARAVEL_FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/caravel_core__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.caravel );
         //$sdf_annotate({`OSC_FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/ring_osc2x13__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.caravel .\pll.ringosc );
-        $sdf_annotate({`FINAL_PREFIX, "../ip/efuse_wb_mem_64x8/sdf/nom_tt_025C_5v00/efuse_wb_mem_64x8__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.efuse_wb_64x8 );
+        $sdf_annotate({`FINAL_PREFIX, "../ip/efuse_wb_mem_64x8/sdf/nom_tt_025C_5v00/efuse_wb_mem_64x8__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.efuse_wb_64x8_0 );
+        $sdf_annotate({`FINAL_PREFIX, "../ip/efuse_wb_mem_64x8/sdf/nom_tt_025C_5v00/efuse_wb_mem_64x8__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.efuse_wb_64x8_1 );
     end
 	`endif 
 
