@@ -31,6 +31,7 @@ VERILOG_FILES:
 - dir::../src/chip_top.sv
 - dir::../src/chip_core.sv
 - dir::../src/wb_mux_2.v
+- dir::../src/sramtest/sram_test.sv
 
 VERILOG_INCLUDE_DIRS: [ dir::../caravel/verilog/ ]
 
@@ -292,6 +293,84 @@ MACROS:
       i_chip_core.efuse_wb_64x8_1:
         location: [1000, 1700]
         orientation: S
+
+#495	0	4150
+#350	145	4295
+#280	215	4365
+#245	250	4400
+
+  gf180_ram_64x8_wrapper:
+    gds:
+      - dir::../ip/sram/gf180_ram_64x8_wrapper.gds.gz
+    lef:
+      - dir::../ip/sram/gf180_ram_64x8_wrapper.lef
+    nl:
+      - dir::../ip/sram/gf180_ram_64x8_wrapper.v
+    lib:
+      "*tt*" : [ dir::../ip/sram/gf180_ram_64x8_wrapper__tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/sram/gf180_ram_64x8_wrapper__ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/sram/gf180_ram_64x8_wrapper__ff_n40C_5v50.lib ]
+      
+    instances:  
+#i_chip_core.sram64_0:
+      i_chip_core.sram_test_0.sram64_0:
+        location: [500, 4400]
+        orientation: S
+
+  gf180_ram_128x8_wrapper:
+    gds:
+      - dir::../ip/sram/gf180_ram_128x8_wrapper.gds.gz
+    lef:
+      - dir::../ip/sram/gf180_ram_128x8_wrapper.lef
+    nl:
+      - dir::../ip/sram/gf180_ram_128x8_wrapper.v
+    lib:
+      "*tt*" : [ dir::../ip/sram/gf180_ram_128x8_wrapper__tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/sram/gf180_ram_128x8_wrapper__ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/sram/gf180_ram_128x8_wrapper__ff_n40C_5v50.lib ]
+      
+    instances:  
+#i_chip_core.sram128_0:
+      i_chip_core.sram_test_0.sram128_0:
+        location: [1000, 4365]
+        orientation: S
+
+  gf180_ram_256x8_wrapper:
+    gds:
+      - dir::../ip/sram/gf180_ram_256x8_wrapper.gds.gz
+    lef:
+      - dir::../ip/sram/gf180_ram_256x8_wrapper.lef
+    nl:
+      - dir::../ip/sram/gf180_ram_256x8_wrapper.v
+    lib:
+      "*tt*" : [ dir::../ip/sram/gf180_ram_256x8_wrapper__tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/sram/gf180_ram_256x8_wrapper__ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/sram/gf180_ram_256x8_wrapper__ff_n40C_5v50.lib ]
+      
+    instances:  
+#i_chip_core.sram256_0:
+      i_chip_core.sram_test_0.sram256_0:
+        location: [1500, 4295]
+        orientation: S
+
+  gf180_ram_512x8_wrapper:
+    gds:
+      - dir::../ip/sram/gf180_ram_512x8_wrapper.gds.gz
+    lef:
+      - dir::../ip/sram/gf180_ram_512x8_wrapper.lef
+    nl:
+      - dir::../ip/sram/gf180_ram_512x8_wrapper.v
+    lib:
+      "*tt*" : [ dir::../ip/sram/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/sram/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/sram/gf180mcu_fd_ip_sram__sram512x8m8wm1__ff_n40C_5v50.lib ]
+      
+    instances:  
+#i_chip_core.sram512_0:
+      i_chip_core.sram_test_0.sram512_0:
+        location: [2000, 4150]
+        orientation: S
+
         
   gf180mcu_ws_ip__logo:
     gds:

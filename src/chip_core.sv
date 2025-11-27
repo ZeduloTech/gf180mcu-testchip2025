@@ -212,6 +212,8 @@ module chip_core #(
         .user_gpio_oeb({`CARAVEL_IO_PADS{1'b1}})
     );
 
+  sram_test sram_test_0(.clk(clk), .rst_n(rst_n), .bank_select(input_in[1:0]), .sram_out(bidir_out[39:31]) );
+
 endmodule
 
 `default_nettype wire
