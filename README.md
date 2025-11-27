@@ -8,7 +8,12 @@ This repository contains a Nix flake that provides a shell with the [`leo/gf180m
 
 Simply run `nix-shell` in the root of this repository.
 
-With this shell enabled, run the implementation, first implementing the Caravel core (can be skipped as all required files are already in the repository):
+With this shell enabled, run the implementation, first clone the PDK
+
+```
+make clone-pdk
+```
+and them make the Caravel core (can be skipped as all required files are already in the repository):
 
 ```
 make caravel-librelane
