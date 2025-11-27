@@ -36,7 +36,7 @@ async def uart_monitor(uart_sink):
             assert(not uart_recv)
 
 
-@cocotb.test(timeout_time=100000, timeout_unit="us")
+@cocotb.test(timeout_time=200, timeout_unit="ms")
 async def test_caravel(dut):
     """Run the Caravel test"""
 
@@ -86,7 +86,10 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         sources.append(proj_path / "../caravel/ring_osc2x13/final/pnl/ring_osc2x13.pnl.v")
         sources.append(proj_path / "../caravel/final/pnl/caravel_core.pnl.v")
         sources.append(proj_path / "../final/pnl/chip_top.pnl.v")
-        sources.append(proj_path / "../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.pnl.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_32x8/efuse_wb_mem_32x8.pnl.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.pnl.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.pnl.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.pnl.v")
 
         defines.update({"USE_POWER_PINS": 1})
         if sdf:
@@ -94,8 +97,15 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     else:
         sources.append(proj_path / "../src/chip_top.sv")
         sources.append(proj_path / "../src/chip_core.sv")
-        sources.append(proj_path / "../src/wb_mux_2.v")
-        sources.append(proj_path / "../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.nl.v")
+        sources.append(proj_path / "../src/wb_mux_4.v")
+        sources.append(proj_path / "../src/wb_reg.v")
+        sources.append(proj_path / "../src/wb_switch.v")
+        sources.append(proj_path / "../src/wb_efuses.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_32x8/efuse_wb_mem_32x8.nl.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.nl.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.nl.v")
+        sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.nl.v")
+        # sources.append(proj_path / "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_wb_mem.v")
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 
@@ -117,7 +127,9 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         proj_path / "../ip/simple_por/verilog/simple_por.v",
 
         # eFuse array model
-        proj_path / "../ip/efuse_wb_mem_64x8/efuse_array.v",
+        proj_path / "../ip/efuse_wb_mem_1024x32/efuse_array_64x32.v",    # for 1024x32 & 64x32
+        proj_path / "../ip/efuse_wb_mem_128x8/efuse_array_64x8.v",
+        proj_path / "../ip/efuse_wb_mem_32x8/efuse_array_32x8.v",
         
         # Custom IP
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",

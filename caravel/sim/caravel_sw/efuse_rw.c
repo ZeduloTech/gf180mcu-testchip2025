@@ -7,16 +7,15 @@
 
 // User Wishbone address
 #define USER_WB_ADDR            0x30000000
-#define EFUSE0_ADDR             USER_WB_ADDR
-#define EFUSE1_ADDR             (USER_WB_ADDR + 0x100000)
+#define EFUSE_BLOCKS            4   // number of eFuse blocks on chip
 
-#define EFUSE_WDT               8   // efuse word size in bits
-#define EFUSE_SIZE              64  // efuse size in words
+const uint32_t efuse_addr[EFUSE_BLOCKS]     = {USER_WB_ADDR, USER_WB_ADDR+0x1000, USER_WB_ADDR+0x2000, USER_WB_ADDR+0x3000};  // efuse block addresses on WB
+const uint32_t efuse_nwords[EFUSE_BLOCKS]   = {1024, 128, 64, 32};  // efuse block sizes
+const uint32_t efuse_wdt[EFUSE_BLOCKS]      = {32, 8, 32, 8};       // efuse block widths
 
 // User wishbone access helpers
-#define efuse_addr(n) (n ? EFUSE1_ADDR : EFUSE0_ADDR)
-#define write_efuse(n, off, val) {(*(volatile uint32_t*)(efuse_addr(n) + (off))) = (val);}
-#define read_efuse(n, off) (*(volatile uint32_t*)(efuse_addr(n) + (off)))
+#define write_efuse(s, off, val) {(*(volatile uint32_t*)((s) + (off))) = (val);}
+#define read_efuse(s, off) (*(volatile uint32_t*)((s) + (off)))
 
 // --------------------------------------------------------
 // Signal test success or failure with IO
@@ -35,10 +34,25 @@ void success()
 }
 
 // --------------------------------------------------------
-// Main
+// Main & test
 // --------------------------------------------------------
 
-#define mem_word(n, i) ((i+n) & ((1<<EFUSE_WDT)-1))
+#define mem_word(s, i, m) ((((i + s)*0x3751E19B) ^ 0xAABBCCDD) & m) // trivial pseudo-random
+
+// Put test function to data section to speedup test (will be copied and executed from SRAM)
+void test_efuse(uint32_t start, uint32_t size, uint32_t mask) __attribute__((section(".data")));
+
+void test_efuse(uint32_t start, uint32_t size, uint32_t mask)
+{
+    // Write efuse
+    for (int i = 0; i < size; i++)
+        write_efuse(start, i*4, mem_word(start, i, mask));
+        
+    // Read efuse
+    for (int i = 0; i < size; i++)
+        if (read_efuse(start, i*4) != mem_word(start, i, mask))
+            fail();
+}
 
 void main()
 {
@@ -51,17 +65,8 @@ void main()
     reg_uart_enable = 1;
     reg_wb_enable = 1;
     
-    for (int n = 0; n < 2; n++)
-    {
-        // Write efuse
-        for (int i = 0; i < EFUSE_SIZE; i++)
-            write_efuse(n, i*4, mem_word(n, i));
-            
-        // Read efuse
-        for (int i = 0; i < EFUSE_SIZE; i++)
-            if (read_efuse(n, i*4) != mem_word(n, i))
-                fail();
-    }
+    for (int n = 0; n < EFUSE_BLOCKS; n++)
+        test_efuse(efuse_addr[n], efuse_nwords[n], (1ull<<efuse_wdt[n])-1);
         
     success();
 }

@@ -46,118 +46,43 @@ module chip_core #(
     wire [31:0] user_wb_dat_rd;
     wire user_wb_ack;
 
-    // Wishbone for first efuse block
-    wire ef0_wb_cyc;
-    wire ef0_wb_stb;
-    wire ef0_wb_we;
-    wire [3:0]  ef0_wb_sel;
-    wire [31:0] ef0_wb_adr;
-    wire [31:0] ef0_wb_dat_wr;
-    wire [31:0] ef0_wb_dat_rd;
-    wire ef0_wb_ack;
-
-    // Wishbone for second efuse block
-    wire ef1_wb_cyc;
-    wire ef1_wb_stb;
-    wire ef1_wb_we;
-    wire [3:0]  ef1_wb_sel;
-    wire [31:0] ef1_wb_adr;
-    wire [31:0] ef1_wb_dat_wr;
-    wire [31:0] ef1_wb_dat_rd;
-    wire ef1_wb_ack;
+    // Additional Caravel signals
+    wire npor;
     
     // Disable pull-up and pull-down for input
     assign input_pu = '0;
     assign input_pd = '0;
     
-    // set pad config for flash & GPIO
+    // Set pad config for flash & GPIO
     assign bidir_pu[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0010;
     assign bidir_pd[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
     assign bidir_sl[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
     assign bidir_cs[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
     
-    // set all other bidirs
+    // Set all other bidirs
     assign bidir_pu[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
     assign bidir_pd[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
     assign bidir_sl[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
     assign bidir_cs[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
+
+    assign npor = ~user_wb_rst; // TODO !!!
     
     // eFuse Wishbone memory
-    efuse_wb_mem_64x8 efuse_wb_64x8_0 (
-        .wb_clk_i(user_wb_clk),
-        .wb_rst_i(user_wb_rst),
-        .wb_stb_i(ef0_wb_stb),
-        .wb_cyc_i(ef0_wb_cyc),
-        .wb_adr_i(ef0_wb_adr[9:2]),
-        .wb_dat_i(ef0_wb_dat_wr[7:0]),
-        .wb_we_i (ef0_wb_we),
-        .wb_dat_o(ef0_wb_dat_rd[7:0]),
-        .wb_ack_o(ef0_wb_ack),
-        .write_disable_i(1'b0)
+    wb_efuses wb_efuses (
+        .wb_clk_i (user_wb_clk),
+        .wb_rst_i (user_wb_rst),
+
+        .wbm_adr_i(user_wb_adr),   
+        .wbm_dat_i(user_wb_dat_wr),   
+        .wbm_dat_o(user_wb_dat_rd),   
+        .wbm_we_i (user_wb_we),    
+        .wbm_sel_i(user_wb_sel),   
+        .wbm_stb_i(user_wb_stb),   
+        .wbm_ack_o(user_wb_ack),   
+        .wbm_cyc_i(user_wb_cyc),   
+        .npor_i(npor)       
     );
-    assign ef0_wb_dat_rd[31:8] = 24'b0;    
-    
-    efuse_wb_mem_64x8 efuse_wb_64x8_1 (
-        .wb_clk_i(user_wb_clk),
-        .wb_rst_i(user_wb_rst),
-        .wb_stb_i(ef1_wb_stb),
-        .wb_cyc_i(ef1_wb_cyc),
-        .wb_adr_i(ef1_wb_adr[9:2]),
-        .wb_dat_i(ef1_wb_dat_wr[7:0]),
-        .wb_we_i (ef1_wb_we),
-        .wb_dat_o(ef1_wb_dat_rd[7:0]),
-        .wb_ack_o(ef1_wb_ack),
-        .write_disable_i(1'b0)
-    );
-    assign ef1_wb_dat_rd[31:8] = 24'b0;
 
-    // Wishbone mux
-    wb_mux_2 wb_mux (
-        // General signals
-        .clk(user_wb_clk),
-        .rst(user_wb_rst),
-                
-        // Address config
-        .wbs0_addr(32'h30000000),     // Slave address prefix
-        .wbs0_addr_msk(32'hFFF00000), // Slave address prefix mask
-        .wbs1_addr(32'h30100000),     // Slave address prefix
-        .wbs1_addr_msk(32'hFFF00000), // Slave address prefix mask
-
-        // Master
-        .wbm_adr_i(user_wb_adr),     // ADR_I() address input
-        .wbm_dat_i(user_wb_dat_wr),     // DAT_I() data in
-        .wbm_dat_o(user_wb_dat_rd),     // DAT_O() data out
-        .wbm_we_i (user_wb_we),      // WE_I write enable input
-        .wbm_sel_i(user_wb_sel),     // SEL_I() select input
-        .wbm_stb_i(user_wb_stb),     // STB_I strobe input
-        .wbm_ack_o(user_wb_ack),     // ACK_O acknowledge output
-        .wbm_cyc_i(user_wb_cyc),     // CYC_I cycle input
-
-        // First slave
-        .wbs0_adr_o(ef0_wb_adr),    // ADR_O() address output
-        .wbs0_dat_i(ef0_wb_dat_rd),    // DAT_I() data in
-        .wbs0_dat_o(ef0_wb_dat_wr),    // DAT_O() data out
-        .wbs0_we_o (ef0_wb_we),     // WE_O write enable output
-        .wbs0_sel_o(ef0_wb_sel),    // SEL_O() select output
-        .wbs0_stb_o(ef0_wb_stb),    // STB_O strobe output
-        .wbs0_ack_i(ef0_wb_ack),    // ACK_I acknowledge input
-        .wbs0_err_i('0),    // ERR_I error input
-        .wbs0_rty_i('0),    // RTY_I retry input
-        .wbs0_cyc_o(ef0_wb_cyc),    // CYC_O cycle output
-
-        // Second slave
-        .wbs1_adr_o(ef1_wb_adr),    // ADR_O() address output
-        .wbs1_dat_i(ef1_wb_dat_rd),    // DAT_I() data in
-        .wbs1_dat_o(ef1_wb_dat_wr),    // DAT_O() data out
-        .wbs1_we_o (ef1_wb_we),     // WE_O write enable output
-        .wbs1_sel_o(ef1_wb_sel),    // SEL_O() select output
-        .wbs1_stb_o(ef1_wb_stb),    // STB_O strobe output
-        .wbs1_ack_i(ef1_wb_ack),    // ACK_I acknowledge input
-        .wbs1_err_i('0),    // ERR_I error input
-        .wbs1_rty_i('0),    // RTY_I retry input
-        .wbs1_cyc_o(ef1_wb_cyc)    // CYC_O cycle output
-    );
-    
     caravel_core caravel (
         `ifdef USE_POWER_PINS
         .VDD(VDD),		
