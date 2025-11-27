@@ -30,12 +30,12 @@ DESIGN_NAME: chip_top
 VERILOG_FILES:
 - dir::../src/chip_top.sv
 - dir::../src/chip_core.sv
-- dir::../src/wb_mux_2.v
+- dir::../src/wb_reg.v
+- dir::../src/wb_mux_4.v
+- dir::../src/wb_switch.v
+- dir::../src/wb_efuses.v
 
 VERILOG_INCLUDE_DIRS: [ dir::../caravel/verilog/ ]
-
-# Enable plugin for better SystemVerilog support
-# USE_SLANG: True
 
 # Slightly smaller file sizes
 PRIMARY_GDSII_STREAMOUT_TOOL: klayout
@@ -166,9 +166,9 @@ CLOCK_NET: i_chip_core.caravel/user_wb_clk_o
 
 CLOCK_PERIOD: 50 # 20 MHz
 
-# Fix hold violations
-PL_RESIZER_HOLD_SLACK_MARGIN: 0.2
-GRT_RESIZER_HOLD_SLACK_MARGIN: 0.1
+# Increase timing margins
+PL_RESIZER_HOLD_SLACK_MARGIN: 0.7
+PL_RESIZER_SETUP_SLACK_MARGIN: 0.2
 
 # Floorplanning
 FP_SIZING: absolute
@@ -176,9 +176,6 @@ FP_SIZING: absolute
 # for the sealring on all sides
 DIE_AREA: [0, 0, 3932, 5122]
 CORE_AREA: [442, 442, 3490, 4680]
-
-# Increase for more logic
-# on your die
 PL_TARGET_DENSITY_PCT: 35
 GRT_ALLOW_CONGESTION: true
 
@@ -194,10 +191,14 @@ PDN_CORE_HORIZONTAL_LAYER: Metal3
 PDN_HPITCH: 100
 PDN_VPITCH: 50
 
-PDN_MACRO_CONNECTIONS: ["i_chip_core.efuse_wb.* VDD VSS VDD VSS"]
-
 ERROR_ON_MAGIC_DRC: false # still fails on SRAM
-ERROR_ON_ILLEGAL_OVERLAPS: false
+
+# To disable ports buffering & wire repair with dly cells as they degrade timing
+PNR_EXCLUDED_CELL_FILE: dir::../caravel/librelane/pnr_exclude.cells
+
+# To fix antennas
+RUN_HEURISTIC_DIODE_INSERTION: True
+HEURISTIC_ANTENNA_THRESHOLD: 250
 
 # Prevent false positive DRC errors in I/O cells
 MAGIC_GDS_FLATGLOB:
@@ -273,24 +274,70 @@ MACROS:
       i_chip_core.caravel:
         location: [500, 500]
         orientation: N
-        
-  efuse_wb_mem_64x8:
+
+  efuse_wb_mem_1024x32:
     gds:
-      - dir::../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.gds
+      - dir::../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.gds
     lef:
-      - dir::../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.lef
+      - dir::../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.lef
     pnl:
-      - dir::../ip/efuse_wb_mem_64x8/efuse_wb_mem_64x8.pnl.v
+      - dir::../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.pnl.v
     lib:
-      "*tt*" : [ dir::../ip/efuse_wb_mem_64x8/min_tt_025C_5v00/efuse_wb_mem_64x8__min_tt_025C_5v00.lib ]
-      "*ss*" : [ dir::../ip/efuse_wb_mem_64x8/max_ss_125C_4v50/efuse_wb_mem_64x8__max_ss_125C_4v50.lib ]
-      "*ff*" : [ dir::../ip/efuse_wb_mem_64x8/max_ff_n40C_5v50/efuse_wb_mem_64x8__max_ff_n40C_5v50.lib ]
+      "*tt*" : [ dir::../ip/efuse_wb_mem_1024x32/min_tt_025C_5v00/efuse_wb_mem_1024x32__min_tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/efuse_wb_mem_1024x32/max_ss_125C_4v50/efuse_wb_mem_1024x32__max_ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/efuse_wb_mem_1024x32/max_ff_n40C_5v50/efuse_wb_mem_1024x32__max_ff_n40C_5v50.lib ]
     instances:
-      i_chip_core.efuse_wb_64x8_0:
-        location: [500, 1700]
+      i_chip_core.wb_efuses.efuse_wb_1024x32:
+        location: [500, 1600]
         orientation: S
-      i_chip_core.efuse_wb_64x8_1:
-        location: [1000, 1700]
+
+  efuse_wb_mem_64x32:
+    gds:
+      - dir::../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.gds
+    lef:
+      - dir::../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.lef
+    pnl:
+      - dir::../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.pnl.v
+    lib:
+      "*tt*" : [ dir::../ip/efuse_wb_mem_64x32/min_tt_025C_5v00/efuse_wb_mem_64x32__min_tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/efuse_wb_mem_64x32/max_ss_125C_4v50/efuse_wb_mem_64x32__max_ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/efuse_wb_mem_64x32/max_ff_n40C_5v50/efuse_wb_mem_64x32__max_ff_n40C_5v50.lib ]
+    instances:
+      i_chip_core.wb_efuses.efuse_wb_64x32:
+        location: [3120, 3050]
+        orientation: S
+
+  efuse_wb_mem_128x8:
+    gds:
+      - dir::../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.gds
+    lef:
+      - dir::../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.lef
+    pnl:
+      - dir::../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.pnl.v
+    lib:
+      "*tt*" : [ dir::../ip/efuse_wb_mem_128x8/min_tt_025C_5v00/efuse_wb_mem_128x8__min_tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/efuse_wb_mem_128x8/max_ss_125C_4v50/efuse_wb_mem_128x8__max_ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/efuse_wb_mem_128x8/max_ff_n40C_5v50/efuse_wb_mem_128x8__max_ff_n40C_5v50.lib ]
+    instances:
+      i_chip_core.wb_efuses.efuse_wb_128x8:
+        #location: [850, 3000]
+        location: [2600, 3020]
+        orientation: S
+
+  efuse_wb_mem_32x8:
+    gds:
+      - dir::../ip/efuse_wb_mem_32x8/efuse_wb_mem_32x8.gds
+    lef:
+      - dir::../ip/efuse_wb_mem_32x8/efuse_wb_mem_32x8.lef
+    pnl:
+      - dir::../ip/efuse_wb_mem_32x8/efuse_wb_mem_32x8.pnl.v
+    lib:
+      "*tt*" : [ dir::../ip/efuse_wb_mem_32x8/min_tt_025C_5v00/efuse_wb_mem_32x8__min_tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/efuse_wb_mem_32x8/max_ss_125C_4v50/efuse_wb_mem_32x8__max_ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/efuse_wb_mem_32x8/max_ff_n40C_5v50/efuse_wb_mem_32x8__max_ff_n40C_5v50.lib ]
+    instances:
+      i_chip_core.wb_efuses.efuse_wb_32x8:
+        location: [2860, 3400]
         orientation: S
         
   gf180mcu_ws_ip__logo:
