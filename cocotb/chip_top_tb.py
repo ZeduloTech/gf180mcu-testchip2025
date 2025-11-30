@@ -97,6 +97,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     else:
         sources.append(proj_path / "../src/chip_top.sv")
         sources.append(proj_path / "../src/chip_core.sv")
+        sources.append(proj_path / "../src/sramtest/sram_test.sv")
         sources.append(proj_path / "../src/wb_mux_4.v")
         sources.append(proj_path / "../src/wb_reg.v")
         sources.append(proj_path / "../src/wb_switch.v")
@@ -120,9 +121,15 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_io/verilog/gf180mcu_ws_io.v",
         
         # SRAM macros
+        Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram64x8m8wm1.v",
+        Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram128x8m8wm1.v",
+        Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram256x8m8wm1.v",
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
 
         # Caravel IP
+        proj_path / "../ip/sram/gf180_ram_64x8_wrapper.v",
+        proj_path / "../ip/sram/gf180_ram_128x8_wrapper.v",
+        proj_path / "../ip/sram/gf180_ram_256x8_wrapper.v",
         proj_path / "../ip/sram/gf180_ram_512x8_wrapper.v",
         proj_path / "../ip/simple_por/verilog/simple_por.v",
 

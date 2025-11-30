@@ -15,7 +15,7 @@ module sram_test (
     input  logic rst_n,     // reset (active low)
 
     input wire [1:0] bank_select,
-    output wire [7:0] sram_out
+    output reg [7:0] sram_out
 );
 
     reg [7:0] sram64_0_out;

@@ -170,7 +170,8 @@ CLOCK_PERIOD: 50 # 20 MHz
 
 # Increase timing margins
 PL_RESIZER_HOLD_SLACK_MARGIN: 0.7
-PL_RESIZER_SETUP_SLACK_MARGIN: 0.2
+PL_RESIZER_SETUP_SLACK_MARGIN: 0.4
+MAX_TRANSITION_CONSTRAINT: 1.0
 
 # Floorplanning
 FP_SIZING: absolute
@@ -199,8 +200,9 @@ ERROR_ON_MAGIC_DRC: false # still fails on SRAM
 PNR_EXCLUDED_CELL_FILE: dir::../caravel/librelane/pnr_exclude.cells
 
 # To fix antennas
+DESIGN_REPAIR_MAX_WIRE_LENGTH: 1000
 RUN_HEURISTIC_DIODE_INSERTION: True
-HEURISTIC_ANTENNA_THRESHOLD: 250
+HEURISTIC_ANTENNA_THRESHOLD: 300
 
 # Prevent false positive DRC errors in I/O cells
 MAGIC_GDS_FLATGLOB:
@@ -322,7 +324,6 @@ MACROS:
       "*ff*" : [ dir::../ip/efuse_wb_mem_128x8/max_ff_n40C_5v50/efuse_wb_mem_128x8__max_ff_n40C_5v50.lib ]
     instances:
       i_chip_core.wb_efuses.efuse_wb_128x8:
-        #location: [850, 3000]
         location: [2600, 3020]
         orientation: S
 
