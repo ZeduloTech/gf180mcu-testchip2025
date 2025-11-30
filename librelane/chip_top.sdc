@@ -16,6 +16,8 @@ set caravel_clk_src $cvl/$caravel_clk_start
 # or in the "flat" (inside OpenROAD with libs) mode.
 set hierarchical_sta [llength [get_pins $caravel_clk_src]]
 
+# create SRAM test clock
+create_clock i_chip_core.sramtest_clk_buf/Z -name sramtest_clk -period $::env(CLOCK_PERIOD)
 
 if {$hierarchical_sta} {
 ####################### HIER CONSTRAINTS ############################### 

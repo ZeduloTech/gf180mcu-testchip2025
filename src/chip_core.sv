@@ -46,6 +46,7 @@ module chip_core #(
     wire [31:0] user_wb_dat_wr;
     wire [31:0] user_wb_dat_rd;
     wire user_wb_ack;
+    wire sramtest_clk;
 
     // Additional Caravel signals
     wire npor;
@@ -139,8 +140,12 @@ module chip_core #(
     );
 
   //sram_test sram_test_0(.clk(clk), .rst_n(rst_n), .bank_select(input_in[1:0]), .sram_out(bidir_out[39:31]) );
+  (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_20 sramtest_clk_buf (
+        .I(clk),
+        .Z(sramtest_clk)
+  );
   uspi_sramtest sram_test_0(
-	.clk(clk),
+	.clk(sramtest_clk),
 	.rst_n(rst_n),
 	.spi_mosi(bidir_in[`PAD_SRAM_SPIMOSI]),
 	.wspi_clk(bidir_in[`PAD_SRAM_SPICLK]),
