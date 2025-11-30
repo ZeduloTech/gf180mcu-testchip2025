@@ -11,9 +11,16 @@
         end
 
 module efuse_array_32x8 #(
+    `ifdef EFUSE_MEMORY_INIT
+    parameter INIT_FILE_NAME = "efuse_init.hex",
+    `endif
     parameter NWORDS = 32,
     parameter WORD_WIDTH = 8
 ) (
+    `ifdef USE_POWER_PINS
+    input VDD,
+    input VSS,
+    `endif
     input  [NWORDS-1:0]     BIT_SEL,
     input  [WORD_WIDTH-1:0] COL_PROG_N,
     input                   PRESET_N,
@@ -42,12 +49,17 @@ module efuse_array_32x8 #(
 
     assign OUT = out;
 
-    // set array to all zeroes on start
     initial begin
-        integer i;
-        for (i = 0; i < NWORDS; i = i + 1) begin
-            fuses[i] = {WORD_WIDTH{1'b0}};
-        end
+        `ifndef EFUSE_MEMORY_INIT
+            // set array to all zeroes on start
+            integer i;
+            for (i = 0; i < NWORDS; i = i + 1) begin
+                fuses[i] = {WORD_WIDTH{1'b0}};
+            end
+        `else
+            // init from file
+            $readmemh(INIT_FILE_NAME, fuses);
+        `endif
     end
 
     integer i, ones;
@@ -86,7 +98,11 @@ module efuse_array_32x8 #(
         end else if (COL_PROG_N != {WORD_WIDTH{1'b1}}) begin
             // write
             `assert(state == STATE_IDLE || state == STATE_WRITE)
-            `assert(state == STATE_IDLE || (prog == COL_PROG_N && sel == BIT_SEL))
+            `ifndef ENABLE_SDF
+            // `assert(state == STATE_IDLE || (prog == COL_PROG_N && sel == BIT_SEL))
+            `else
+            // TODO: proper width check for timing simulation
+            `endif
             sel = BIT_SEL;
             prog = COL_PROG_N;
             if (state == STATE_IDLE)

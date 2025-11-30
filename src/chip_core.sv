@@ -60,12 +60,21 @@ module chip_core #(
     assign bidir_pd[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
     assign bidir_sl[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
     assign bidir_cs[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
+
+    // Set pad config for SRAM test
+    assign bidir_oe[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b010_0111;   // Output enable
+    assign bidir_ie[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b101_1000;   // Input enable
+    assign bidir_cs[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Input type (0=CMOS Buffer, 1=Schmitt Trigger)
+    assign bidir_sl[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Slew rate (0=fast, 1=slow)
+    assign bidir_pu[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Pull-up
+    assign bidir_pd[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Pull-down
+
     
     // Set all other bidirs
-    assign bidir_pu[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
-    assign bidir_pd[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
-    assign bidir_sl[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
-    assign bidir_cs[NUM_BIDIR_PADS-1:`PAD_CARAVEL_END+1] = '0;
+    assign bidir_pu[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    assign bidir_pd[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    assign bidir_sl[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    assign bidir_cs[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
 
     assign npor = ~user_wb_rst; // TODO !!!
     
@@ -139,7 +148,7 @@ module chip_core #(
         .user_gpio_oeb({`CARAVEL_IO_PADS{1'b1}})
     );
 
-  //sram_test sram_test_0(.clk(clk), .rst_n(rst_n), .bank_select(input_in[1:0]), .sram_out(bidir_out[39:31]) );
+  //SRAM test over SPI
   (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_20 sramtest_clk_buf (
         .I(clk),
         .Z(sramtest_clk)

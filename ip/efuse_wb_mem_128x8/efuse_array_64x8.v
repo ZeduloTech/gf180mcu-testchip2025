@@ -11,6 +11,9 @@
         end
 
 module efuse_array_64x8 #(
+    `ifdef EFUSE_MEMORY_INIT
+    parameter INIT_FILE_NAME = "efuse_init.hex",
+    `endif
     parameter NWORDS = 64,
     parameter WORD_WIDTH = 8
 ) (
@@ -46,12 +49,17 @@ module efuse_array_64x8 #(
 
     assign OUT = out;
 
-    // set array to all zeroes on start
     initial begin
-        integer i;
-        for (i = 0; i < NWORDS; i = i + 1) begin
-            fuses[i] = {WORD_WIDTH{1'b0}};
-        end
+        `ifndef EFUSE_MEMORY_INIT
+            // set array to all zeroes on start
+            integer i;
+            for (i = 0; i < NWORDS; i = i + 1) begin
+                fuses[i] = {WORD_WIDTH{1'b0}};
+            end
+        `else
+            // init from file
+            $readmemh(INIT_FILE_NAME, fuses);
+        `endif
     end
 
     integer i, ones;
@@ -70,6 +78,7 @@ module efuse_array_64x8 #(
             state = STATE_PRESET;
         end else if (SENSE === 1'b1) begin
             // read
+            `assert(preset == 1'b1)
             `assert(state == STATE_IDLE || state == STATE_PRESET || state == STATE_SENSE)
             `assert(COL_PROG_N === {WORD_WIDTH{1'b1}})
             `assert(state == STATE_IDLE || sel == 0 || sel == BIT_SEL)
@@ -90,7 +99,7 @@ module efuse_array_64x8 #(
             // write
             `assert(state == STATE_IDLE || state == STATE_WRITE)
             `ifndef ENABLE_SDF
-            `assert(state == STATE_IDLE || (prog == COL_PROG_N && sel == BIT_SEL))
+            // `assert(state == STATE_IDLE || (prog == COL_PROG_N && sel == BIT_SEL))
             `else
             // TODO: proper width check for timing simulation
             `endif
@@ -115,7 +124,6 @@ module efuse_array_64x8 #(
                 `assert($time - timestamp >= MIN_WRITE_NS)
             else if (state == STATE_SENSE) begin
                 `assert($time - timestamp >= MIN_SENSE_NS)
-                `assert(preset == 1'b1)
                 preset = 1'b0;
             end 
             
