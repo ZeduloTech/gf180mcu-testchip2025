@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 egorxe
 // SPDX-License-Identifier: Apache-2.0
 
+`timescale 1 ns / 1 ps
 `default_nettype none
 `include "pinout.vh"
 `include "defines.v" // from Caravel
@@ -137,7 +138,18 @@ module chip_core #(
         .user_gpio_oeb({`CARAVEL_IO_PADS{1'b1}})
     );
 
-  sram_test sram_test_0(.clk(clk), .rst_n(rst_n), .bank_select(input_in[1:0]), .sram_out(bidir_out[39:31]) );
+  //sram_test sram_test_0(.clk(clk), .rst_n(rst_n), .bank_select(input_in[1:0]), .sram_out(bidir_out[39:31]) );
+  uspi_sramtest sram_test_0(
+	.clk(clk),
+	.rst_n(rst_n),
+	.spi_mosi(bidir_in[`PAD_SRAM_SPIMOSI]),
+	.wspi_clk(bidir_in[`PAD_SRAM_SPICLK]),
+	.wspi_cs(bidir_in[`PAD_SRAM_SPICS]),
+	.wspi_miso(bidir_out[`PAD_SRAM_SPIMISO]),
+	.wled_status(bidir_out[`PAD_SRAM_LEDSTATUS]),
+	.wled_reset(bidir_out[`PAD_SRAM_LEDRESET]),
+	.wdebug(bidir_out[`PAD_SRAM_SPIDEBUG])
+	);
 
 endmodule
 
