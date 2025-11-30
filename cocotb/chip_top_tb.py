@@ -97,7 +97,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     else:
         sources.append(proj_path / "../src/chip_top.sv")
         sources.append(proj_path / "../src/chip_core.sv")
-        sources.append(proj_path / "../src/sramtest/sram_test.sv")
+        sources.append(proj_path / "../src/sramtest/uspi_sramtest.sv")
         sources.append(proj_path / "../src/wb_mux_4.v")
         sources.append(proj_path / "../src/wb_reg.v")
         sources.append(proj_path / "../src/wb_switch.v")
@@ -106,7 +106,6 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.nl.v")
-        # sources.append(proj_path / "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_wb_mem.v")
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 
