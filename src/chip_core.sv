@@ -46,14 +46,17 @@ module chip_core #(
     wire [31:0] user_wb_dat_wr;
     wire [31:0] user_wb_dat_rd;
     wire user_wb_ack;
-    wire sramtest_clk;
 
     // Additional Caravel signals
     wire npor;
+    wire caravel_start_mode;
     
-    // Disable pull-up and pull-down for input
+    // Set inputs to pull-down
     assign input_pu = '0;
-    assign input_pd = '0;
+    assign input_pd = '1;
+    
+    // SRAM test signals
+    wire sramtest_clk;
     
     // Set pad config for flash & GPIO
     assign bidir_pu[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0010;
@@ -76,8 +79,6 @@ module chip_core #(
     assign bidir_sl[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
     assign bidir_cs[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
 
-    assign npor = ~user_wb_rst; // TODO !!!
-    
     // eFuse Wishbone memory
     wb_efuses wb_efuses (
         .wb_clk_i (user_wb_clk),
@@ -145,25 +146,29 @@ module chip_core #(
         
         // User IO stub
         .user_gpio_out({`CARAVEL_IO_PADS{1'b0}}),
-        .user_gpio_oeb({`CARAVEL_IO_PADS{1'b1}})
+        .user_gpio_oeb({`CARAVEL_IO_PADS{1'b1}}),
+        
+        .npor(npor),
+        .start_mode(caravel_start_mode)
     );
+    assign caravel_start_mode = input_in[`START_MODE_IN_PAD];
 
-  //SRAM test over SPI
-  (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_20 sramtest_clk_buf (
+    //SRAM test over SPI
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_20 sramtest_clk_buf (
         .I(clk),
         .Z(sramtest_clk)
-  );
-  uspi_sramtest sram_test_0(
-	.clk(sramtest_clk),
-	.rst_n(rst_n),
-	.spi_mosi(bidir_in[`PAD_SRAM_SPIMOSI]),
-	.wspi_clk(bidir_in[`PAD_SRAM_SPICLK]),
-	.wspi_cs(bidir_in[`PAD_SRAM_SPICS]),
-	.wspi_miso(bidir_out[`PAD_SRAM_SPIMISO]),
-	.wled_status(bidir_out[`PAD_SRAM_LEDSTATUS]),
-	.wled_reset(bidir_out[`PAD_SRAM_LEDRESET]),
-	.wdebug(bidir_out[`PAD_SRAM_SPIDEBUG])
-	);
+    );
+    uspi_sramtest sram_test_0(
+        .clk(sramtest_clk),
+        .rst_n(rst_n),
+        .spi_mosi(bidir_in[`PAD_SRAM_SPIMOSI]),
+        .wspi_clk(bidir_in[`PAD_SRAM_SPICLK]),
+        .wspi_cs(bidir_in[`PAD_SRAM_SPICS]),
+        .wspi_miso(bidir_out[`PAD_SRAM_SPIMISO]),
+        .wled_status(bidir_out[`PAD_SRAM_LEDSTATUS]),
+        .wled_reset(bidir_out[`PAD_SRAM_LEDRESET]),
+        .wdebug(bidir_out[`PAD_SRAM_SPIDEBUG])
+    );
 
 endmodule
 

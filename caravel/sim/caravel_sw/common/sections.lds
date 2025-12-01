@@ -68,6 +68,11 @@ SECTIONS
 		_ebss = .;
 		_end = .;
 	} > sram
+    
+    .efuse :
+    {
+        *(.efuse)
+    } > mprj
 }
 
 PROVIDE(_fstack = ORIGIN(sram) + LENGTH(sram));

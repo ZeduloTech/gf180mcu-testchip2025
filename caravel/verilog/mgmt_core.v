@@ -79,7 +79,9 @@ module mgmt_core(
 	input wire por_l_in,
 	output wire por_l_out,
 	input wire porb_h_in,
-	output wire porb_h_out
+	output wire porb_h_out,
+    
+    input wire [31:0] cpu_reset_vector
 );
 
 wire core_rst;
@@ -147,7 +149,8 @@ wire mgmtsoc_vexriscv_debug_bus_we;
 wire [2:0] mgmtsoc_vexriscv_debug_bus_cti;
 wire [1:0] mgmtsoc_vexriscv_debug_bus_bte;
 reg mgmtsoc_vexriscv_debug_bus_err = 1'd0;
-reg [31:0] mgmtsoc_vexriscv = 32'd268435456;
+//reg [31:0] mgmtsoc_vexriscv = 32'd268435456;
+wire [31:0] mgmtsoc_vexriscv = cpu_reset_vector;
 reg [31:0] mgmtsoc_load_storage = 32'd0;
 reg mgmtsoc_load_re = 1'd0;
 reg [31:0] mgmtsoc_reload_storage = 32'd0;
@@ -670,7 +673,7 @@ reg debug_oeb_re = 1'd0;
 reg debug_mode_storage = 1'd0;
 reg debug_mode_re = 1'd0;
 wire uart_enabled_o;
-reg uart_enabled_storage = 1'd0;
+reg uart_enabled_storage = 1'd1;
 reg uart_enabled_re = 1'd0;
 reg gpio_mode1_storage = 1'd0;
 reg gpio_mode1_re = 1'd0;
@@ -7379,7 +7382,7 @@ always @(posedge sys_clk) begin
 		debug_oeb_re <= 1'd0;
 		debug_mode_storage <= 1'd0;
 		debug_mode_re <= 1'd0;
-		uart_enabled_storage <= 1'd0;
+		uart_enabled_storage <= 1'd1;
 		uart_enabled_re <= 1'd0;
 		gpio_mode1_storage <= 1'd0;
 		gpio_mode1_re <= 1'd0;

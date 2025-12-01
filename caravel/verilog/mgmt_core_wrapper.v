@@ -128,7 +128,9 @@ module mgmt_core_wrapper #(parameter LA_WIDTH = 64)(
     output [31:0]   sram_ro_data,
 */
     // Trap state from CPU
-    output          trap
+    output          trap,
+    
+    input           start_from_user
 );
 
     // Memory Interface 
@@ -145,6 +147,7 @@ module mgmt_core_wrapper #(parameter LA_WIDTH = 64)(
     wire no_connect2 ;
     wire [7:0] no_connect3 ;
 
+    wire [31:0] cpu_reset_vector;
 
     /* Implement the PicoSoC core */
 
@@ -229,25 +232,13 @@ module mgmt_core_wrapper #(parameter LA_WIDTH = 64)(
     	.spi_mosi(spi_sdo),
     	.debug_in(debug_in),
     	.debug_out(debug_out),
-    	.debug_oeb(debug_oeb)
-
+    	.debug_oeb(debug_oeb),
+        
+        .cpu_reset_vector(cpu_reset_vector)
     );
 
-/*
-    // DFFRAM
-    DFFRAM DFFRAM_0 (
-    `ifdef USE_POWER_PINS
-        .VDD(VDD),
-        .VSS(VSS),
-    `endif
-        .CLK(core_clk),
-        .WE(mgmt_soc_dff_WE),
-        .EN(mgmt_soc_dff_EN),
-        .Di(mgmt_soc_dff_Di),
-        .Do(mgmt_soc_dff_Do),
-        .A(mgmt_soc_dff_A)   // 8-bit address if using the default custom DFF RAM
-    );
-*/
+assign cpu_reset_vector = start_from_user ? 32'h30000000 : 32'h10000000;
+
 endmodule
 `default_nettype wire
 

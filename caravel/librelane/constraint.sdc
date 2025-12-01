@@ -92,6 +92,7 @@ set_max_fanout $::env(MAX_FANOUT_CONSTRAINT) [current_design]
 
 ## FALSE PATHS 
 set_false_path -from [get_ports {rstb}]
+set_false_path -from [get_ports {start_mode}]
 
 set_false_path -through [get_ports {user_gpio*}]
 set_false_path -through [get_ports user_clock2]

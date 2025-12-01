@@ -139,34 +139,34 @@
         .write_enable_i(npor_i)
     );
 
+    efuse_wb_mem_64x32 efuse_wb_64x32 (
+         .wb_clk_i(wb_clk_i),
+         .wb_rst_i(wb_rst_i),
+         .wb_stb_i(ef1_wb_stb),
+         .wb_cyc_i(ef1_wb_cyc),
+         .wb_adr_i(ef1_wb_adr[7:2]),
+         .wb_dat_i(ef1_wb_dat_wr),
+         .wb_we_i (ef1_wb_we),
+         .wb_sel_i(ef1_wb_sel),
+         .wb_dat_o(ef1_wb_dat_rd),
+         .wb_ack_o(ef1_wb_ack),
+         .write_enable_i(npor_i)
+    );
+
     efuse_wb_mem_128x8 efuse_wb_128x8 (
         .wb_clk_i(wb_clk_i),
         .wb_rst_i(wb_rst_i),
-        .wb_stb_i(ef1_wb_stb),
-        .wb_cyc_i(ef1_wb_cyc),
-        .wb_adr_i(ef1_wb_adr[8:2]),
-        .wb_dat_i(ef1_wb_dat_wr),
-        .wb_we_i (ef1_wb_we),
-        .wb_sel_i(ef1_wb_sel),
-        .wb_dat_o(ef1_wb_dat_rd),
-        .wb_ack_o(ef1_wb_ack),
+        .wb_stb_i(ef2_wb_stb),
+        .wb_cyc_i(ef2_wb_cyc),
+        .wb_adr_i(ef2_wb_adr[8:2]),
+        .wb_dat_i(ef2_wb_dat_wr),
+        .wb_we_i (ef2_wb_we),
+        .wb_sel_i(ef2_wb_sel),
+        .wb_dat_o(ef2_wb_dat_rd),
+        .wb_ack_o(ef2_wb_ack),
         .write_enable_i(npor_i)
     );
-    assign ef1_wb_dat_rd[31:8] = 24'b0;
-
-     efuse_wb_mem_64x32 efuse_wb_64x32 (
-         .wb_clk_i(wb_clk_i),
-         .wb_rst_i(wb_rst_i),
-         .wb_stb_i(ef2_wb_stb),
-         .wb_cyc_i(ef2_wb_cyc),
-         .wb_adr_i(ef2_wb_adr[7:2]),
-         .wb_dat_i(ef2_wb_dat_wr),
-         .wb_we_i (ef2_wb_we),
-         .wb_sel_i(ef2_wb_sel),
-         .wb_dat_o(ef2_wb_dat_rd),
-         .wb_ack_o(ef2_wb_ack),
-         .write_enable_i(npor_i)
-    );
+    assign ef2_wb_dat_rd[31:8] = 24'b0;
     
     efuse_wb_mem_32x8 efuse_wb_32x8 (
         .wb_clk_i(wb_clk_i),

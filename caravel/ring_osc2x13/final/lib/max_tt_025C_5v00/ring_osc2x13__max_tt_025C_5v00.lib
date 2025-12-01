@@ -1,0 +1,199 @@
+library (ring_osc2x13) {
+  comment                        : "";
+  delay_model                    : table_lookup;
+  simulation                     : false;
+  capacitive_load_unit (1,pF);
+  leakage_power_unit             : 1pW;
+  current_unit                   : "1mA";
+  pulling_resistance_unit        : "1ohm";
+  time_unit                      : "1ns";
+  voltage_unit                   : "1v";
+  library_features(report_delay_calculation);
+
+  input_threshold_pct_rise : 50;
+  input_threshold_pct_fall : 50;
+  output_threshold_pct_rise : 50;
+  output_threshold_pct_fall : 50;
+  slew_lower_threshold_pct_rise : 30;
+  slew_lower_threshold_pct_fall : 30;
+  slew_upper_threshold_pct_rise : 70;
+  slew_upper_threshold_pct_fall : 70;
+  slew_derate_from_library : 1.0;
+
+
+  nom_process                    : 1.0;
+  nom_temperature                : 25.0;
+  nom_voltage                    : 5.00;
+
+  lu_table_template(template_1) {
+    variable_1 : total_output_net_capacitance;
+    index_1("0.00100,  0.01366,  0.05809,  0.14290,  0.27510,  0.46060,  0.70460,  1.01200,  1.38700,  1.83500");
+  }
+  type ("clockp") {
+    base_type : array;
+    data_type : bit;
+    bit_width : 2;
+    bit_from : 1;
+    bit_to : 0;
+  }
+  type ("trim") {
+    base_type : array;
+    data_type : bit;
+    bit_width : 26;
+    bit_from : 25;
+    bit_to : 0;
+  }
+
+  cell ("ring_osc2x13") {
+    area : 9009.103 
+    is_macro_cell : true;
+    pin("reset") {
+      direction : input;
+      capacitance : 0.0355;
+    }
+    bus("clockp") {
+      bus_type : clockp;
+      direction : output;
+      capacitance : 0.0000;
+    pin("clockp[1]") {
+      direction : output;
+      capacitance : 0.0015;
+    }
+    pin("clockp[0]") {
+      direction : output;
+      capacitance : 0.0046;
+      timing() {
+        related_pin : "reset";
+        timing_sense : negative_unate;
+        timing_type : combinational;
+	cell_rise(template_1) {
+          index_1("0.00100,  0.01366,  0.05809,  0.14290,  0.27510,  0.46060,  0.70460,  1.01200,  1.38700,  1.83500");
+          values("3.50583,3.53269,3.60170,3.70482,3.85661,4.07107,4.35491,4.71305,5.14956,5.67339");
+	}
+	rise_transition(template_1) {
+          index_1("0.00100,  0.01366,  0.05809,  0.14290,  0.27510,  0.46060,  0.70460,  1.01200,  1.38700,  1.83500");
+          values("0.08451,0.11266,0.19167,0.33922,0.60304,0.98735,1.49448,2.13048,2.90500,3.83120");
+	}
+	cell_fall(template_1) {
+          index_1("0.00100,  0.01366,  0.05809,  0.14290,  0.27510,  0.46060,  0.70460,  1.01200,  1.38700,  1.83500");
+          values("4.67846,4.70578,4.77777,4.88615,5.04177,5.26150,5.55119,5.91735,6.36520,6.89635");
+	}
+	fall_transition(template_1) {
+          index_1("0.00100,  0.01366,  0.05809,  0.14290,  0.27510,  0.46060,  0.70460,  1.01200,  1.38700,  1.83500");
+          values("0.07723,0.10585,0.18529,0.32528,0.57704,0.94724,1.43239,2.04678,2.78630,3.68115");
+	}
+      }
+    }
+    }
+    bus("trim") {
+      bus_type : trim;
+      direction : input;
+      capacitance : 0.0000;
+    pin("trim[25]") {
+      direction : input;
+      capacitance : 0.0123;
+    }
+    pin("trim[24]") {
+      direction : input;
+      capacitance : 0.0083;
+    }
+    pin("trim[23]") {
+      direction : input;
+      capacitance : 0.0121;
+    }
+    pin("trim[22]") {
+      direction : input;
+      capacitance : 0.0055;
+    }
+    pin("trim[21]") {
+      direction : input;
+      capacitance : 0.0150;
+    }
+    pin("trim[20]") {
+      direction : input;
+      capacitance : 0.0115;
+    }
+    pin("trim[19]") {
+      direction : input;
+      capacitance : 0.0124;
+    }
+    pin("trim[18]") {
+      direction : input;
+      capacitance : 0.0174;
+    }
+    pin("trim[17]") {
+      direction : input;
+      capacitance : 0.0177;
+    }
+    pin("trim[16]") {
+      direction : input;
+      capacitance : 0.0275;
+    }
+    pin("trim[15]") {
+      direction : input;
+      capacitance : 0.0161;
+    }
+    pin("trim[14]") {
+      direction : input;
+      capacitance : 0.0183;
+    }
+    pin("trim[13]") {
+      direction : input;
+      capacitance : 0.0169;
+    }
+    pin("trim[12]") {
+      direction : input;
+      capacitance : 0.0120;
+    }
+    pin("trim[11]") {
+      direction : input;
+      capacitance : 0.0120;
+    }
+    pin("trim[10]") {
+      direction : input;
+      capacitance : 0.0097;
+    }
+    pin("trim[9]") {
+      direction : input;
+      capacitance : 0.0129;
+    }
+    pin("trim[8]") {
+      direction : input;
+      capacitance : 0.0185;
+    }
+    pin("trim[7]") {
+      direction : input;
+      capacitance : 0.0120;
+    }
+    pin("trim[6]") {
+      direction : input;
+      capacitance : 0.0237;
+    }
+    pin("trim[5]") {
+      direction : input;
+      capacitance : 0.0207;
+    }
+    pin("trim[4]") {
+      direction : input;
+      capacitance : 0.0164;
+    }
+    pin("trim[3]") {
+      direction : input;
+      capacitance : 0.0156;
+    }
+    pin("trim[2]") {
+      direction : input;
+      capacitance : 0.0130;
+    }
+    pin("trim[1]") {
+      direction : input;
+      capacitance : 0.0175;
+    }
+    pin("trim[0]") {
+      direction : input;
+      capacitance : 0.0108;
+    }
+    }
+  }
+
+}

@@ -12,6 +12,8 @@
 
 `define PAD_CARAVEL_END `PAD_FLASH_IO1
 
+`define START_MODE_IN_PAD 11
+
 
 //Unused pins, take pins from here and modify low/high
 //to ensure all unused pins are properly defined
@@ -21,7 +23,7 @@
 
 
 
-//SRAM test
+// SRAM test
 
 `define PAD_SRAM_LOW       33
 

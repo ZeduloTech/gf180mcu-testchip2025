@@ -10,6 +10,6 @@ def pytest_generate_tests(metafunc):
         tests = ["all"]
 
     if "all" in tests:
-        tests = ["efuse_rw", "hkspi", "mprj_bitbang", "uart", "pll"]
+        tests = ["efuse_rw", "hkspi", "mprj_bitbang", "uart", "pll", "self_suff"]
     
     metafunc.parametrize("test", tests)

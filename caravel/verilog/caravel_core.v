@@ -100,7 +100,13 @@ module caravel_core (
     
     // Additional user signals
     output user_clock2,
-    input  user_irq_core
+    input  user_irq_core,
+    
+    // Poweron reset (active-low)
+    output npor,
+    
+    // Start mode: 0 - normal mode, 1 - self sufficient mode, starts from user memory with DCO clock
+    input start_mode
 );
 
     //------------------------------------------------------------
@@ -242,6 +248,7 @@ module caravel_core (
 
     // Exported Wishbone Bus (processor facing)
     wire mprj_iena_wb;
+    wire mprj_wb_ena;
     wire mprj_cyc_o_core;
     wire mprj_stb_o_core;
     wire mprj_we_o_core;
@@ -383,7 +390,10 @@ module caravel_core (
         .la_iena(la_iena_mprj),
     
         // Trap status
-        .trap(trap)
+        .trap(trap),
+        
+        // Self-sufficient mode
+        .start_from_user(start_mode)
     );
 
     /* Clock and reset to user space are passed through a tristate    */
@@ -399,7 +409,7 @@ module caravel_core (
         .caravel_clk(caravel_clk),
         .caravel_clk2(caravel_clk2),
         .caravel_rstn(caravel_rstn),
-        .mprj_iena_wb(mprj_iena_wb),
+        .mprj_iena_wb(mprj_wb_ena),
         .mprj_cyc_o_core(mprj_cyc_o_core),
         .mprj_stb_o_core(mprj_stb_o_core),
         .mprj_we_o_core(mprj_we_o_core),
@@ -431,6 +441,7 @@ module caravel_core (
         .mprj_ack_i_user(mprj_ack_i_user),
         .user_irq(user_irq)
     );
+    assign mprj_wb_ena = mprj_iena_wb | start_mode;
 
     /*--------------------------------------------------*/
     /* user_project_wrapper was here                    */
@@ -520,14 +531,14 @@ module caravel_core (
     
     // Clocking control
     
-    wire ext_clk_sel, pll_clk, pll_clk90, ext_reset, async_rstn, spi_pll_ena, spi_pll_dco_ena;
+    wire ext_clk_sel, pll_clk, pll_clk90, ext_reset, async_rstn, spi_pll_ena, spi_pll_dco_ena, pll_ena, clk_select;
 
     caravel_clocking clock_ctrl (
     `ifdef USE_POWER_PINS
         .VDD(VDD),
         .VSS(VSS),
     `endif
-        .ext_clk_sel(ext_clk_sel),
+        .ext_clk_sel(clk_select),
         .ext_clk(clock_core_postbuf),
         .pll_clk(pll_clk),
         .pll_clk90(pll_clk90),
@@ -541,6 +552,7 @@ module caravel_core (
         .resetb_sync(caravel_rstn),
         .resetb_async(async_rstn)
     );
+    assign clk_select = ext_clk_sel & ~start_mode;
     
     // these buffers have to be x16 to reduce antenna
     (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 coreclkin_clkmovable_buf (
@@ -566,13 +578,15 @@ module caravel_core (
         .VSS(VSS),
     `endif
         .resetb(async_rstn),
-        .enable(spi_pll_ena),
+        .enable(pll_ena),
         .osc(clock_core_forpll),
         .clockp({pll_clk, pll_clk90}),
         .div(spi_pll_div),
         .dco(spi_pll_dco_ena),
         .ext_trim(spi_pll_trim)
     );
+    
+    assign pll_ena = start_mode | spi_pll_ena;
 
     // Housekeeping interface
 
@@ -1085,6 +1099,7 @@ module caravel_core (
         .porb(porb),
         .por(por)
     );
+    assign npor = porb;
 
 endmodule
 // `default_nettype wire

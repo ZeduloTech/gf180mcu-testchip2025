@@ -10,8 +10,8 @@
 #define EFUSE_BLOCKS            4   // number of eFuse blocks on chip
 
 const uint32_t efuse_addr[EFUSE_BLOCKS]     = {USER_WB_ADDR, USER_WB_ADDR+0x1000, USER_WB_ADDR+0x2000, USER_WB_ADDR+0x3000};  // efuse block addresses on WB
-const uint32_t efuse_nwords[EFUSE_BLOCKS]   = {1024, 128, 64, 32};  // efuse block sizes
-const uint32_t efuse_wdt[EFUSE_BLOCKS]      = {32, 8, 32, 8};       // efuse block widths
+const uint32_t efuse_nwords[EFUSE_BLOCKS]   = {1024, 64, 128, 32};  // efuse block sizes
+const uint32_t efuse_wdt[EFUSE_BLOCKS]      = {32, 32, 8, 8};       // efuse block widths
 
 // User wishbone access helpers
 #define write_efuse(s, off, val) {(*(volatile uint32_t*)((s) + (off))) = (val);}

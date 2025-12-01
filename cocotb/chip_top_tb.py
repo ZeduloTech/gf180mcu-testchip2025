@@ -6,6 +6,7 @@ import sys
 import random
 import logging
 from pathlib import Path
+import shutil
 
 import cocotb
 from cocotb.clock import Clock
@@ -42,6 +43,11 @@ async def test_caravel(dut):
 
     # Create a logger for this testbench
     logger = logging.getLogger("testbench")
+    
+    # Copy efuse hex
+    efuse = os.getenv("EFUSE_HEX")
+    if efuse:
+        shutil.copy(efuse, "efuse_init.hex")
 
     # Connect UART
     uart_sink = UartSink(dut.uart_tx, baud=19200, bits=8)
@@ -68,9 +74,10 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     defines = {}
     includes = []
 
+    hex_prefix = str(proj_path / "../caravel/sim/caravel_sw") + "/"
     defines.update({
         "SIM" : 1, 
-        "HEX_PREFIX" : str(proj_path / "../caravel/sim/caravel_sw") + "/",
+        "HEX_PREFIX" : hex_prefix,
         "FINAL_PREFIX" : str(proj_path / "../final") + "/",
         "CARAVEL_FINAL_PREFIX" : str(proj_path / "../caravel/final") + "/",
         "OSC_FINAL_PREFIX" : str(proj_path / "../caravel/ring_osc2x13/final") + "/"
@@ -160,9 +167,12 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     if test != "all":
         tests = [ test ]
     else:
-        tests = ["efuse_rw", "hkspi", "mprj_bitbang", "uart", "pll"]
+        tests = ["efuse_rw", "hkspi", "mprj_bitbang", "uart", "pll", "self_suff"]
         
     for caravel_test in tests:
+        
+        efuse_hex = ""
+        uart = ""
         
         # skip PLL test in GL without SDF (oscillator ring obviously hangs without delays)
         if (caravel_test == "pll") and (not sdf and gl):
@@ -172,6 +182,9 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
             else:
                 print("PLL test can't be run with gate level netlist without SDF", is_pytest)
                 continue
+        elif (caravel_test == "self_suff"):
+            defines.update({"EFUSE_MEMORY_INIT" : 1})
+            efuse_hex = hex_prefix + "self_suff_rom.ehex"
 
         top = f"{caravel_test}_tb"
 
@@ -195,7 +208,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
             test_module="chip_top_tb,",
             plusargs=plusargs,
             waves=True,
-            extra_env = {"EXPECT_UART" : uart}
+            extra_env = {"EXPECT_UART" : uart, "EFUSE_HEX" : efuse_hex}
         )
 
 if __name__ == "__main__":

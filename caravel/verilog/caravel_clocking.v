@@ -68,6 +68,7 @@ module caravel_clocking(
 	    use_pll_first <= 1'b0;
 	    use_pll_second <= 1'b0;
 	    ext_clk_syncd <= 1'b0;
+	    ext_clk_syncd_pre <= 1'b0;
 	end else begin
 	    use_pll_first <= pll_clk_sel;
 	    use_pll_second <= use_pll_first;
