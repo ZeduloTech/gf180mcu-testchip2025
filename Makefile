@@ -54,11 +54,11 @@ librelane-klayout: ## Open the last run in KLayout
 .PHONY: librelane-klayout
 
 sim: ## Run RTL simulation with cocotb
-	cd cocotb; PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -v chip_top_tb.py
+	cd cocotb; PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -nauto -v chip_top_tb.py
 .PHONY: sim
 
 sim-gl: ## Run gate-level simulation with cocotb (after copy-final)
-	cd cocotb; GL=1 PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -v chip_top_tb.py
+	cd cocotb; GL=1 PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -nauto -v chip_top_tb.py
 .PHONY: sim-gl
 
 copy-final: ## Copy final output files from the last run

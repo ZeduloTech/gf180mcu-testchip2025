@@ -80,6 +80,7 @@
           cocotb
           cocotbext-uart
           pytest
+          pytest-xdist
           
           # For KLayout Python DRC runner
           docopt

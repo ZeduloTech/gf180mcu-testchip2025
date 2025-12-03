@@ -2,15 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
-import sys
-import random
+import json
 import logging
 from pathlib import Path
 import shutil
 
 import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import Timer, Edge, RisingEdge, FallingEdge, ClockCycles
+from cocotb.triggers import Timer, RisingEdge
 from cocotbext.uart import UartSink
 from cocotb_tools.runner import get_runner
 
@@ -36,6 +34,42 @@ async def uart_monitor(uart_sink):
             # allow zero bytes at the beginning
             assert(not uart_recv)
 
+async def async_efuse_test(dut):
+    """Test write & read to async efuse"""
+    # !!! should be a separate test !!!
+    dut.uut.in_pads.value = 1
+    await Timer(1, "us")
+
+    while dut.uut.bidir_pads.value[24] != 1:
+        await dut.uut.bidir_pads.value_change
+    await Timer(1, "us")
+
+    in_val = in_val_orig = dut.uut.in_pads.get()
+    for i in range(8):
+        in_val[1+i] = i&1
+    dut.uut.in_pads.set(in_val)
+    await Timer(10, "us")
+    dut.uut.in_pads.set(in_val_orig)
+    await Timer(1, "us")
+
+    # reset & try to write during reset low
+    dut.uut.in_pads.value = 0
+    await Timer(1, "us")
+    in_val = in_val_orig = dut.uut.in_pads.get()
+    for i in range(8):
+        in_val[1+i] = 1
+    dut.uut.in_pads.set(in_val)
+    await Timer(1, "us")
+    dut.uut.in_pads.set(in_val_orig)
+    await Timer(1, "us")
+
+    # read & check value after ready
+    dut.uut.in_pads.value = 1
+    while dut.uut.bidir_pads.value[24] != 1:
+        await dut.uut.bidir_pads.value_change
+
+    for i in range(8):
+        assert(dut.uut.bidir_pads.value[25+i] == i&1)
 
 @cocotb.test(timeout_time=200, timeout_unit="ms")
 async def test_caravel(dut):
@@ -97,6 +131,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.pnl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.pnl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.pnl.v")
+        sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.pnl.v")
 
         defines.update({"USE_POWER_PINS": 1})
         if sdf:
@@ -113,6 +148,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.nl.v")
+        sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.nl.v")
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 
@@ -120,6 +156,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
 
     includes.append(proj_path / "../src")
     includes.append(proj_path / "../caravel/verilog/")
+    includes.append(proj_path / "../caravel/sim/common/")
 
     sources += [
         # IO pad models
@@ -143,6 +180,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         proj_path / "../ip/efuse_wb_mem_1024x32/efuse_array_64x32.v",    # for 1024x32 & 64x32
         proj_path / "../ip/efuse_wb_mem_128x8/efuse_array_64x8.v",
         proj_path / "../ip/efuse_wb_mem_32x8/efuse_array_32x8.v",
+        proj_path / "../ip/efuse_async_mem_1x8/efuse_async_array_1x8.v",
         
         # Custom IP
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",
@@ -167,7 +205,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     if test != "all":
         tests = [ test ]
     else:
-        tests = ["efuse_rw", "hkspi", "mprj_bitbang", "uart", "pll", "self_suff"]
+        tests = json.load(open("test_list.json"))
         
     for caravel_test in tests:
         
@@ -175,12 +213,13 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         uart = ""
         
         # skip PLL test in GL without SDF (oscillator ring obviously hangs without delays)
-        if (caravel_test == "pll") and (not sdf and gl):
+        if (caravel_test in ["pll", "self_suff"]) and (not sdf and gl):
+            msg = "PLL tests can't be run with gate level netlist without SDF"
             if is_pytest:
                 from pytest import skip
-                skip("PLL test can't be run with gate level netlist without SDF")
+                skip(msg)
             else:
-                print("PLL test can't be run with gate level netlist without SDF", is_pytest)
+                print(msg)
                 continue
         elif (caravel_test == "self_suff"):
             defines.update({"EFUSE_MEMORY_INIT" : 1})
@@ -198,6 +237,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
             always=True,
             includes=includes,
             build_args=build_args,
+            build_dir=f"sim_build/{caravel_test}" + ("_gl" if gl else ""),
             waves=True,
         )
 

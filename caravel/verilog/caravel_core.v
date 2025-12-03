@@ -102,7 +102,7 @@ module caravel_core (
     output user_clock2,
     input  user_irq_core,
     
-    // Poweron reset (active-low)
+    // Power-on reset (active-low)
     output npor,
     
     // Start mode: 0 - normal mode, 1 - self sufficient mode, starts from user memory with DCO clock

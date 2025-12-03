@@ -31,6 +31,7 @@ void pll_test_cycle()
 {
     reg_clk_out_dest = 0x6;
     reg_gpio_out = 1;
+    for (volatile int i = 0; i < 100; i++);
     reg_clk_out_dest = 0x0;
     reg_gpio_out = 0;
 } 
@@ -89,52 +90,52 @@ void main()
 
     // Test 1 (PLL disabled)
     pll_test_cycle();
-#if 1
-    // Set PLL enable, no DCO mode
+    
+    // Enable DCO mode with default dividers (2/2)
+    reg_hkspi_pll_ena = 0x3; 
+    reg_hkspi_pll_bypass = 0x0;
+    
+    // Test 2 (DCO, default trim - max, div=5/2)
+    pll_test_cycle();
+
+    // Reduce DCO trim to 0 (max freq), div=6/3
+    reg_hkspi_pll_source = 6 | (3<<3);
+    reg_hkspi_pll_trim = 0; 
+    
+    // Test 3 (DCO, trim=0, div=6/3)
+    pll_test_cycle();
+
+    // Set PLL enable, no DCO mode, PLL bypass
+    reg_hkspi_pll_bypass = 0x1;
     reg_hkspi_pll_ena = 0x1; 
 
-    // Set PLL feedback to 31 (max frequency) PLL output divider to 8
+    // Set PLL feedback to 31 (max frequency), div=7/1
     reg_hkspi_pll_source = 7;
     reg_hkspi_pll_divider = 31;
 
-    // Test 2 (PLL bypassed)
+    // Test 4 (PLL bypassed)
     pll_test_cycle();
 
     // Disable PLL bypass
     reg_hkspi_pll_bypass = 0x0;
 
-    // Test 3 (PLL max freq, fb=31, div=7/1)
+    // Test 5 (PLL max freq, fb=31, div=7/1)
     pll_test_cycle();
 
     // Set feedback to 1 (min freq), and both dividers to 2
     reg_hkspi_pll_divider = 1;
     reg_hkspi_pll_source = 2 | (2<<3);
     
-    // Test 4 (PLL min freq, fb=1, div=2/2)
+    // Test 6 (PLL min freq, fb=1, div=2/2)
     pll_test_cycle();
 
-    // Set feedback to 10 (50 MHz for 5MHz input) and both dividers to 4
+    // Set feedback to 8 (40 MHz for 5MHz input) and both dividers to 4
     reg_hkspi_pll_source = 4 | (4<<3);
-    reg_hkspi_pll_divider = 10;
+    reg_hkspi_pll_divider = 8;
     
-    // Test 4 (PLL 50Mhz, fb=10, div=4/4)
+    // Test 7 (PLL 40Mhz, fb=8, div=4/4)
     pll_test_cycle();
-#endif
-    // Set both dividers to 5/2 and enable DCO mode
-    reg_hkspi_pll_source = 5 | (2<<3);
-    reg_hkspi_pll_ena = 0x3; 
-    reg_hkspi_pll_bypass = 0x0;
     
-    // Test 5 (DCO, default trim - max, div=7/1)
-    pll_test_cycle();
-
-    // Reduce DCO trim to 0 (max freq)
-    reg_hkspi_pll_source = 6 | (3<<3);
-    reg_hkspi_pll_trim = 0; 
-    
-    // Test 6 (DCO, trim=0, div=7/1)
-    pll_test_cycle();
-
     // End test
     reg_gpio_out = 1;
 }

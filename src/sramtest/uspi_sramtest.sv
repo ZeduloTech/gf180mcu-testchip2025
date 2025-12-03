@@ -201,7 +201,7 @@ module uspi_sramtest (
 		
 		//reset sequence
 		if(rst_n == 0)begin //0 == reset
-			$display("Reset");
+			//$display("Reset");
 			//SPI regs
 			main_reg <= 8'h59;  //no need to clear other regs
 			led_reset <= 1'h1; //LED2 on

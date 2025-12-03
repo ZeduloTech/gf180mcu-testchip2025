@@ -51,7 +51,7 @@ module chip_core #(
     wire npor;
     wire caravel_start_mode;
     
-    // Set inputs to pull-down
+    // Set all inputs to pull-down
     assign input_pu = '0;
     assign input_pd = '1;
     
@@ -72,6 +72,13 @@ module chip_core #(
     assign bidir_pu[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Pull-up
     assign bidir_pd[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Pull-down
 
+    // Set pad config for async eFuse
+    assign bidir_oe[`PAD_AEF_OUT_HIGH:`PAD_AEF_READY] = 9'b11111_1111; // Output enable
+    assign bidir_ie[`PAD_AEF_OUT_HIGH:`PAD_AEF_READY] = 9'b00000_0000; // Input enable
+    assign bidir_cs[`PAD_AEF_OUT_HIGH:`PAD_AEF_READY] = 9'b00000_0000; // Input type (0=CMOS Buffer, 1=Schmitt Trigger)
+    assign bidir_sl[`PAD_AEF_OUT_HIGH:`PAD_AEF_READY] = 9'b00000_0000; // Slew rate (0=fast, 1=slow)
+    assign bidir_pu[`PAD_AEF_OUT_HIGH:`PAD_AEF_READY] = 9'b00000_0000; // Pull-up
+    assign bidir_pd[`PAD_AEF_OUT_HIGH:`PAD_AEF_READY] = 9'b00000_0000; // Pull-down
     
     // Set all other bidirs
     assign bidir_pu[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
@@ -93,6 +100,14 @@ module chip_core #(
         .wbm_ack_o(user_wb_ack),   
         .wbm_cyc_i(user_wb_cyc),   
         .npor_i(npor)       
+    );
+
+    // eFuse async memory
+    efuse_async_mem_1x8 efuse_async (
+        .reset_n(input_in[`PADI_AEF_RESET]),
+        .ready(bidir_out[`PAD_AEF_READY]),
+        .prog(input_in[`PADI_AEF_PROG_HIGH:`PADI_AEF_PROG_LOW]),
+        .out(bidir_out[`PAD_AEF_OUT_HIGH:`PAD_AEF_OUT_LOW])
     );
 
     caravel_core caravel (
@@ -151,7 +166,7 @@ module chip_core #(
         .npor(npor),
         .start_mode(caravel_start_mode)
     );
-    assign caravel_start_mode = input_in[`START_MODE_IN_PAD];
+    assign caravel_start_mode = input_in[`PADI_START_MODE];
 
     //SRAM test over SPI
     (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_20 sramtest_clk_buf (

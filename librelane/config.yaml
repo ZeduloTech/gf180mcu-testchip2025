@@ -345,6 +345,22 @@ MACROS:
         location: [2860, 3400]
         orientation: S
 
+  efuse_async_mem_1x8:
+    gds:
+      - dir::../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.gds
+    lef:
+      - dir::../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.lef
+    pnl:
+      - dir::../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.pnl.v
+    lib:
+      "*tt*" : [ dir::../ip/efuse_async_mem_1x8/min_tt_025C_5v00/efuse_async_mem_1x8__min_tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/efuse_async_mem_1x8/max_ss_125C_4v50/efuse_async_mem_1x8__max_ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/efuse_async_mem_1x8/max_ff_n40C_5v50/efuse_async_mem_1x8__max_ff_n40C_5v50.lib ]
+    instances:
+      i_chip_core.efuse_async:
+        location: [1000, 3015]
+        orientation: N
+
 #495	0	4150
 #350	145	4295
 #280	215	4365

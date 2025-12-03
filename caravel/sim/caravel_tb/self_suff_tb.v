@@ -26,42 +26,25 @@ module self_suff_tb;
 	assign uart_tx = mprj_io[6];
 	assign mprj_io[5] = uart_rx;
 
-	//always #25 clock <= (clock === 1'b0);
-
 	initial begin
 		clock = 1'b0;
         uut.self_sufficient = 1'b1; // enable self-sufficient mode
 	end
 	
 	`ifdef ENABLE_SDF
-    initial begin
-        $sdf_annotate({`FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/chip_top__nom_tt_025C_5v00.sdf"}, uut.chip );
-        $sdf_annotate({`CARAVEL_FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/caravel_core__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.caravel );
-        $sdf_annotate({`OSC_FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/ring_osc2x13__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.caravel .\pll.ringosc );
-        $sdf_annotate({`FINAL_PREFIX, "../ip/efuse_wb_mem_1024x32/nom_tt_025C_5v00/efuse_wb_mem_1024x32__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.wb_efuses.efuse_wb_1024x32 );
-        $sdf_annotate({`FINAL_PREFIX, "../ip/efuse_wb_mem_128x8/nom_tt_025C_5v00/efuse_wb_mem_128x8__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.wb_efuses.efuse_wb_128x8 );
-        $sdf_annotate({`FINAL_PREFIX, "../ip/efuse_wb_mem_64x32/nom_tt_025C_5v00/efuse_wb_mem_64x32__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.wb_efuses.efuse_wb_64x32 );
-        $sdf_annotate({`FINAL_PREFIX, "../ip/efuse_wb_mem_32x8/nom_tt_025C_5v00/efuse_wb_mem_32x8__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.wb_efuses.efuse_wb_32x8 );
-    end
-	`endif 
+    `include "sdf.vh"
+	`endif
 
 	initial begin
 		$display("Wait for self sufficient test to complete");
         wait(gpio == 1'b1);
         $display("Monitor: Test self sufficient Passed");
         test_success <= 1'b1;
-        #100;
+        #1000000;
 		$finish;
 	end
     
     // no reset, no flash, no clock
-
-	//initial begin
-		//RSTB <= 1'b0;
-		//#1000;
-		//RSTB <= 1'b1;	    // Release reset
-		//#2000;
-	//end
     assign RSTB = 1'b1;
 
 	initial begin		// Power-up sequence
@@ -93,17 +76,6 @@ module self_suff_tb;
 		.flash_io1(flash_io1),
 		.resetb	  (RSTB)
 	);
-
-	//spiflash #(
-		//.FILENAME({`HEX_PREFIX, "efuse_rw.hex"})
-	//) spiflash (
-		//.csb(flash_csb),
-		//.clk(flash_clk),
-		//.io0(flash_io0),
-		//.io1(flash_io1),
-		//.io2(),			// not used
-		//.io3()			// not used
-	//);
 
 endmodule
 `default_nettype wire

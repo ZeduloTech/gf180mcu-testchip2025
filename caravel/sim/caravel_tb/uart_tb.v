@@ -56,17 +56,10 @@ module uart_tb;
 	end
 	
 	`ifdef ENABLE_SDF
-    initial begin
-        $sdf_annotate({`FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/chip_top__nom_tt_025C_5v00.sdf"}, uut.chip );
-        $sdf_annotate({`CARAVEL_FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/caravel_core__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.caravel );
-        $sdf_annotate({`OSC_FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/ring_osc2x13__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.caravel .\pll.ringosc  );
-    end
-	`endif 
+    `include "sdf.vh"
+	`endif
 
 	initial begin
-		//$dumpfile("uart.fst");
-		//$dumpvars(0, uart_tb);
-
 		$display("UART Test started");
         
 		repeat (450) begin
@@ -142,10 +135,6 @@ module uart_tb;
 		.io3()			// not used
 	);
 
-	// Testbench UART
-	//tbuart tbuart (
-		//.ser_rx(uart_tx)
-	//);
 		
 endmodule
 `default_nettype wire

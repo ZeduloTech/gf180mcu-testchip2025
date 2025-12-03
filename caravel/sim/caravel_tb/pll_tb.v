@@ -66,20 +66,11 @@ module pll_tb;
     end
     
     `ifdef ENABLE_SDF
-    initial begin
-        $sdf_annotate({`FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/chip_top__nom_tt_025C_5v00.sdf"}, uut.chip );
-        $sdf_annotate({`CARAVEL_FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/caravel_core__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.caravel );
-        $sdf_annotate({`OSC_FINAL_PREFIX, "/sdf/nom_tt_025C_5v00/ring_osc2x13__nom_tt_025C_5v00.sdf"}, uut.chip.\i_chip_core.caravel .\pll.ringosc  );
-    end
-    `endif 
+    `include "sdf.vh"
+	`endif
 
     initial begin
-        //$dumpfile("pll.vcd");
-        //$dumpvars(0, pll_tb);
-        repeat (50) begin
-            repeat (1000) @(posedge clock);
-            //$display("+1000 cycles");
-        end
+        #20000000;
         $display("%c[1;31m",27);
         $display ("Monitor: Timeout, PLL test Failed");
         $display("%c[0m",27);
@@ -122,12 +113,12 @@ module pll_tb;
     initial begin
 
         pll_test_cycle("PLL disabled", 100, 1, 1, EXT_FREQ*0.99, EXT_FREQ*1.01);
+        pll_test_cycle("DCO default", 10, 2, 2, 10, 100);
+        pll_test_cycle("DCO max", 10, 6, 3, 30, 200);
         pll_test_cycle("PLL bypass", 100, 1, 1, EXT_FREQ*0.99, EXT_FREQ*1.01);
-        pll_test_cycle("PLL max frequency", 10, 7, 1, 20, 200);
+        pll_test_cycle("PLL max frequency", 10, 7, 1, 30, 200);
         pll_test_cycle("PLL min frequency", 50, 2, 2, 10, 100);
-        pll_test_cycle("PLL 50MHz frequency", 20, 4, 4, 45, 55);
-        pll_test_cycle("DCO default", 10, 5, 2, 20, 100);
-        pll_test_cycle("DCO max", 10, 6, 3, 50, 200);
+        pll_test_cycle("PLL 40MHz frequency", 20, 4, 4, 36, 44);
 
         $display("Monitor: Test PLL (RTL) Passed");
         test_success <= 1'b1;
