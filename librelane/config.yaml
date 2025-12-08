@@ -4,8 +4,8 @@ meta:
   substituting_steps:
   
     # Disable KLayout antenna check
-    KLayout.Antenna: null
-    Checker.KLayoutAntenna: null
+    #KLayout.Antenna: null
+    #Checker.KLayoutAntenna: null
 
     # Disable KLayout density check
     #KLayout.Density: null
@@ -195,15 +195,15 @@ PDN_CORE_HORIZONTAL_LAYER: Metal3
 PDN_HPITCH: 100
 PDN_VPITCH: 50
 
-ERROR_ON_MAGIC_DRC: false # still fails on SRAM
-
 # To disable ports buffering & wire repair with dly cells as they degrade timing
 PNR_EXCLUDED_CELL_FILE: dir::../caravel/librelane/pnr_exclude.cells
 
 # To fix antennas
 DESIGN_REPAIR_MAX_WIRE_LENGTH: 1000
-RUN_HEURISTIC_DIODE_INSERTION: True
-HEURISTIC_ANTENNA_THRESHOLD: 300
+DIODE_ON_PORTS: both
+GRT_ANTENNA_MARGIN: 20
+GRT_ANTENNA_ITERS: 10
+DRT_ANTENNA_REPAIR_ITERS: 10
 
 # Prevent false positive DRC errors in I/O cells
 MAGIC_GDS_FLATGLOB:

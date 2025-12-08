@@ -168,17 +168,19 @@ DESIGN_REPAIR_MAX_SLEW_PCT: 25
 ############################### Routing ################################
 
 # following is required to fix antennas
-RUN_HEURISTIC_DIODE_INSERTION: True  
-HEURISTIC_ANTENNA_THRESHOLD: 250
-DIODE_ON_PORTS: in
+DIODE_ON_PORTS: both
+GRT_ANTENNA_MARGIN: 20
 GRT_ANTENNA_ITERS: 10
+DRT_ANTENNA_REPAIR_ITERS: 10
 
 # To disable ports buffering & wire repair with dly cells as they degrade timing
 PNR_EXCLUDED_CELL_FILE: dir::pnr_exclude.cells
 
 ############################### DRC/LVS ################################
 
-ERROR_ON_MAGIC_DRC: False
+KLAYOUT_ANTENNA_OPTIONS: 
+  run_mode: "deep"
+  skip_via_antenna: "true"
 
 # Prevent false positive DRC errors in I/O cells
 MAGIC_GDS_FLATGLOB:
