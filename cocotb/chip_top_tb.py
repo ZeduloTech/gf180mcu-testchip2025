@@ -121,8 +121,6 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / "primitives.v")
 
     if gl:
-        # SCL models
-
         # Use the powered netlist
         sources.append(proj_path / "../caravel/ring_osc2x13/final/pnl/ring_osc2x13.pnl.v")
         sources.append(proj_path / "../caravel/final/pnl/caravel_core.pnl.v")
@@ -152,7 +150,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 
-        defines.update({"FUNCTIONAL": 1})
+        defines.update({"SLOT_1X1" : 1, "FUNCTIONAL": 1})
 
     includes.append(proj_path / "../src")
     includes.append(proj_path / "../caravel/verilog/")

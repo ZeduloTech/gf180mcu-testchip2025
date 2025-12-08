@@ -3,15 +3,17 @@
 
 `default_nettype none
 
+`include "slot_defines.svh"
+
 module chip_top #(
     // Power/ground pads for core and I/O
-    parameter NUM_DVDD_PADS = 8,
-    parameter NUM_DVSS_PADS = 10,
+    parameter NUM_DVDD_PADS = `NUM_DVDD_PADS,
+    parameter NUM_DVSS_PADS = `NUM_DVSS_PADS,
 
     // Signal pads
-    parameter NUM_INPUT_PADS = 12,
-    parameter NUM_BIDIR_PADS = 40,
-    parameter NUM_ANALOG_PADS = 2
+    parameter NUM_INPUT_PADS = `NUM_INPUT_PADS,
+    parameter NUM_BIDIR_PADS = `NUM_BIDIR_PADS,
+    parameter NUM_ANALOG_PADS = `NUM_ANALOG_PADS
     )(
     `ifdef USE_POWER_PINS
     inout  wire VDD,
@@ -20,11 +22,13 @@ module chip_top #(
 
     inout  wire clk_PAD,
     inout  wire rst_n_PAD,
+
+    `ifndef NO_ANALOG_PADS    
+    inout  wire [NUM_ANALOG_PADS-1:0] analog_PAD,
+    `endif
     
     inout  wire [NUM_INPUT_PADS-1:0] input_PAD,
-    inout  wire [NUM_BIDIR_PADS-1:0] bidir_PAD,
-    
-    inout  wire [NUM_ANALOG_PADS-1:0] analog_PAD
+    inout  wire [NUM_BIDIR_PADS-1:0] bidir_PAD
 );
 
     wire clk_PAD2CORE;
@@ -148,6 +152,7 @@ module chip_top #(
     end
     endgenerate
 
+    `ifndef NO_ANALOG_PADS
     generate
     for (genvar i=0; i<NUM_ANALOG_PADS; i++) begin : analog
         (* keep *)
@@ -162,6 +167,7 @@ module chip_top #(
         );
     end
     endgenerate
+    `endif
 
     // Core design
 
@@ -182,6 +188,10 @@ module chip_top #(
         .input_pu   (input_CORE2PAD_PU),
         .input_pd   (input_CORE2PAD_PD),
 
+        `ifndef NO_ANALOG_PADS
+        .analog     (analog_PAD),
+        `endif
+
         .bidir_in   (bidir_PAD2CORE),
         .bidir_out  (bidir_CORE2PAD),
         .bidir_oe   (bidir_CORE2PAD_OE),
@@ -189,9 +199,7 @@ module chip_top #(
         .bidir_sl   (bidir_CORE2PAD_SL),
         .bidir_ie   (bidir_CORE2PAD_IE),
         .bidir_pu   (bidir_CORE2PAD_PU),
-        .bidir_pd   (bidir_CORE2PAD_PD),
-        
-        .analog     (analog_PAD)
+        .bidir_pd   (bidir_CORE2PAD_PD)
     );
     
     // Chip ID - do not remove, necessary for tapeout
