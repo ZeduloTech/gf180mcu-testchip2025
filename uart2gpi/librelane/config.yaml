@@ -1,0 +1,137 @@
+############################## General #################################
+
+meta:
+  version: 2
+  flow: Classic
+  substituting_steps:
+    Checker.YosysSynthChecks: null  # Fails due to multisources in OpenTitan IPs
+
+DESIGN_NAME: uart2gpi
+VERILOG_FILES:
+- dir::../src/uart2gpi.sv
+# UART IP
+- dir::../src/otUART.03/uart_reg_pkg.sv
+- dir::../src/otUART.03/uart_reg_top.sv
+- dir::../src/otUART.03/uart_core.sv
+- dir::../src/otUART.03/uart_tx.sv
+- dir::../src/otUART.03/uart_rx.sv
+- dir::../src/otUART.03/prim_util_pkg.sv
+- dir::../src/otUART.03/prim_count_pkg.sv
+- dir::../src/otUART.03/prim_fifo_sync_cnt.sv
+- dir::../src/otUART.03/prim_fifo_sync.sv
+- dir::../src/otUART.03/prim_flop_2sync.sv
+- dir::../src/otUART.03/prim_count.sv
+- dir::../src/otUART.03/prim_flop.sv
+# GPIO IP
+- dir::../src/otGPIO.04/gpio_reg_pkg.sv
+- dir::../src/otGPIO.04/gpio.sv
+- dir::../src/otGPIO.04/gpio_reg_lite.sv
+# I2C IP
+- dir::../src/otI2C.05/i2c_reg_pkg.sv
+- dir::../src/otI2C.05/i2c_reg_top.sv
+- dir::../src/otI2C.05/i2c_core.sv
+- dir::../src/otI2C.05/i2c_fifo_sync_sram_adapter.sv
+- dir::../src/otI2C.05/i2c_controller_fsm.sv
+- dir::../src/otI2C.05/i2c_fifos.sv
+# PWM IP
+- dir::../src/otPWM.04/pwm_reg_pkg.sv
+- dir::../src/otPWM.04/pwm_reg_lite.sv
+- dir::../src/otPWM.04/pwm_core.sv
+- dir::../src/otPWM.04/pwm_chan.sv
+
+# Slightly smaller file sizes
+PRIMARY_GDSII_STREAMOUT_TOOL: klayout
+
+# USE_SLANG enabled
+USE_SLANG: True 
+
+# SDC files
+#PNR_SDC_FILE: dir::constraint.sdc
+#SIGNOFF_SDC_FILE: dir::constraint.sdc
+#FALLBACK_SDC: dir::constraint.sdc
+
+# Power / ground nets
+VDD_NETS:
+- VDD
+GND_NETS:
+- VSS
+
+# Clock
+CLOCK_PORT: clk
+CLOCK_PERIOD: 50  # 20 MHz
+
+############################ Floorplanning ############################# 
+
+FP_SIZING: absolute
+DIE_AREA: [0, 0, 750, 750]
+CORE_AREA: [50, 50, 700, 700]
+
+############################### Placement ############################## 
+
+PL_TARGET_DENSITY_PCT: 55
+PL_KEEP_RESIZE_BELOW_OVERFLOW: 0
+PL_RESIZER_HOLD_SLACK_MARGIN: 0.7
+PL_RESIZER_SETUP_SLACK_MARGIN: 0.2
+
+# Wire length control - critical for antenna prevention
+DESIGN_REPAIR_MAX_WIRE_LENGTH: 500
+DESIGN_REPAIR_MAX_SLEW_PCT: 25
+
+RUN_POST_CTS_RESIZER_TIMING: False
+DESIGN_REPAIR_BUFFER_INPUT_PORTS: False
+DESIGN_REPAIR_BUFFER_OUTPUT_PORTS: False
+
+############################### Routing ################################
+
+RUN_HEURISTIC_DIODE_INSERTION: True
+HEURISTIC_ANTENNA_THRESHOLD: 90
+GRT_ANTENNA_ITERS: 25
+DIODE_ON_PORTS: in
+RUN_ANTENNA_REPAIR: True
+
+# Routing adjustments to reduce congestion and long wires
+GRT_ALLOW_CONGESTION: True
+GRT_ADJUSTMENT: 0.25
+
+############################### DRC/LVS ################################
+
+ERROR_ON_MAGIC_DRC: False
+
+# Prevent false positive DRC errors
+MAGIC_GDS_FLATGLOB:
+# For contacts
+- "*_CDNS_*"
+# COMP and Poly2 filler cells need to be 
+# flattened to form a "filltrans" layer
+- "COMP_fill_cell"
+- "Poly2_fill_cell"
+# Foundry provided SRAMs
+- "*$$*"
+- "M1_N*"
+- "M1_P*"
+- "M2_M1*"
+- "M3_M2*"
+- "nmos_5p0*"
+- "nmos_1p2*"
+- "pmos_5p0*"
+- "pmos_1p2*"
+- "via1_*"
+- "ypass_gate*"
+- "G_ring_*"
+# These additional cells must be flattened to get rid of 3.3V devices
+# (DUALGATE drawn into high-level cells)
+- "dcap_103*"
+- "din_*"
+- "mux821_*"
+- "rdummy_*"
+- "pmoscap_*"
+- "xdec_*"
+- "ypredec*"
+- "xpredec*"
+- "xdec8_*"
+- "prexdec_*"
+- "xdec32_*"
+- "sa_*"
+
+# Because we have multiple power pads for one power domain
+MAGIC_EXT_UNIQUE: notopports
