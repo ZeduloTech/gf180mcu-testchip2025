@@ -85,6 +85,8 @@ module chip_core #(
     assign bidir_pd[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
     assign bidir_sl[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
     assign bidir_cs[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    assign bidir_ie[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    assign bidir_oe[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
 
     // eFuse Wishbone memory
     wb_efuses wb_efuses (
@@ -110,6 +112,7 @@ module chip_core #(
         .out(bidir_out[`PAD_AEF_OUT_HIGH:`PAD_AEF_OUT_LOW])
     );
 
+    // Caravel core
     caravel_core caravel (
         `ifdef USE_POWER_PINS
         .VDD(VDD),		
@@ -168,7 +171,7 @@ module chip_core #(
     );
     assign caravel_start_mode = input_in[`PADI_START_MODE];
 
-    //SRAM test over SPI
+    // SRAM test over SPI
     (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_20 sramtest_clk_buf (
         .I(clk),
         .Z(sramtest_clk)

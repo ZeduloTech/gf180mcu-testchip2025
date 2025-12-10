@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 # SPDX-FileCopyrightText: © 2025 Project Template Contributors
 # SPDX-License-Identifier: Apache-2.0
 
@@ -8,8 +9,10 @@ from pathlib import Path
 import shutil
 
 import cocotb
+from cocotb.clock import Clock
 from cocotb.triggers import Timer, RisingEdge
 from cocotbext.uart import UartSink
+from cocotbext.spi import SpiBus, SpiConfig, SpiMaster
 from cocotb_tools.runner import get_runner
 
 sim = os.getenv("SIM", "icarus")
@@ -21,6 +24,107 @@ sdf = os.getenv("SDF", False)
 test_env = os.getenv("TEST", "all")
 add_build_args = os.getenv("ADD_BUILD_ARGS", "").split()
 add_plus_args = os.getenv("ADD_PLUS_ARGS", "").split()
+
+# SPI test class
+# class SPITest
+
+@cocotb.test(timeout_time=300, timeout_unit="us")
+async def spi_sram_test(dut):
+    """Test SRAMs available via SPI"""
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    logger.info("Starting SRAM SPI test")
+
+    # Clock & reset
+    cocotb.start_soon(Clock(dut.clock, 100, "ns").start())
+    dut.resetb.value = 0
+    await Timer(1, "us")
+    dut.resetb.value = 1
+    await Timer(1, "us")
+    logger.info("Reset deasserted")
+
+    spi_bus = SpiBus.from_prefix(dut, "sramtest", cs_name="cs")
+
+    spi_config = SpiConfig(
+        word_width = 8,         # number of bits in a SPI transaction
+        sclk_freq  = 1e6,       # clock rate in Hz
+        cpol       = True,      # clock idle polarity
+        cpha       = True,      # clock phase (CPHA=True means data sampled on second edge)
+        msb_first  = True,      # the order that bits are clocked onto the wire
+        data_output_idle = 1,   # the idle value of the MOSI or MISO line
+        ignore_rx_value = None, # MISO value that should be ignored when received
+        cs_active_low = True    # the chip select is active low
+    )
+
+    spi_master = SpiMaster(spi_bus, spi_config)
+
+    # Write test sequence to SPI:
+    # Write single byte to all SRAMs and read single byte from SRAM_64)
+    logger.info("Shifting test sequence to SPI...")
+    TEST_BYTE = 0xAB
+    spi_master.write_nowait([
+        0x00, 0xF0,         # CMD_STATUS
+        0x01, 0x0F,         # CMD_CEN_SET
+        0x01, 0x00,         # CMD_CEN_SET
+        0x02, 0x00,         # CMD_WRMASK_SET
+        0x03, 0x00,         # CMD_ADDRL
+        0x04, 0x00,         # CMD_ADDRH
+        0x28, TEST_BYTE,    # CMD_WRITEI
+        0x03, 0x00,         # CMD_ADDRL
+        0x30, 0x00,         # CMD_READ0
+        0x00, 0x00          # CMD_STATUS
+    ])
+    await spi_master.wait()
+    read_bytes = await spi_master.read()
+
+    logger.info("Verifying read byte...")
+    assert int(read_bytes[-2]) == TEST_BYTE
+
+    logger.info("Done!")
+
+@cocotb.test(timeout_time=200, timeout_unit="us")
+async def async_efuse_test(dut):
+    """Test write & read async efuse"""
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    logger.info("Starting async eFuse test")
+    dut.input_PAD.value = 1
+    await Timer(1, "us")
+
+    while dut.bidir_PAD.value[24] != 1:
+        await dut.bidir_PAD.value_change
+    await Timer(1, "us")
+
+    in_val = in_val_orig = dut.input_PAD.get()
+    for i in range(8):
+        in_val[1+i] = i&1
+        logger.info(f"Wrote bit {i} {i&1}")
+    dut.input_PAD.set(in_val)
+    await Timer(10, "us")
+    dut.input_PAD.set(in_val_orig)
+    await Timer(1, "us")
+
+    # reset & try to write during reset low
+    dut.input_PAD.value = 0
+    await Timer(1, "us")
+    in_val = in_val_orig = dut.input_PAD.get()
+    for i in range(8):
+        in_val[1+i] = 1
+    dut.input_PAD.set(in_val)
+    await Timer(1, "us")
+    dut.input_PAD.set(in_val_orig)
+    await Timer(1, "us")
+
+    # read & check value after ready
+    dut.input_PAD.value = 1
+    while dut.bidir_PAD.value[24] != 1:
+        await dut.bidir_PAD.value_change
+
+    for i in range(8):
+        logger.info(f"Read bit {i}: {dut.bidir_PAD.value[25+i]}")
+        assert(dut.bidir_PAD.value[25+i] == i&1)
 
 uart_recv = ""
 async def uart_monitor(uart_sink):
@@ -34,49 +138,14 @@ async def uart_monitor(uart_sink):
             # allow zero bytes at the beginning
             assert(not uart_recv)
 
-async def async_efuse_test(dut):
-    """Test write & read to async efuse"""
-    # !!! should be a separate test !!!
-    dut.uut.in_pads.value = 1
-    await Timer(1, "us")
-
-    while dut.uut.bidir_pads.value[24] != 1:
-        await dut.uut.bidir_pads.value_change
-    await Timer(1, "us")
-
-    in_val = in_val_orig = dut.uut.in_pads.get()
-    for i in range(8):
-        in_val[1+i] = i&1
-    dut.uut.in_pads.set(in_val)
-    await Timer(10, "us")
-    dut.uut.in_pads.set(in_val_orig)
-    await Timer(1, "us")
-
-    # reset & try to write during reset low
-    dut.uut.in_pads.value = 0
-    await Timer(1, "us")
-    in_val = in_val_orig = dut.uut.in_pads.get()
-    for i in range(8):
-        in_val[1+i] = 1
-    dut.uut.in_pads.set(in_val)
-    await Timer(1, "us")
-    dut.uut.in_pads.set(in_val_orig)
-    await Timer(1, "us")
-
-    # read & check value after ready
-    dut.uut.in_pads.value = 1
-    while dut.uut.bidir_pads.value[24] != 1:
-        await dut.uut.bidir_pads.value_change
-
-    for i in range(8):
-        assert(dut.uut.bidir_pads.value[25+i] == i&1)
-
 @cocotb.test(timeout_time=200, timeout_unit="ms")
-async def test_caravel(dut):
+async def caravel_test(dut):
     """Run the Caravel test"""
 
     # Create a logger for this testbench
-    logger = logging.getLogger("testbench")
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    logger.info(f"Starting Caravel test {os.getenv("TEST_NAME")}")
     
     # Copy efuse hex
     efuse = os.getenv("EFUSE_HEX")
@@ -92,9 +161,9 @@ async def test_caravel(dut):
     uart = os.getenv("EXPECT_UART")
     if uart:
         while len(uart_recv) < len(uart):
-            logger.warning("Waiting for UART data to arrive...")
+            logger.info("Waiting for UART data to arrive...")
             await Timer(100, "us")
-        logger.warning(f"Checking received UART data: got {uart_recv}, expected {uart}")
+        logger.info(f"Checking received UART data: got {uart_recv}, expected {uart}")
         assert(uart == uart_recv)
 
     logger.info("Done!")
@@ -167,11 +236,13 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram256x8m8wm1.v",
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
 
-        # Caravel IP
+        # SRAM wrappers
         proj_path / "../ip/sram/gf180_ram_64x8_wrapper.v",
         proj_path / "../ip/sram/gf180_ram_128x8_wrapper.v",
         proj_path / "../ip/sram/gf180_ram_256x8_wrapper.v",
         proj_path / "../ip/sram/gf180_ram_512x8_wrapper.v",
+        
+        # Caravel IP
         proj_path / "../ip/simple_por/verilog/simple_por.v",
 
         # eFuse array model
@@ -184,9 +255,6 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",
         proj_path / "../ip/gf180mcu_ws_ip__logo/vh/gf180mcu_ws_ip__logo.v",
     ]
-
-    # Add Caravel sim Verilog helpers
-    sources += (proj_path / "../caravel/sim/common/").glob("*.v")
 
     build_args = []
 
@@ -205,37 +273,53 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     else:
         tests = json.load(open("test_list.json"))
         
-    for caravel_test in tests:
+    for test in tests:
         
         efuse_hex = ""
         uart = ""
-        
-        # skip PLL test in GL without SDF (oscillator ring obviously hangs without delays)
-        if (caravel_test in ["pll", "self_suff"]) and (not sdf and gl):
-            msg = "PLL tests can't be run with gate level netlist without SDF"
-            if is_pytest:
-                from pytest import skip
-                skip(msg)
-            else:
-                print(msg)
-                continue
-        elif (caravel_test == "self_suff"):
-            defines.update({"EFUSE_MEMORY_INIT" : 1})
-            efuse_hex = hex_prefix + "self_suff_rom.ehex"
 
-        top = f"{caravel_test}_tb"
+        if "caravel_" in test:
+            caravel_test = test[8:]
 
-        uart = "Hi\n" if caravel_test == "uart" else ""
+            # skip PLL tests in GL without SDF (oscillator ring hangs without delays)
+            if (caravel_test in ["pll", "self_suff"]) and (not sdf and gl):
+                msg = "PLL tests can't be run with gate level netlist without SDF"
+                if is_pytest:
+                    from pytest import skip
+                    skip(msg)
+                else:
+                    print(msg)
+                    continue
+            elif (caravel_test == "self_suff"):
+                defines.update({"EFUSE_MEMORY_INIT" : 1})
+                efuse_hex = hex_prefix + "self_suff_rom.ehex"
+
+            # Add Caravel sim top and Verilog helpers
+            sources += (proj_path / "../caravel/sim/common/").glob("*.v")
+            top = f"{caravel_test}_tb"
+            sources.append(proj_path / f"../caravel/sim/caravel_tb/{top}.v")
+
+            uart = "Hi\n" if caravel_test == "uart" else ""
+
+            testcase = "caravel_test"
+
+        else:
+            top = "chip_top"
+            testcase = f"{test}_test"
+
+            if test == "spi_sram":
+                sources.append(proj_path / "../src/sramtest/sim/sramtest_sim_wrapper.v")
+                top = "chip_wrapper"
 
         runner = get_runner(sim)
         runner.build(
-            sources=sources + [proj_path / f"../caravel/sim/caravel_tb/{top}.v"],
+            sources=sources,
             hdl_toplevel=top,
             defines=defines,
             always=True,
             includes=includes,
             build_args=build_args,
-            build_dir=f"sim_build/{caravel_test}" + ("_gl" if gl else ""),
+            build_dir=f"sim_build/{test}" + ("_gl" if gl else ""),
             waves=True,
         )
 
@@ -246,7 +330,8 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
             test_module="chip_top_tb,",
             plusargs=plusargs,
             waves=True,
-            extra_env = {"EXPECT_UART" : uart, "EFUSE_HEX" : efuse_hex}
+            testcase=testcase,
+            extra_env={"TEST_NAME" : test, "EXPECT_UART" : uart, "EFUSE_HEX" : efuse_hex}
         )
 
 if __name__ == "__main__":

@@ -47,6 +47,7 @@
     
     devShells = nix-eda.forAllSystems (system: let
       pkgs = (self.legacyPackages.${system});
+      
       cocotbext-uart = pkgs.python3Packages.buildPythonPackage rec {
         pname = "cocotbext-uart";
         version = "0.1.4";
@@ -56,6 +57,22 @@
           repo = "cocotbext-uart";
           rev = "3f8c2602367940110bdb8204d4d36d33a4e383a6";
           sha256 = "13dw8s6xgf92w79hx2i0c6yawyjx9flwgwgiswfcrvyraw3f5rd9";
+        };
+      };
+      
+      cocotbext-spi = pkgs.python3Packages.buildPythonPackage rec {
+        pname = "cocotbext-spi";
+        version = "0.6.0";
+        format = "pyproject";
+        
+        propagatedBuildInputs = with pkgs.python3Packages; [ setuptools_scm ];
+        dontCheckRuntimeDeps = true;
+      
+        src = pkgs.fetchFromGitHub {
+          owner = "overcookedlobster";
+          repo = "cocotbext-spi";
+          rev = "271bc5d29c12eae80c8ac485e4b1f2c178bb59f6";
+          sha256 = "139pwj3bwvxqavyw7p3x5bm2nbyzh4n2mji6fh97izzkyw34klhz";
         };
       };
     in {
@@ -79,6 +96,7 @@
           # Verification
           cocotb
           cocotbext-uart
+          cocotbext-spi
           pytest
           pytest-xdist
           
