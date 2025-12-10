@@ -31,9 +31,8 @@ module self_suff_tb;
         uut.self_sufficient = 1'b1; // enable self-sufficient mode
 	end
 	
-	`ifdef ENABLE_SDF
+	`define CHIP_TOP_HIER uut.chip
     `include "sdf.vh"
-	`endif
 
 	initial begin
 		$display("Wait for self sufficient test to complete");

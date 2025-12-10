@@ -31,9 +31,8 @@ module efuse_rw_tb;
 		clock = 0;
 	end
 	
-	`ifdef ENABLE_SDF
-    `include "sdf.vh"
-	`endif 
+	`define CHIP_TOP_HIER uut.chip
+    `include "sdf.vh" 
 
 	initial begin
 		$display("Wait for eFuse read-write test to complete");

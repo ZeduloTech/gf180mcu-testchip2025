@@ -6,7 +6,7 @@ TOP = chip_top
 
 PDK_ROOT ?= $(MAKEFILE_DIR)/gf180mcu
 PDK ?= gf180mcuD
-PDK_TAG ?= 1.6.3
+PDK_TAG ?= 1.6.4
 
 AVAILABLE_SLOTS = 1x1 0p5x1 1x0p5 0p5x0p5
 DEFAULT_SLOT = 1x1
@@ -69,11 +69,11 @@ librelane-klayout: ## Open the last run in KLayout
 .PHONY: librelane-klayout
 
 sim: ## Run RTL simulation with cocotb
-	cd cocotb; PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -nauto -v chip_top_tb.py
+	cd cocotb; PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -nauto --maxschedchunk=1 --dist worksteal -v chip_top_tb.py
 .PHONY: sim
 
 sim-gl: ## Run gate-level simulation with cocotb (after copy-final)
-	cd cocotb; GL=1 PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -nauto -v chip_top_tb.py
+	cd cocotb; GL=1 PDK_ROOT=${PDK_ROOT} PDK=${PDK} pytest -nauto --maxschedchunk=1 --dist worksteal -v chip_top_tb.py
 .PHONY: sim-gl
 
 sim-view: ## View simulation waveforms in GTKWave

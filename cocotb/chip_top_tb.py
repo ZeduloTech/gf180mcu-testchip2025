@@ -5,6 +5,7 @@
 import os
 import json
 import logging
+import random
 from pathlib import Path
 import shutil
 
@@ -61,8 +62,8 @@ async def spi_sram_test(dut):
 
     # Write test sequence to SPI:
     # Write single byte to all SRAMs and read single byte from SRAM_64)
-    logger.info("Shifting test sequence to SPI...")
-    TEST_BYTE = 0xAB
+    TEST_BYTE = random.randrange(256)
+    logger.info(f"Shifting test sequence to SPI, writing {TEST_BYTE:x}")
     spi_master.write_nowait([
         0x00, 0xF0,         # CMD_STATUS
         0x01, 0x0F,         # CMD_CEN_SET
@@ -90,41 +91,51 @@ async def async_efuse_test(dut):
     logger.setLevel(logging.INFO)
 
     logger.info("Starting async eFuse test")
-    dut.input_PAD.value = 1
+    dut.aef_rst.value = 0
+    await Timer(1, "us")
+    dut.aef_rst.value = 1
     await Timer(1, "us")
 
-    while dut.bidir_PAD.value[24] != 1:
-        await dut.bidir_PAD.value_change
+    while dut.aef_ready.value != 1:
+        await dut.aef_ready.value_change
     await Timer(1, "us")
 
-    in_val = in_val_orig = dut.input_PAD.get()
-    for i in range(8):
-        in_val[1+i] = i&1
-        logger.info(f"Wrote bit {i} {i&1}")
-    dut.input_PAD.set(in_val)
+    # in_val = in_val_orig = dut.input_PAD.get()
+    # for i in range(8):
+    #     dut.aef_prog[1+i].value = i&1
+    #     logger.info(f"Wrote bit {i} {i&1}")
+    test_byte = random.randrange(256)
+    dut.aef_prog.value = test_byte
+    logger.info(f"Wrote byte 0x{test_byte:x}")
+    # dut.input_PAD.set(in_val)
     await Timer(10, "us")
-    dut.input_PAD.set(in_val_orig)
+    dut.aef_prog.value = 0
+    # dut.input_PAD.set(in_val_orig)
     await Timer(1, "us")
 
     # reset & try to write during reset low
-    dut.input_PAD.value = 0
+    dut.aef_rst.value = 0
     await Timer(1, "us")
-    in_val = in_val_orig = dut.input_PAD.get()
-    for i in range(8):
-        in_val[1+i] = 1
-    dut.input_PAD.set(in_val)
+    # in_val = in_val_orig = dut.input_PAD.get()
+    # for i in range(8):
+    #     in_val[1+i] = 1
+    # dut.input_PAD.set(in_val)
+    dut.aef_prog.value = 0xFF
     await Timer(1, "us")
-    dut.input_PAD.set(in_val_orig)
+    dut.aef_prog.value = 0
+    await Timer(1, "us")
+    dut.aef_rst.value = 1
     await Timer(1, "us")
 
     # read & check value after ready
-    dut.input_PAD.value = 1
-    while dut.bidir_PAD.value[24] != 1:
-        await dut.bidir_PAD.value_change
+    while dut.aef_ready.value != 1:
+        await dut.aef_ready.value_change
 
-    for i in range(8):
-        logger.info(f"Read bit {i}: {dut.bidir_PAD.value[25+i]}")
-        assert(dut.bidir_PAD.value[25+i] == i&1)
+    # for i in range(8):
+    #     logger.info(f"Read bit {i}: {dut.bidir_PAD.value[25+i]}")
+    read_byte = int(dut.aef_out.value)
+    logger.info(f"Read byte 0x{read_byte:x}")
+    assert(read_byte == test_byte)
 
 uart_recv = ""
 async def uart_monitor(uart_sink):
@@ -145,7 +156,7 @@ async def caravel_test(dut):
     # Create a logger for this testbench
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-    logger.info(f"Starting Caravel test {os.getenv("TEST_NAME")}")
+    logger.info(f"Starting Caravel test {os.getenv('TEST_NAME')}")
     
     # Copy efuse hex
     efuse = os.getenv("EFUSE_HEX")
@@ -215,7 +226,7 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.nl.v")
-        sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.nl.v")
+        sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.v")
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 
@@ -304,12 +315,9 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
             testcase = "caravel_test"
 
         else:
-            top = "chip_top"
             testcase = f"{test}_test"
-
-            if test == "spi_sram":
-                sources.append(proj_path / "../src/sramtest/sim/sramtest_sim_wrapper.v")
-                top = "chip_wrapper"
+            sources.append(proj_path / "../src/sramtest/sim/sramtest_sim_wrapper.v")
+            top = "chip_wrapper"
 
         runner = get_runner(sim)
         runner.build(

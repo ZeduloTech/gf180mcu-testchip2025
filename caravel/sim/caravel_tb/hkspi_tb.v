@@ -54,9 +54,8 @@ module hkspi_tb;
         power1 <= 1'b1;
     end
     
-    `ifdef ENABLE_SDF
+    `define CHIP_TOP_HIER uut.chip
     `include "sdf.vh"
-	`endif
 
     // The main testbench is here.  Put the housekeeping SPI into
     // pass-thru mode and read several bytes from the flash SPI.

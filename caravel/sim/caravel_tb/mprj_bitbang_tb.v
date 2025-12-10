@@ -49,9 +49,8 @@ module mprj_bitbang_tb;
         clock = 0;
     end
     
-    `ifdef ENABLE_SDF
+    `define CHIP_TOP_HIER uut.chip
     `include "sdf.vh"
-	`endif
 
     initial begin        // Power-up sequence
         power1 <= 1'b0;

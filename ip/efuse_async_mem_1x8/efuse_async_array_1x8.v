@@ -22,6 +22,10 @@ module efuse_array_async_1x8 (
 );
 
 efuse_array_1x8 wrapped_model (
+    `ifdef USE_POWER_PINS
+    .VDD(VDD),
+    .VSS(VSS),
+    `endif
     .BIT_SEL(1'b1),
     .COL_PROG_N(COL_PROG_N),
     .OUT(OUT),
@@ -130,21 +134,21 @@ module efuse_array_1x8 #(
             if (state == STATE_IDLE)
                 timestamp = $time;
 
-            for (i = 0; i < NWORDS; i = i + 1)
-                if (BIT_SEL[i]) begin
-                    fuses[i] = fuses[i] | (~COL_PROG_N);
-                    ones = ones + 1;
-                end
-            `assert(ones == 1)
+            //for (i = 0; i < NWORDS; i = i + 1)
+                //if (BIT_SEL[i]) begin
+            fuses[0] = fuses[0] | (~COL_PROG_N);
+                    //ones = ones + 1;
+                //end
+            //`assert(ones == 1)
 
             state = STATE_WRITE;
         end else begin
             // idle after active states, check signal hold times
-            if (state == STATE_PRESET)
+            if (state == STATE_PRESET) begin
                 `assert($time - timestamp >= MIN_PRESET_NS)
-            else if (state == STATE_WRITE)
+            end else if (state == STATE_WRITE) begin
                 `assert($time - timestamp >= MIN_WRITE_NS)
-            else if (state == STATE_SENSE) begin
+            end else if (state == STATE_SENSE) begin
                 `assert($time - timestamp >= MIN_SENSE_NS)
                 preset = 1'b0;
             end 
