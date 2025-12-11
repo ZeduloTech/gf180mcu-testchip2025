@@ -3,12 +3,24 @@
  */
 
  `timescale 1ns/1ps
+ 
+ // ugly composition to disable asserts in GL without SDF
+ `ifdef GL
+    `ifndef ENABLE_SDF
+        `define SKIP_ASSERTS
+    `endif
+ `endif
 
-`define assert(statement) \
-        if ($time > 1 && !(statement)) begin \
-            $display("ASSERTION FAILED in %m on line %d", `__LINE__); \
-            $finish; \
-        end
+`ifndef SKIP_ASSERTS
+    `define assert(statement) \
+            if ($time > 1 && !(statement)) begin \
+                $display("ASSERTION FAILED in %m on line %d", `__LINE__); \
+                $finish; \
+            end
+`else
+    `define assert(statement)
+    `undef SKIP_ASSERTS
+`endif
 
 module efuse_array_async_1x8 (
     `ifdef USE_POWER_PINS

@@ -206,7 +206,7 @@ def test_chip_top_runner(test : str):
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.pnl.v")
         sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.pnl.v")
 
-        defines.update({"USE_POWER_PINS": 1})
+        defines.update({"GL" : 1, "USE_POWER_PINS": 1})
         if sdf:
             defines.update({"ENABLE_SDF" : 1})
     else:
