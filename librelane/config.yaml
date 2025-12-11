@@ -357,6 +357,23 @@ MACROS:
         location: [2000, 4100]
         orientation: N
 
+  uart2gpi:
+    gds:
+      - dir::../uart2gpi/final/gds/uart2gpi.gds.gz
+    lef:
+      - dir::../uart2gpi/final/lef/uart2gpi.lef
+    nl:
+      - dir::../uart2gpi/final/nl/uart2gpi.nl.v
+    lib:
+      "*tt*" : [ dir::../uart2gpi/final/lib/nom_tt_025C_5v00/uart2gpi__nom_tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../uart2gpi/final/lib/nom_ss_125C_4v50/uart2gpi__nom_ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../uart2gpi/final/lib/nom_ff_n40C_5v50/uart2gpi__nom_ff_n40C_5v50.lib ]
+      
+    instances:  
+      i_chip_core.uart2gpi_0:
+        location: [500, 3450]
+        orientation: N
+
 
 # Make sure netgen doesn't create 'no_connect' nets
 # Not needed since netgen 1.5.303

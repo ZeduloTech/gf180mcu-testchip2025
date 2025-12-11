@@ -200,6 +200,26 @@ module chip_core #(
         .wdebug(sram_spidebug)
     );
 
+    uart2gpi uart2gpi_0 (
+        .clk(clk),
+        .rst_ni(rst_n),
+        .uart_rx_i(bidir_in[`PAD_UART2GPI_UARTRX]),
+        .uart_tx_o(bidir_out[`PAD_UART2GPI_UARTTX]),
+        .gpio_i(bidir_in[`PAD_UART2GPI_GPIO3:`PAD_UART2GPI_GPIO0]),
+        .gpio_o(bidir_out[`PAD_UART2GPI_GPIO3:`PAD_UART2GPI_GPIO0]),
+//ie needs to be oe inverted. Add some delay as well?
+        .gpio_oe(bidir_oe[`PAD_UART2GPI_GPIO3:`PAD_UART2GPI_GPIO0]),
+        .pwm_o(bidir_out[`PAD_UART2GPI_PWM1:`PAD_UART2GPI_PWM0]),
+        .i2c_scl_i(bidir_in[`PAD_UART2GPI_I2CSCL]),
+        .i2c_scl_o(bidir_out[`PAD_UART2GPI_I2CSCL]),
+//ie needs to be oe inverted. Add some delay as well?
+        .i2c_scl_oe(bidir_oe[`PAD_UART2GPI_I2CSCL]),
+        .i2c_sda_i(bidir_in[`PAD_UART2GPI_I2CSDA]),
+        .i2c_sda_o(bidir_out[`PAD_UART2GPI_I2CSDA]),
+//ie needs to be oe inverted. Add some delay as well?
+        .i2c_sda_oe(bidir_oe[`PAD_UART2GPI_I2CSDA])
+     );
+
 endmodule
 
 `default_nettype wire
