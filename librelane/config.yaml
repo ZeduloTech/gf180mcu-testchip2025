@@ -31,9 +31,10 @@ VERILOG_FILES:
 - dir::../src/chip_top.sv
 - dir::../src/chip_core.sv
 - dir::../src/wb_reg.v
-- dir::../src/wb_mux_4.v
+- dir::../src/wb_mux_5.v
 - dir::../src/wb_switch.v
 - dir::../src/wb_efuses.v
+- dir::../src/wb_async_efuse.v
 - dir::../src/sramtest/uspi_sramtest.sv
 
 VERILOG_INCLUDE_DIRS: [ dir::../caravel/verilog/ ]
@@ -60,7 +61,8 @@ IGNORE_DISCONNECTED_MODULES:
 - gf180mcu_ws_ip__logo
 
 # Clock
-CLOCK_NET: i_chip_core.caravel/user_wb_clk_o
+#CLOCK_NET: i_chip_core.caravel/user_wb_clk_o
+CLOCK_NET: i_chip_core.wb_clk_buf/Z
 
 CLOCK_PERIOD: 50 # 20 MHz
 
@@ -72,7 +74,7 @@ PL_KEEP_RESIZE_BELOW_OVERFLOW: 0
 RSZ_DONT_TOUCH_RX: .*clk_buf
 
 # Floorplanning
-PL_TARGET_DENSITY_PCT: 35
+PL_TARGET_DENSITY_PCT: 25
 GRT_ALLOW_CONGESTION: true
 
 # PDN
@@ -235,7 +237,7 @@ MACROS:
       "*ff*" : [ dir::../ip/efuse_wb_mem_128x8/max_ff_n40C_5v50/efuse_wb_mem_128x8__max_ff_n40C_5v50.lib ]
     instances:
       i_chip_core.wb_efuses.efuse_wb_128x8:
-        location: [2600, 3020]
+        location: [2550, 3020]
         orientation: S
 
   efuse_wb_mem_32x8:
@@ -251,7 +253,7 @@ MACROS:
       "*ff*" : [ dir::../ip/efuse_wb_mem_32x8/max_ff_n40C_5v50/efuse_wb_mem_32x8__max_ff_n40C_5v50.lib ]
     instances:
       i_chip_core.wb_efuses.efuse_wb_32x8:
-        location: [2860, 3400]
+        location: [2650, 3500]
         orientation: S
 
   efuse_async_mem_1x8:
@@ -268,6 +270,18 @@ MACROS:
     instances:
       i_chip_core.efuse_async:
         location: [1000, 3015]
+        orientation: N
+      i_chip_core.wb_efuses.efuse_wb_async.efuse[0].efuse_async:
+        location: [2030, 3015]                    
+        orientation: N                            
+      i_chip_core.wb_efuses.efuse_wb_async.efuse[1].efuse_async:
+        location: [2030, 3115]                    
+        orientation: N                            
+      i_chip_core.wb_efuses.efuse_wb_async.efuse[2].efuse_async:
+        location: [2030, 3215]                    
+        orientation: N                            
+      i_chip_core.wb_efuses.efuse_wb_async.efuse[3].efuse_async:
+        location: [2030, 3315]
         orientation: N
 
 #495	0	4150

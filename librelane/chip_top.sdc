@@ -11,7 +11,7 @@ set period $::env(CLOCK_PERIOD)
 set cvl i_chip_core.caravel
 set caravel_clk_src $cvl/$caravel_clk_start
 
-# The following variables helps to determine if we're in 
+# The following variable helps to determine if we're in 
 # the "hierarchical" (OpenSTA step with netlists and spefs) 
 # or in the "flat" (inside OpenROAD with libs) mode.
 set hierarchical_sta [llength [get_pins $caravel_clk_src]]

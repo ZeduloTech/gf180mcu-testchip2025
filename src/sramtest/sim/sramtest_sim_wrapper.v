@@ -1,4 +1,4 @@
-// Simulation wrapper around chip_top to test SPI SRAM
+// Simulation wrapper around chip_top to test SPI SRAM & async eFuse in cocotb
 
 `default_nettype none
 `include "pinout.vh"
@@ -6,16 +6,15 @@
     
 module chip_wrapper #(
     parameter NUM_INPUT_PADS = 12,
-    parameter NUM_BIDIR_PADS = 40,
-    parameter NUM_ANALOG_PADS = 2
-    ) ();
+    parameter NUM_BIDIR_PADS = 42
+) ();
 
     wire clock = 1'b0;
     wire resetb = 1'b0;
     supply1 VDD;
     supply0 VSS;
     
-    wire [NUM_INPUT_PADS-1:0] in_pads = {NUM_INPUT_PADS{1'bz}};
+    wire [NUM_INPUT_PADS-1:0] in_pads = {1'b0, {(NUM_INPUT_PADS-1){1'bz}}};
     wire [NUM_BIDIR_PADS-1:0] bidir_pads = {NUM_BIDIR_PADS{1'bz}};
     
     wire sramtest_sclk  = 1'b1;

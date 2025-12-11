@@ -1,4 +1,4 @@
-// Test "self sufficient" Caravel start mode
+// Test "self sufficient" Caravel start mode running from eFuse ROM
 
 `default_nettype none
 

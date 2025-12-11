@@ -36,6 +36,7 @@ module chip_core #(
 );
 
     // Wishbone from Caravel
+    wire user_wb_clk_prebuf;
     wire user_wb_clk;
     wire user_wb_rst;
     wire user_wb_cyc;
@@ -65,12 +66,12 @@ module chip_core #(
     assign bidir_cs[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
 
     // Set pad config for SRAM test
-    assign bidir_oe[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b010_0111;   // Output enable
-    assign bidir_ie[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b101_1000;   // Input enable
-    assign bidir_cs[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Input type (0=CMOS Buffer, 1=Schmitt Trigger)
-    assign bidir_sl[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Slew rate (0=fast, 1=slow)
-    assign bidir_pu[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Pull-up
-    assign bidir_pd[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 7'b000_0000;   // Pull-down
+    assign bidir_oe[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b01000;   // Output enable
+    assign bidir_ie[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b10111;   // Input enable
+    assign bidir_cs[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Input type (0=CMOS Buffer, 1=Schmitt Trigger)
+    assign bidir_sl[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Slew rate (0=fast, 1=slow)
+    assign bidir_pu[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Pull-up
+    assign bidir_pd[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Pull-down
 
     // Set pad config for async eFuse
     assign bidir_oe[`PAD_AEF_OUT_HIGH:`PAD_AEF_READY] = 9'b11111_1111; // Output enable
@@ -102,6 +103,12 @@ module chip_core #(
         .wbm_ack_o(user_wb_ack),   
         .wbm_cyc_i(user_wb_cyc),   
         .npor_i(npor)       
+    );
+    
+    // Buffer wb clock
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_8 wb_clk_buf (
+        .I(user_wb_clk_prebuf),
+        .Z(user_wb_clk)
     );
 
     // eFuse async memory
@@ -149,7 +156,7 @@ module chip_core #(
         .caravel_io_slew_sel(bidir_sl[`CARAVEL_IO_PADS-1:0]),
         
         // User wishbone stub
-        .user_wb_clk_o(user_wb_clk),
+        .user_wb_clk_o(user_wb_clk_prebuf),
         .user_wb_rst_o(user_wb_rst),
         .user_wb_cyc_o(user_wb_cyc),
         .user_wb_stb_o(user_wb_stb),
@@ -177,7 +184,7 @@ module chip_core #(
     reg sram_spidebug;
     assign bidir_out[`PAD_SRAM_SPIDEBUG] = sram_ledstatus | sram_ledreset | sram_spidebug;
 
-    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_20 sramtest_clk_buf (
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_8 sramtest_clk_buf (
         .I(clk),
         .Z(sramtest_clk)
     );

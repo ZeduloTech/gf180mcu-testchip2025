@@ -7,7 +7,7 @@
  */
 
 `timescale 1 ns / 1 ps
- `default_nettype none
+`default_nettype none
 
 /*
  * Wishbone 4 port multiplexer
@@ -22,7 +22,8 @@ module wb_switch #
     parameter S0_ADDR      = 32'h30000000,
     parameter S1_ADDR      = 32'h30001000,
     parameter S2_ADDR      = 32'h30002000,
-    parameter S3_ADDR      = 32'h30003000
+    parameter S3_ADDR      = 32'h30003000,
+    parameter S4_ADDR      = 32'h30004000
 ) (
     input  wire                    wb_clk_i,
     input  wire                    wb_rst_i,
@@ -85,7 +86,19 @@ module wb_switch #
     output wire [SELECT_WIDTH-1:0] wbs3_sel_o,    // SEL_O() select output
     output wire                    wbs3_stb_o,    // STB_O strobe output
     input  wire                    wbs3_ack_i,    // ACK_I acknowledge input
-    output wire                    wbs3_cyc_o     // CYC_O cycle output
+    output wire                    wbs3_cyc_o,    // CYC_O cycle output
+
+    /*
+     * Wishbone slave 4 output
+     */
+    output wire [ADDR_WIDTH-1:0]   wbs4_adr_o,    // ADR_O() address output
+    input  wire [DATA_WIDTH-1:0]   wbs4_dat_i,    // DAT_I() data in
+    output wire [DATA_WIDTH-1:0]   wbs4_dat_o,    // DAT_O() data out
+    output wire                    wbs4_we_o,     // WE_O write enable output
+    output wire [SELECT_WIDTH-1:0] wbs4_sel_o,    // SEL_O() select output
+    output wire                    wbs4_stb_o,    // STB_O strobe output
+    input  wire                    wbs4_ack_i,    // ACK_I acknowledge input
+    output wire                    wbs4_cyc_o     // CYC_O cycle output
 );
 
 // Slave buses between switch and registers
@@ -116,8 +129,17 @@ wire                    wbs3_prereg_stb;
 wire                    wbs3_prereg_ack;
 wire                    wbs3_prereg_cyc;
 
-// Wishbone mux 4->1
-wb_mux_4 #(
+wire [ADDR_WIDTH-1:0]   wbs4_prereg_adr;
+wire [DATA_WIDTH-1:0]   wbs4_prereg_dat_i;
+wire [DATA_WIDTH-1:0]   wbs4_prereg_dat_o;
+wire                    wbs4_prereg_we ;
+wire [SELECT_WIDTH-1:0] wbs4_prereg_sel;
+wire                    wbs4_prereg_stb;
+wire                    wbs4_prereg_ack;
+wire                    wbs4_prereg_cyc;
+
+// Wishbone mux 5->1
+wb_mux_5 #(
     .DATA_WIDTH(DATA_WIDTH),
     .ADDR_WIDTH(ADDR_WIDTH),
     .SELECT_WIDTH(SELECT_WIDTH)
@@ -135,6 +157,8 @@ wb_mux_4 #(
     .wbs2_addr_msk(ADDR_MASK),          // Slave address prefix mask
     .wbs3_addr(S3_ADDR),                // Slave address prefix
     .wbs3_addr_msk(ADDR_MASK),          // Slave address prefix mask
+    .wbs4_addr(S4_ADDR),                // Slave address prefix
+    .wbs4_addr_msk(ADDR_MASK),          // Slave address prefix mask
 
     // Master
     .wbm_adr_i(wbm_adr_i),              // ADR_I() address input
@@ -192,7 +216,19 @@ wb_mux_4 #(
     .wbs3_ack_i(wbs3_prereg_ack),       // ACK_I acknowledge input
     .wbs3_cyc_o(wbs3_prereg_cyc),       // CYC_O cycle output
     .wbs3_err_i(1'b0),                  // ERR_I error input
-    .wbs3_rty_i(1'b0)                   // RTY_I retry input
+    .wbs3_rty_i(1'b0),                  // RTY_I retry input
+
+    // Fifth slave 
+    .wbs4_adr_o(wbs4_prereg_adr),       // ADR_O() address output
+    .wbs4_dat_i(wbs4_prereg_dat_i),     // DAT_I() data in
+    .wbs4_dat_o(wbs4_prereg_dat_o),     // DAT_O() data out
+    .wbs4_we_o (wbs4_prereg_we),        // WE_O write enable output
+    .wbs4_sel_o(wbs4_prereg_sel),       // SEL_O() select output
+    .wbs4_stb_o(wbs4_prereg_stb),       // STB_O strobe output
+    .wbs4_ack_i(wbs4_prereg_ack),       // ACK_I acknowledge input
+    .wbs4_cyc_o(wbs4_prereg_cyc),       // CYC_O cycle output
+    .wbs4_err_i(1'b0),                  // ERR_I error input
+    .wbs4_rty_i(1'b0)                   // RTY_I retry input
 );
 
 // Register all slave busses but 0th after the switch
@@ -279,6 +315,35 @@ wb_reg #(
     .wbs_stb_o(wbs3_stb_o),         // STB_O strobe output
     .wbs_ack_i(wbs3_ack_i),         // ACK_I acknowledge input
     .wbs_cyc_o(wbs3_cyc_o),         // CYC_O cycle output
+    .wbs_err_i(1'b0),               // ERR_I error input
+    .wbs_rty_i(1'b0)                // RTY_I retry input
+);
+
+wb_reg #(
+    .DATA_WIDTH(DATA_WIDTH),
+    .ADDR_WIDTH(ADDR_WIDTH),
+    .SELECT_WIDTH(SELECT_WIDTH)
+) reg_s4 (
+    .clk(wb_clk_i),
+    .rst(wb_rst_i),
+
+    .wbm_adr_i(wbs4_prereg_adr),    // ADR_I() address
+    .wbm_dat_i(wbs4_prereg_dat_o),  // DAT_I() data in
+    .wbm_dat_o(wbs4_prereg_dat_i),  // DAT_O() data out
+    .wbm_we_i (wbs4_prereg_we),     // WE_I write enable input
+    .wbm_sel_i(wbs4_prereg_sel),    // SEL_I() select input
+    .wbm_stb_i(wbs4_prereg_stb),    // STB_I strobe input
+    .wbm_ack_o(wbs4_prereg_ack),    // ACK_O acknowledge output
+    .wbm_cyc_i(wbs4_prereg_cyc),    // CYC_I cycle input
+
+    .wbs_adr_o(wbs4_adr_o),         // ADR_O() address
+    .wbs_dat_i(wbs4_dat_i),         // DAT_I() data in
+    .wbs_dat_o(wbs4_dat_o),         // DAT_O() data out
+    .wbs_we_o (wbs4_we_o),          // WE_O write enable output
+    .wbs_sel_o(wbs4_sel_o),         // SEL_O() select output
+    .wbs_stb_o(wbs4_stb_o),         // STB_O strobe output
+    .wbs_ack_i(wbs4_ack_i),         // ACK_I acknowledge input
+    .wbs_cyc_o(wbs4_cyc_o),         // CYC_O cycle output
     .wbs_err_i(1'b0),               // ERR_I error input
     .wbs_rty_i(1'b0)                // RTY_I retry input
 );

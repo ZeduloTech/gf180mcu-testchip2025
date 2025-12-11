@@ -118,14 +118,14 @@ module efuse_array_32x8 #(
             state = STATE_WRITE;
         end else begin
             // idle after active states, check signal hold times
-            if (state == STATE_PRESET)
+            if (state == STATE_PRESET) begin
                 `assert($time - timestamp >= MIN_PRESET_NS)
-            else if (state == STATE_WRITE)
+            end else if (state == STATE_WRITE) begin
                 `assert($time - timestamp >= MIN_WRITE_NS)
-            else if (state == STATE_SENSE) begin
+            end else if (state == STATE_SENSE) begin
                 `assert($time - timestamp >= MIN_SENSE_NS)
                 preset = 1'b0;
-            end 
+            end
             
             sel = BIT_SEL;
             prog = COL_PROG_N;

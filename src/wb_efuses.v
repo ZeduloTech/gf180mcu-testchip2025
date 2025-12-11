@@ -65,6 +65,15 @@
     wire [31:0] ef3_wb_dat_wr;
     wire [31:0] ef3_wb_dat_rd;
     wire        ef3_wb_ack;
+    
+    wire        ef4_wb_cyc;
+    wire        ef4_wb_stb;
+    wire        ef4_wb_we;
+    wire [3:0]  ef4_wb_sel;
+    wire [31:0] ef4_wb_adr;
+    wire [31:0] ef4_wb_dat_wr;
+    wire [31:0] ef4_wb_dat_rd;
+    wire        ef4_wb_ack;
 
 
     // Wishbone switch
@@ -121,7 +130,17 @@
         .wbs3_sel_o(ef3_wb_sel),    // SEL_O() select output
         .wbs3_stb_o(ef3_wb_stb),    // STB_O strobe output
         .wbs3_ack_i(ef3_wb_ack),    // ACK_I acknowledge input
-        .wbs3_cyc_o(ef3_wb_cyc)     // CYC_O cycle output
+        .wbs3_cyc_o(ef3_wb_cyc),    // CYC_O cycle output
+
+        // async eFuse 
+        .wbs4_adr_o(ef4_wb_adr),    // ADR_O() address output
+        .wbs4_dat_i(ef4_wb_dat_rd), // DAT_I() data in
+        .wbs4_dat_o(ef4_wb_dat_wr), // DAT_O() data out
+        .wbs4_we_o (ef4_wb_we),     // WE_O write enable output
+        .wbs4_sel_o(ef4_wb_sel),    // SEL_O() select output
+        .wbs4_stb_o(ef4_wb_stb),    // STB_O strobe output
+        .wbs4_ack_i(ef4_wb_ack),    // ACK_I acknowledge input
+        .wbs4_cyc_o(ef4_wb_cyc)     // CYC_O cycle output
     );
 
     // eFuse blocks
@@ -182,5 +201,19 @@
         .write_enable_i(npor_i)
     );
     assign ef3_wb_dat_rd[31:8] = 24'b0;
+    
+    wb_async_efuse efuse_wb_async (
+        .wb_clk_i(wb_clk_i),
+        .wb_rst_i(wb_rst_i),
+        .wb_stb_i(ef4_wb_stb),
+        .wb_cyc_i(ef4_wb_cyc),
+        .wb_adr_i(ef4_wb_adr),
+        .wb_dat_i(ef4_wb_dat_wr),
+        .wb_we_i (ef4_wb_we),
+        .wb_sel_i(ef4_wb_sel),
+        .wb_dat_o(ef4_wb_dat_rd),
+        .wb_ack_o(ef4_wb_ack),
+        .npor(npor_i)
+    );
 
  endmodule

@@ -15,9 +15,9 @@
 `define PADI_START_MODE     11
 
 // Async eFuse pads
-`define PADI_AEF_RESET      0
-`define PADI_AEF_PROG_LOW   1
-`define PADI_AEF_PROG_HIGH  8
+`define PADI_AEF_RESET      10
+`define PADI_AEF_PROG_LOW   2
+`define PADI_AEF_PROG_HIGH  9
 `define PAD_AEF_OUT_LOW     25
 `define PAD_AEF_OUT_HIGH    32
 `define PAD_AEF_READY       24
@@ -29,22 +29,22 @@
 `define PAD_UART2GPI_GPIO3  21
 `define PAD_UART2GPI_PWM0   22
 `define PAD_UART2GPI_PWM1   23
-`define PAD_UART2GPI_I2CSDA 34
-`define PAD_UART2GPI_I2CSCL 35
-`define PAD_UART2GPI_UARTTX 36
-`define PAD_UART2GPI_UARTRX 37
+`define PAD_UART2GPI_I2CSDA 33
+`define PAD_UART2GPI_I2CSCL 34
+`define PAD_UART2GPI_UARTTX 35
+`define PAD_UART2GPI_UARTRX 36
 
 // SRAM test pads
 
-`define PAD_SRAM_LOW        38
+`define PAD_SRAM_LOW        37
 
-`define PAD_SRAM_SPIDEBUG   38
-`define PAD_SRAM_SPICS      39
-`define PAD_SRAM_SPICLK     40
-`define PAD_SRAM_SPIMISO    41
-`define PAD_SRAM_SPIMOSI    42
+`define PAD_SRAM_SPIDEBUG   37
+`define PAD_SRAM_SPICS      38
+`define PAD_SRAM_SPICLK     39
+`define PAD_SRAM_SPIMISO    40
+`define PAD_SRAM_SPIMOSI    41
 
-`define PAD_SRAM_HIGH       42
+`define PAD_SRAM_HIGH       41
 
 //Unused pins, take pins from here and modify low/high
 //to ensure all unused pins are properly defined

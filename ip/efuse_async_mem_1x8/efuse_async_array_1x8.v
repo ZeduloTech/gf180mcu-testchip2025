@@ -108,16 +108,6 @@ module efuse_array_1x8 #(
             `assert(COL_PROG_N === {WORD_WIDTH{1'b1}})
             `assert(state == STATE_IDLE || sel == 0 || sel == BIT_SEL)
 
-            //if (BIT_SEL != 0 && sel == 0) begin
-                //timestamp = $time;
-                //for (i = 0; i < NWORDS; i = i + 1)
-                    //if (BIT_SEL[i]) begin
-                        //out = fuses[i];
-                        //ones = ones + 1;
-                    //end
-                //`assert(ones == 1)
-            //end
-            //sel = BIT_SEL;
             out = fuses[0];
             
             state = STATE_SENSE;
@@ -134,12 +124,7 @@ module efuse_array_1x8 #(
             if (state == STATE_IDLE)
                 timestamp = $time;
 
-            //for (i = 0; i < NWORDS; i = i + 1)
-                //if (BIT_SEL[i]) begin
             fuses[0] = fuses[0] | (~COL_PROG_N);
-                    //ones = ones + 1;
-                //end
-            //`assert(ones == 1)
 
             state = STATE_WRITE;
         end else begin

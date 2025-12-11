@@ -6,9 +6,8 @@
     
 module caravel #(
     parameter NUM_INPUT_PADS = 12,
-    parameter NUM_BIDIR_PADS = 40,
-    parameter NUM_ANALOG_PADS = 2
-    ) (
+    parameter NUM_BIDIR_PADS = 42
+) (
     `ifdef USE_POWER_PINS
     inout VDD,        
     inout VSS,        

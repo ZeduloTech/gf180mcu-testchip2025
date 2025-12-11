@@ -2,7 +2,7 @@
 
 `timescale 1 ns / 1 ps
 
-module efuse_rw_tb;
+module async_wb_efuse_tb;
     reg clock;
     reg RSTB;
     reg power1;
@@ -35,9 +35,14 @@ module efuse_rw_tb;
     `include "sdf.vh" 
 
     initial begin
-        $display("Wait for eFuse read-write test to complete");
+        $display("Wait for Wishbone async eFuse test to complete...");
         wait(gpio == 1'b1);
-        $display("Monitor: Test eFuse read-write Passed");
+        $display("eFuse write completed, resetting...");
+        #1000;  // reset will pe performed here
+        wait(gpio == 1'b1);
+        wait(gpio == 1'b0);
+        wait(gpio == 1'b1);
+        $display("Monitor: Wishbone async eFuse test passed");
         test_success <= 1'b1;
         #100;
         $finish;
@@ -45,6 +50,14 @@ module efuse_rw_tb;
 
     initial begin
         RSTB <= 1'b0;
+        #1000;
+        RSTB <= 1'b1;        // Release reset
+        #2000;
+        wait(gpio == 1'b1); // Reset & simulate POR after first test part
+        RSTB <= 1'b0;
+        uut.chip.i_chip_core.caravel.por_inst.restart = 0;
+        #1;
+        uut.chip.i_chip_core.caravel.por_inst.restart = 1;
         #1000;
         RSTB <= 1'b1;        // Release reset
         #2000;
@@ -87,7 +100,7 @@ module efuse_rw_tb;
     );
 
     spiflash #(
-        .FILENAME({`HEX_PREFIX, "efuse_rw.hex"})
+        .FILENAME({`HEX_PREFIX, "async_wb_efuse.hex"})
     ) spiflash (
         .csb(flash_csb),
         .clk(flash_clk),

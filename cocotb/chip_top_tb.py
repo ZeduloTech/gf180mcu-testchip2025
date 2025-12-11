@@ -26,8 +26,6 @@ test_env = os.getenv("TEST", "all")
 add_build_args = os.getenv("ADD_BUILD_ARGS", "").split()
 add_plus_args = os.getenv("ADD_PLUS_ARGS", "").split()
 
-# SPI test class
-# class SPITest
 
 @cocotb.test(timeout_time=300, timeout_unit="us")
 async def spi_sram_test(dut):
@@ -100,26 +98,16 @@ async def async_efuse_test(dut):
         await dut.aef_ready.value_change
     await Timer(1, "us")
 
-    # in_val = in_val_orig = dut.input_PAD.get()
-    # for i in range(8):
-    #     dut.aef_prog[1+i].value = i&1
-    #     logger.info(f"Wrote bit {i} {i&1}")
     test_byte = random.randrange(256)
     dut.aef_prog.value = test_byte
     logger.info(f"Wrote byte 0x{test_byte:x}")
-    # dut.input_PAD.set(in_val)
     await Timer(10, "us")
     dut.aef_prog.value = 0
-    # dut.input_PAD.set(in_val_orig)
     await Timer(1, "us")
 
     # reset & try to write during reset low
     dut.aef_rst.value = 0
     await Timer(1, "us")
-    # in_val = in_val_orig = dut.input_PAD.get()
-    # for i in range(8):
-    #     in_val[1+i] = 1
-    # dut.input_PAD.set(in_val)
     dut.aef_prog.value = 0xFF
     await Timer(1, "us")
     dut.aef_prog.value = 0
@@ -131,8 +119,6 @@ async def async_efuse_test(dut):
     while dut.aef_ready.value != 1:
         await dut.aef_ready.value_change
 
-    # for i in range(8):
-    #     logger.info(f"Read bit {i}: {dut.bidir_PAD.value[25+i]}")
     read_byte = int(dut.aef_out.value)
     logger.info(f"Read byte 0x{read_byte:x}")
     assert(read_byte == test_byte)
@@ -180,7 +166,16 @@ async def caravel_test(dut):
     logger.info("Done!")
 
 
-def test_chip_top_runner(test : str, is_pytest : bool = True):
+def skip_test(msg):
+    """Test skip helper"""
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        # skip in pytest
+        from pytest import skip
+        skip(msg)
+    else:
+        print(msg)
+
+def test_chip_top_runner(test : str):
 
     proj_path = Path(__file__).resolve().parent
 
@@ -218,10 +213,11 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
         sources.append(proj_path / "../src/chip_top.sv")
         sources.append(proj_path / "../src/chip_core.sv")
         sources.append(proj_path / "../src/sramtest/uspi_sramtest.sv")
-        sources.append(proj_path / "../src/wb_mux_4.v")
+        sources.append(proj_path / "../src/wb_mux_5.v")
         sources.append(proj_path / "../src/wb_reg.v")
         sources.append(proj_path / "../src/wb_switch.v")
         sources.append(proj_path / "../src/wb_efuses.v")
+        sources.append(proj_path / "../src/wb_async_efuse.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_32x8/efuse_wb_mem_32x8.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.nl.v")
@@ -270,8 +266,6 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     build_args = []
 
     if sim == "icarus":
-        # For debugging
-        # build_args = ["-Winfloop", "-pfileline=1"]
         pass
 
     build_args += add_build_args
@@ -279,38 +273,36 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
     if sim == "verilator":
         build_args = ["--timing", "--trace", "--trace-fst", "--trace-structs"]
 
+    tests = json.load(open("test_list.json"))
+    test_list = list(tests.keys())
+
     if test != "all":
-        tests = [ test ]
-    else:
-        tests = json.load(open("test_list.json"))
+        assert test in test_list, f"Unknown test name {test}, valid tests are: {test_list}"
+        test_list = [ test ]
         
-    for test in tests:
+    for test in test_list:
         
-        efuse_hex = ""
-        uart = ""
+        extra_env = {"TEST_NAME" : test}
+        attrib = tests[test]
 
-        if "caravel_" in test:
+        if ("skip_glnosdf" in attrib) and (not sdf and gl):
+            skip_test(f"Test {test} can't be run with gate level netlist without SDF")
+            continue
+
+        if "efuse_hex" in attrib:
+            defines.update({"EFUSE_MEMORY_INIT" : 1})
+            extra_env.update({"EFUSE_HEX" : hex_prefix + attrib["efuse_hex"]})
+        
+        if "uart" in attrib:
+            extra_env.update({"EXPECT_UART" : attrib["uart"]})
+
+        if test[:8] == "caravel_":
             caravel_test = test[8:]
-
-            # skip PLL tests in GL without SDF (oscillator ring hangs without delays)
-            if (caravel_test in ["pll", "self_suff"]) and (not sdf and gl):
-                msg = "PLL tests can't be run with gate level netlist without SDF"
-                if is_pytest:
-                    from pytest import skip
-                    skip(msg)
-                else:
-                    print(msg)
-                    continue
-            elif (caravel_test == "self_suff"):
-                defines.update({"EFUSE_MEMORY_INIT" : 1})
-                efuse_hex = hex_prefix + "self_suff_rom.ehex"
 
             # Add Caravel sim top and Verilog helpers
             sources += (proj_path / "../caravel/sim/common/").glob("*.v")
             top = f"{caravel_test}_tb"
             sources.append(proj_path / f"../caravel/sim/caravel_tb/{top}.v")
-
-            uart = "Hi\n" if caravel_test == "uart" else ""
 
             testcase = "caravel_test"
 
@@ -339,8 +331,8 @@ def test_chip_top_runner(test : str, is_pytest : bool = True):
             plusargs=plusargs,
             waves=True,
             testcase=testcase,
-            extra_env={"TEST_NAME" : test, "EXPECT_UART" : uart, "EFUSE_HEX" : efuse_hex}
+            extra_env=extra_env
         )
 
 if __name__ == "__main__":
-    test_chip_top_runner(test_env, False)
+    test_chip_top_runner(test_env)
