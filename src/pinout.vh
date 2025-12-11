@@ -22,24 +22,34 @@
 `define PAD_AEF_OUT_HIGH    32
 `define PAD_AEF_READY       24
 
+// uart2gpi
+`define PAD_UART2GPI_GPIO0  18
+`define PAD_UART2GPI_GPIO1  19
+`define PAD_UART2GPI_GPIO2  20
+`define PAD_UART2GPI_GPIO3  21
+`define PAD_UART2GPI_PWM0   22
+`define PAD_UART2GPI_PWM1   23
+`define PAD_UART2GPI_I2CSDA 34
+`define PAD_UART2GPI_I2CSCL 35
+`define PAD_UART2GPI_UARTTX 36
+`define PAD_UART2GPI_UARTRX 37
+
 // SRAM test pads
 
-`define PAD_SRAM_LOW        33
+`define PAD_SRAM_LOW        38
 
-`define PAD_SRAM_LEDRESET   33
-`define PAD_SRAM_LEDSTATUS  34
-`define PAD_SRAM_SPIDEBUG   35
-`define PAD_SRAM_SPICS      36
-`define PAD_SRAM_SPICLK     37
-`define PAD_SRAM_SPIMISO    38
-`define PAD_SRAM_SPIMOSI    39
+`define PAD_SRAM_SPIDEBUG   38
+`define PAD_SRAM_SPICS      39
+`define PAD_SRAM_SPICLK     40
+`define PAD_SRAM_SPIMISO    41
+`define PAD_SRAM_SPIMOSI    42
 
-`define PAD_SRAM_HIGH       39
+`define PAD_SRAM_HIGH       42
 
 //Unused pins, take pins from here and modify low/high
 //to ensure all unused pins are properly defined
 
-`define PAD_UNUSED_LOW      18
-`define PAD_UNUSED_HIGH     23
+//`define PAD_UNUSED_LOW      - all are used!
+//`define PAD_UNUSED_HIGH     -
 
 `endif

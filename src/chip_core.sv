@@ -81,12 +81,12 @@ module chip_core #(
     assign bidir_pd[`PAD_AEF_OUT_HIGH:`PAD_AEF_READY] = 9'b00000_0000; // Pull-down
     
     // Set all other bidirs
-    assign bidir_pu[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
-    assign bidir_pd[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
-    assign bidir_sl[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
-    assign bidir_cs[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
-    assign bidir_ie[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
-    assign bidir_oe[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    //assign bidir_pu[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    //assign bidir_pd[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    //assign bidir_sl[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    //assign bidir_cs[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    //assign bidir_ie[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
+    //assign bidir_oe[`PAD_UNUSED_HIGH:`PAD_UNUSED_LOW] = '0;
 
     // eFuse Wishbone memory
     wb_efuses wb_efuses (
@@ -172,6 +172,11 @@ module chip_core #(
     assign caravel_start_mode = input_in[`PADI_START_MODE];
 
     // SRAM test over SPI
+    reg sram_ledstatus;
+    reg sram_ledreset;
+    reg sram_spidebug;
+    assign bidir_out[`PAD_SRAM_SPIDEBUG] = sram_ledstatus | sram_ledreset | sram_spidebug;
+
     (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__clkbuf_20 sramtest_clk_buf (
         .I(clk),
         .Z(sramtest_clk)
@@ -183,9 +188,9 @@ module chip_core #(
         .wspi_clk(bidir_in[`PAD_SRAM_SPICLK]),
         .wspi_cs(bidir_in[`PAD_SRAM_SPICS]),
         .wspi_miso(bidir_out[`PAD_SRAM_SPIMISO]),
-        .wled_status(bidir_out[`PAD_SRAM_LEDSTATUS]),
-        .wled_reset(bidir_out[`PAD_SRAM_LEDRESET]),
-        .wdebug(bidir_out[`PAD_SRAM_SPIDEBUG])
+        .wled_status(sram_ledstatus),
+        .wled_reset(sram_ledreset),
+        .wdebug(sram_spidebug)
     );
 
 endmodule
