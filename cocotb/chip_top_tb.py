@@ -205,6 +205,7 @@ def test_chip_top_runner(test : str):
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.pnl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.pnl.v")
         sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.pnl.v")
+        sources.append(proj_path / "../uart2gpi/final/pnl/uart2gpi.pnl.v")
 
         defines.update({"GL" : 1, "USE_POWER_PINS": 1})
         if sdf:
@@ -223,6 +224,7 @@ def test_chip_top_runner(test : str):
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.nl.v")
         sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.v")
+        sources.append(proj_path / "../uart2gpi/final/nl/uart2gpi.nl.v")
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 

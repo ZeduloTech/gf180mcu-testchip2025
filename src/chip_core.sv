@@ -58,6 +58,7 @@ module chip_core #(
     
     // SRAM test signals
     wire sramtest_clk;
+    wire rst_n_buf;
     
     // Set pad config for flash & GPIO
     assign bidir_pu[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0010;
@@ -188,9 +189,14 @@ module chip_core #(
         .I(clk),
         .Z(sramtest_clk)
     );
+
+    (* keep, dont_touch *) gf180mcu_fd_sc_mcu7t5v0__buf_8 sramtest_rst_clk_buf (
+        .I(rst_n),
+        .Z(rst_n_buf)
+    );
     uspi_sramtest sram_test_0(
         .clk(sramtest_clk),
-        .rst_n(rst_n),
+        .rst_n(rst_n_buf),
         .spi_mosi(bidir_in[`PAD_SRAM_SPIMOSI]),
         .wspi_clk(bidir_in[`PAD_SRAM_SPICLK]),
         .wspi_cs(bidir_in[`PAD_SRAM_SPICS]),
@@ -201,8 +207,8 @@ module chip_core #(
     );
 
     uart2gpi uart2gpi_0 (
-        .clk(clk),
-        .rst_ni(rst_n),
+        .clk(sramtest_clk),
+        .rst_ni(rst_n_buf),
         .uart_rx_i(bidir_in[`PAD_UART2GPI_UARTRX]),
         .uart_tx_o(bidir_out[`PAD_UART2GPI_UARTTX]),
         .gpio_i(bidir_in[`PAD_UART2GPI_GPIO3:`PAD_UART2GPI_GPIO0]),

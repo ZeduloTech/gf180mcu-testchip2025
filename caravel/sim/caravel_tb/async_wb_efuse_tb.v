@@ -48,6 +48,11 @@ module async_wb_efuse_tb;
         $finish;
     end
 
+    `ifdef GL
+    `define POR_INST `CHIP_TOP_HIER.\i_chip_core.caravel .por_inst
+    `else
+    `define POR_INST `CHIP_TOP_HIER.i_chip_core.caravel.por_inst 
+    `endif
     initial begin
         RSTB <= 1'b0;
         #1000;
@@ -55,9 +60,9 @@ module async_wb_efuse_tb;
         #2000;
         wait(gpio == 1'b1); // Reset & simulate POR after first test part
         RSTB <= 1'b0;
-        uut.chip.i_chip_core.caravel.por_inst.restart = 0;
+        `POR_INST.restart = 0;
         #1;
-        uut.chip.i_chip_core.caravel.por_inst.restart = 1;
+        `POR_INST.restart = 1;
         #1000;
         RSTB <= 1'b1;        // Release reset
         #2000;
