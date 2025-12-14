@@ -31,6 +31,12 @@ lst:  $(PROG).lst
 	@# following helps to prevent X states in sim when caching last instructions
 	echo "00000000 00000000" >> $@
 
+%.e8hex: %.elf
+	$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)-objcopy --only-section=.efuse --set-section-flags .efuse=alloc,load --verilog-data-width=1 -O verilog $< $@
+	sed -i 's/@30000000/@00000000/g' $@
+	@# following helps to prevent X states in sim when caching last instructions
+	echo "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00" >> $@
+
 %.bin: %.elf
 	$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)-objcopy -O binary $< $@
 	
@@ -46,6 +52,6 @@ flash2:  $(PROG).hex
 # ---- Clean ----
 
 clean:
-	rm -f *.elf *.hex *.ehex *.bin *.vvp *.vcd *.lst
+	rm -f *.elf *.hex *.ehex *.e8hex *.bin *.vvp *.vcd *.lst
 
 .PHONY: clean hex ehex lst all flash

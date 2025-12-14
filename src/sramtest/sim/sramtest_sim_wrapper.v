@@ -9,18 +9,18 @@ module chip_wrapper #(
     parameter NUM_BIDIR_PADS = 42
 ) ();
 
-    wire clock = 1'b0;
-    wire resetb = 1'b0;
+    wire clock = 1'bz;
+    wire resetb = 1'bz;
     supply1 VDD;
     supply0 VSS;
     
     wire [NUM_INPUT_PADS-1:0] in_pads = {1'b0, {(NUM_INPUT_PADS-1){1'bz}}};
     wire [NUM_BIDIR_PADS-1:0] bidir_pads = {NUM_BIDIR_PADS{1'bz}};
     
-    wire spi_sclk       = 1'b1;
-    wire spi_cs_sram    = 1'b1;
-    wire spi_cs_efuse   = 1'b1;
-    wire spi_mosi       = 1'b1;
+    wire spi_sclk       = 1'bz;
+    wire spi_cs_sram    = 1'bz;
+    wire spi_cs_efuse   = 1'bz;
+    wire spi_mosi       = 1'bz;
     wire spi_miso;
 
     wire       aef_ready;
