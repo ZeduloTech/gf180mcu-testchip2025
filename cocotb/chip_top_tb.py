@@ -46,6 +46,8 @@ class SpiEfuseTest:
             cpha       = True,      # clock phase (CPHA=True means data sampled on second edge)
             msb_first  = True,      # the order that bits are clocked onto the wire
             data_output_idle = 0,   # the idle value of the MOSI or MISO line
+            frame_spacing_ns = 0,   # the spacing between frames that the master waits for or the slave obeys
+                                    #       the slave should raise SpiFrameError if this is not obeyed.
             ignore_rx_value = None, # MISO value that should be ignored when received
             cs_active_low = True    # the chip select is active low
         )
@@ -56,6 +58,16 @@ class SpiEfuseTest:
         """EEPROM-like SPI write enable"""
         self.spi_master.write_nowait([
             0x06                    # Write enable cmd
+        ])
+        await self.spi_master.wait()
+        await self.spi_master.read()
+
+        await Timer(SPI_PERIOD*2, "ns")
+
+    async def spi_write_disable(self):
+        """EEPROM-like SPI write disable"""
+        self.spi_master.write_nowait([
+            0x04                    # Write disable cmd
         ])
         await self.spi_master.wait()
         await self.spi_master.read()
@@ -109,26 +121,47 @@ class SpiEfuseTest:
 
         await Timer(SPI_PERIOD*2, "ns")
 
-        return int.from_bytes(read_bytes[-nbytes:])
+        res = []
+        for i in range(nbytes):
+            res.append(read_bytes[-nbytes+i])
+        return res
 
     async def reset(self):
+        self.dut.spi_cs_sram.value = 1
+        self.dut.spi_cs_efuse.value = 1
         self.dut.resetb.value = 0
         await Timer(1, "us")
+        await Timer(CLK_PERIOD/4, "ns") # for SPI to be not alligned with clock
         self.dut.resetb.value = 1
         await Timer(1, "us")
-        await Timer(CLK_PERIOD/4, "ns") # for SPI to be not alligned with clock
         self.logger.info("Reset deasserted")
 
     async def run(self):
         self.logger.info("Starting SPI eFuse test")
 
         await self.reset()
-        await self.spi_write_enable()
-        await self.spi_write(0, 0xAA)
-        await self.spi_write(1, 0xBB)
-        read = await self.spi_read(0, 2)
 
-        assert(read == 0xAABB)
+        self.logger.info("Writing to SPI eFuse...")
+        await self.spi_write_enable()
+        TEST_SIZE = 256
+        values = []
+        for i in range(TEST_SIZE):
+            v = random.randrange(256)
+            await self.spi_write(i, v)
+            values.append(v)
+        await self.spi_write_disable()
+
+        # attempt to write when disabled
+        await self.spi_write(0, 0xFF)  
+        await self.spi_write(1, 0xFF)  
+        
+        self.logger.info("Reading from SPI eFuse in random bunches...")
+        read_values = []
+        while len(read_values) < len(values):
+            read_values += await self.spi_read(len(read_values), random.randrange(1, len(values)-len(read_values)+1))
+
+        for i in range(TEST_SIZE):
+            assert(read_values[i] == values[i])
 
         self.logger.info("SPI eFuse test completed")
 
@@ -148,12 +181,14 @@ async def spi_sram_test(dut):
     logger.info("Starting SRAM SPI test")
 
     # Clock & reset
+    dut.spi_cs_sram.value = 1
+    dut.spi_cs_efuse.value = 1
     cocotb.start_soon(Clock(dut.clock, CLK_PERIOD, "ns").start())
     dut.resetb.value = 0
     await Timer(1, "us")
+    await Timer(CLK_PERIOD/4, "ns") # for SPI to be not alligned with clock
     dut.resetb.value = 1
     await Timer(1, "us")
-    await Timer(CLK_PERIOD/4, "ns") # for SPI to be not alligned with clock
     logger.info("Reset deasserted")
 
     spi_bus = SpiBus.from_prefix(dut, "spi", cs_name="cs_sram")
@@ -165,6 +200,8 @@ async def spi_sram_test(dut):
         cpha       = True,      # clock phase (CPHA=True means data sampled on second edge)
         msb_first  = True,      # the order that bits are clocked onto the wire
         data_output_idle = 1,   # the idle value of the MOSI or MISO line
+        frame_spacing_ns = 0,   # the spacing between frames that the master waits for or the slave obeys
+                                #       the slave should raise SpiFrameError if this is not obeyed.
         ignore_rx_value = None, # MISO value that should be ignored when received
         cs_active_low = True    # the chip select is active low
     )
@@ -337,13 +374,13 @@ def test_chip_top_runner(test : str):
         sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.nl.v")
-        sources.append(proj_path / "../ip/efuse_spi_mem_256x8/efuse_spi_mem_256x8.nl.v")
+        # sources.append(proj_path / "../ip/efuse_spi_mem_256x8/efuse_spi_mem_256x8.nl.v")
         sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.v")
         sources.append(proj_path / "../uart2gpi/final/nl/uart2gpi.nl.v")
         # !!!
-        # sources += ["/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/spi2wb.v", 
-        #     "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_spi_mem.v",
-        #     "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_wb_mem.v"]
+        sources += ["/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/spi2wb.v", 
+            "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_spi_mem.v",
+            "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_wb_mem.v"]
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 
@@ -354,6 +391,9 @@ def test_chip_top_runner(test : str):
     includes.append(proj_path / "../caravel/sim/common/")
 
     sources += [
+        # Sim wrapper
+        proj_path / "../src/sramtest/sim/sramtest_sim_wrapper.v",
+
         # IO pad models
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_io/verilog/gf180mcu_fd_io.v",
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_io/verilog/gf180mcu_ws_io.v",
@@ -429,7 +469,6 @@ def test_chip_top_runner(test : str):
 
         else:
             testcase = f"{test}_test"
-            sources.append(proj_path / "../src/sramtest/sim/sramtest_sim_wrapper.v")
             top = "chip_wrapper"
 
         runner = get_runner(sim)

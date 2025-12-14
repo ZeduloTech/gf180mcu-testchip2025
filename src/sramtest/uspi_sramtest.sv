@@ -195,7 +195,7 @@ module uspi_sramtest (
 	reg [2:0] spi_count;
 	
 	
-	always @ (posedge clk)
+	always @ (posedge clk or negedge rst_n)
 	begin
 		//$strobe("spi_clk %d", spi_clk);
 		
@@ -214,6 +214,8 @@ module uspi_sramtest (
 			sram_d_in <= 0;
 			sram_address <= 0;
 			sram_addr_inc <= 0;
+            
+            spi_count <= 0;
 
 		end
 		else if(wspi_cs == 1'b1) begin

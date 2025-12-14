@@ -211,7 +211,7 @@ module chip_core #(
     // eFuse SPI memory
     efuse_spi_mem_256x8 efuse_spi (
         .clk_i(sramtest_clk),
-        .npor(npor | rst_n),
+        .npor(npor & rst_n_buf),
         .spi_mosi(bidir_in[`PAD_SRAM_SPIMOSI]),
         .spi_clk(bidir_in[`PAD_SRAM_SPICLK]),
         .spi_csn(input_in[`PADI_SEF_SPICS]),
