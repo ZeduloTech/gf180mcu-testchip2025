@@ -23,27 +23,30 @@
 `define PAD_AEF_READY       24
 
 // uart2gpi
+`define PAD_UART2GPI_LOW0   18
 `define PAD_UART2GPI_GPIO0  18
 `define PAD_UART2GPI_GPIO1  19
 `define PAD_UART2GPI_GPIO2  20
 `define PAD_UART2GPI_GPIO3  21
 `define PAD_UART2GPI_PWM0   22
 `define PAD_UART2GPI_PWM1   23
+`define PAD_UART2GPI_HIGH0  23
+
+`define PAD_UART2GPI_LOW1   33
 `define PAD_UART2GPI_I2CSDA 33
 `define PAD_UART2GPI_I2CSCL 34
 `define PAD_UART2GPI_UARTTX 35
 `define PAD_UART2GPI_UARTRX 36
+`define PAD_UART2GPI_HIGH1  36
 
 // SRAM test pads
 
 `define PAD_SRAM_LOW        37
-
 `define PAD_SRAM_SPIDEBUG   37
 `define PAD_SRAM_SPICS      38
 `define PAD_SRAM_SPICLK     39
 `define PAD_SRAM_SPIMISO    40
 `define PAD_SRAM_SPIMOSI    41
-
 `define PAD_SRAM_HIGH       41
 
 // SPI eFuse

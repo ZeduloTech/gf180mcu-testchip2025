@@ -68,13 +68,34 @@ module chip_core #(
     assign bidir_sl[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
     assign bidir_cs[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
 
-    // Set pad config for SRAM test
+    // Set pad config for SRAM test: MOSI MISO CLK CS DEBUG
     assign bidir_oe[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b01001;   // Output enable
     assign bidir_ie[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b10110;   // Input enable
     assign bidir_cs[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Input type (0=CMOS Buffer, 1=Schmitt Trigger)
     assign bidir_sl[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Slew rate (0=fast, 1=slow)
     assign bidir_pu[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Pull-up
     assign bidir_pd[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Pull-down
+
+    // Set pad config for UART2GPI block0: PWM1-0, GPIO3-0
+    assign bidir_oe[`PAD_UART2GPI_PWM1:`PAD_UART2GPI_PWM0] = 2'b11;   // Output enable
+    assign bidir_ie[`PAD_UART2GPI_PWM1:`PAD_UART2GPI_PWM0] = 2'b00;   // Input enable
+    //GPIO oe set by GPIO block
+    assign bidir_ie[`PAD_UART2GPI_GPIO3:`PAD_UART2GPI_GPIO0] = ~bidir_oe[`PAD_UART2GPI_GPIO3:`PAD_UART2GPI_GPIO0];
+    assign bidir_cs[`PAD_UART2GPI_HIGH0:`PAD_UART2GPI_LOW0] = 6'b000000;   // Input type (0=CMOS Buffer, 1=Schmitt Trigger)
+    assign bidir_sl[`PAD_UART2GPI_HIGH0:`PAD_UART2GPI_LOW0] = 6'b000000;   // Slew rate (0=fast, 1=slow)
+    assign bidir_pu[`PAD_UART2GPI_HIGH0:`PAD_UART2GPI_LOW0] = 6'b000000;   // Pull-up
+    assign bidir_pd[`PAD_UART2GPI_HIGH0:`PAD_UART2GPI_LOW0] = 6'b000000;   // Pull-down
+
+
+    // Set pad config for UART2GPI block1: uartRX, uartTX, i2cSCL, i2cSDA
+    assign bidir_oe[`PAD_UART2GPI_UARTRX:`PAD_UART2GPI_UARTTX] = 2'b01;   // Output enable
+    assign bidir_ie[`PAD_UART2GPI_UARTRX:`PAD_UART2GPI_UARTTX] = 2'b10;   // Input enable
+    //SDA/SCL oe set by I2C block
+    assign bidir_ie[`PAD_UART2GPI_I2CSCL:`PAD_UART2GPI_I2CSDA] = ~bidir_oe[`PAD_UART2GPI_I2CSCL:`PAD_UART2GPI_I2CSDA];
+    assign bidir_cs[`PAD_UART2GPI_HIGH1:`PAD_UART2GPI_LOW1] = 4'b0000;   // Input type (0=CMOS Buffer, 1=Schmitt Trigger)
+    assign bidir_sl[`PAD_UART2GPI_HIGH1:`PAD_UART2GPI_LOW1] = 4'b0000;   // Slew rate (0=fast, 1=slow)
+    assign bidir_pu[`PAD_UART2GPI_HIGH1:`PAD_UART2GPI_LOW1] = 4'b0000;   // Pull-up
+    assign bidir_pd[`PAD_UART2GPI_HIGH1:`PAD_UART2GPI_LOW1] = 4'b0000;   // Pull-down
 
     // Set pad config for async eFuse
     assign bidir_oe[`PAD_AEF_OUT_HIGH:`PAD_AEF_READY] = 9'b11111_1111; // Output enable
@@ -228,16 +249,13 @@ module chip_core #(
         .uart_tx_o(bidir_out[`PAD_UART2GPI_UARTTX]),
         .gpio_i(bidir_in[`PAD_UART2GPI_GPIO3:`PAD_UART2GPI_GPIO0]),
         .gpio_o(bidir_out[`PAD_UART2GPI_GPIO3:`PAD_UART2GPI_GPIO0]),
-//ie needs to be oe inverted. Add some delay as well?
         .gpio_oe(bidir_oe[`PAD_UART2GPI_GPIO3:`PAD_UART2GPI_GPIO0]),
         .pwm_o(bidir_out[`PAD_UART2GPI_PWM1:`PAD_UART2GPI_PWM0]),
         .i2c_scl_i(bidir_in[`PAD_UART2GPI_I2CSCL]),
         .i2c_scl_o(bidir_out[`PAD_UART2GPI_I2CSCL]),
-//ie needs to be oe inverted. Add some delay as well?
         .i2c_scl_oe(bidir_oe[`PAD_UART2GPI_I2CSCL]),
         .i2c_sda_i(bidir_in[`PAD_UART2GPI_I2CSDA]),
         .i2c_sda_o(bidir_out[`PAD_UART2GPI_I2CSDA]),
-//ie needs to be oe inverted. Add some delay as well?
         .i2c_sda_oe(bidir_oe[`PAD_UART2GPI_I2CSDA])
      );
 
