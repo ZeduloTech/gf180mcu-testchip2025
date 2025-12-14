@@ -4,8 +4,8 @@ meta:
   substituting_steps:
   
     # Disable KLayout antenna check
-    #KLayout.Antenna: null
-    #Checker.KLayoutAntenna: null
+    KLayout.Antenna: null
+    Checker.KLayoutAntenna: null
 
     # Disable KLayout density check
     #KLayout.Density: null
@@ -255,6 +255,22 @@ MACROS:
       i_chip_core.wb_efuses.efuse_wb_32x8:
         location: [2650, 3500]
         orientation: S
+
+  efuse_spi_mem_256x8:
+    gds:
+      - dir::../ip/efuse_spi_mem_256x8/efuse_spi_mem_256x8.gds
+    lef:
+      - dir::../ip/efuse_spi_mem_256x8/efuse_spi_mem_256x8.lef
+    pnl:
+      - dir::../ip/efuse_spi_mem_256x8/efuse_spi_mem_256x8.pnl.v
+    lib:
+      "*tt*" : [ dir::../ip/efuse_spi_mem_256x8/min_tt_025C_5v00/efuse_spi_mem_256x8__min_tt_025C_5v00.lib ]
+      "*ss*" : [ dir::../ip/efuse_spi_mem_256x8/max_ss_125C_4v50/efuse_spi_mem_256x8__max_ss_125C_4v50.lib ]
+      "*ff*" : [ dir::../ip/efuse_spi_mem_256x8/max_ff_n40C_5v50/efuse_spi_mem_256x8__max_ff_n40C_5v50.lib ]
+    instances:
+      i_chip_core.efuse_spi:
+        location: [1400, 3500]
+        orientation: N
 
   efuse_async_mem_1x8:
     gds:

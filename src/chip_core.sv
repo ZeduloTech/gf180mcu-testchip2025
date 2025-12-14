@@ -58,6 +58,8 @@ module chip_core #(
     
     // SRAM test signals
     wire sramtest_clk;
+    wire sram_spi_miso;
+    wire efuse_spi_miso;
     wire rst_n_buf;
     
     // Set pad config for flash & GPIO
@@ -67,8 +69,8 @@ module chip_core #(
     assign bidir_cs[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
 
     // Set pad config for SRAM test
-    assign bidir_oe[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b01000;   // Output enable
-    assign bidir_ie[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b10111;   // Input enable
+    assign bidir_oe[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b01001;   // Output enable
+    assign bidir_ie[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b10110;   // Input enable
     assign bidir_cs[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Input type (0=CMOS Buffer, 1=Schmitt Trigger)
     assign bidir_sl[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Slew rate (0=fast, 1=slow)
     assign bidir_pu[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b00000;   // Pull-up
@@ -200,12 +202,25 @@ module chip_core #(
         .spi_mosi(bidir_in[`PAD_SRAM_SPIMOSI]),
         .wspi_clk(bidir_in[`PAD_SRAM_SPICLK]),
         .wspi_cs(bidir_in[`PAD_SRAM_SPICS]),
-        .wspi_miso(bidir_out[`PAD_SRAM_SPIMISO]),
+        .wspi_miso(sram_spi_miso),
         .wled_status(sram_ledstatus),
         .wled_reset(sram_ledreset),
         .wdebug(sram_spidebug)
     );
 
+    // eFuse SPI memory
+    efuse_spi_mem_256x8 efuse_spi (
+        .clk_i(sramtest_clk),
+        .npor(npor | rst_n),
+        .spi_mosi(bidir_in[`PAD_SRAM_SPIMOSI]),
+        .spi_clk(bidir_in[`PAD_SRAM_SPICLK]),
+        .spi_csn(input_in[`PADI_SEF_SPICS]),
+        .spi_miso(efuse_spi_miso)
+    );
+
+    assign bidir_out[`PAD_SRAM_SPIMISO] = input_in[`PADI_SEF_SPICS] ? sram_spi_miso : efuse_spi_miso;
+
+    // UART2GPI IP
     uart2gpi uart2gpi_0 (
         .clk(sramtest_clk),
         .rst_ni(rst_n_buf),

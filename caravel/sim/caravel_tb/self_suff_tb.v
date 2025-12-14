@@ -37,9 +37,13 @@ module self_suff_tb;
 	initial begin
 		$display("Wait for self sufficient test to complete");
         wait(gpio == 1'b1);
+        wait(gpio == 1'b0);
+        wait(gpio == 1'b1);
+        wait(gpio == 1'b0);
+        wait(gpio == 1'b1);
         $display("Monitor: Test self sufficient Passed");
         test_success <= 1'b1;
-        #1000000;
+        #10;
 		$finish;
 	end
     

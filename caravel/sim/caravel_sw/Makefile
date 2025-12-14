@@ -26,10 +26,9 @@ lst:  $(PROG).lst
 	echo "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00" >> $@
 
 %.ehex: %.elf
-	readelf -a $<
 	$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)-objcopy --only-section=.efuse --set-section-flags .efuse=alloc,load --verilog-data-width=4 -O verilog $< $@
 	sed -i 's/@0C000000/@00000000/g' $@
-	#@# following helps to prevent X states in sim when caching last instructions
+	@# following helps to prevent X states in sim when caching last instructions
 	echo "00000000 00000000" >> $@
 
 %.bin: %.elf

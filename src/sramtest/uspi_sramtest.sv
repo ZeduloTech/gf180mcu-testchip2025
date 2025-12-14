@@ -217,7 +217,7 @@ module uspi_sramtest (
 
 		end
 		else if(wspi_cs == 1'b1) begin
-			$display("CS high");
+			// $display("CS high");
 			prev_spi_clk <= 1;
 			spi_completed <= 0;
 			arm_tx <= 1;

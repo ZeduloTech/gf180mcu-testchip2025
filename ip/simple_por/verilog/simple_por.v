@@ -28,7 +28,7 @@ module simple_por(
 `ifdef SIM
     reg inode;
     reg restart = 1'b0;
-    parameter PoR_DURATION = 1000;
+    parameter PoR_DURATION = 777;
     // This is a behavioral model!  Actual circuit is a resitor dumping
     // current (slowly) from vdd3v3 onto a capacitor, and this fed into
     // two schmitt triggers for strong hysteresis/glitch tolerance.

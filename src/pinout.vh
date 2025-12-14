@@ -46,6 +46,9 @@
 
 `define PAD_SRAM_HIGH       41
 
+// SPI eFuse
+`define PADI_SEF_SPICS      1
+
 //Unused pins, take pins from here and modify low/high
 //to ensure all unused pins are properly defined
 

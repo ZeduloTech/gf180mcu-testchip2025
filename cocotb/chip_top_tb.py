@@ -26,6 +26,118 @@ test_env = os.getenv("TEST", "all")
 add_build_args = os.getenv("ADD_BUILD_ARGS", "").split()
 add_plus_args = os.getenv("ADD_PLUS_ARGS", "").split()
 
+CLK_PERIOD = 50
+SPI_PERIOD = CLK_PERIOD*20
+
+class SpiEfuseTest:
+    def __init__(self, dut):
+        self.dut = dut
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.INFO)
+
+        cocotb.start_soon(Clock(dut.clock, CLK_PERIOD, "ns").start())
+
+        self.spi_bus = SpiBus.from_prefix(dut, "spi", cs_name="cs_efuse")
+
+        self.spi_config = SpiConfig(
+            word_width = 8,         # number of bits in a SPI transaction
+            sclk_freq  = 1e9 / SPI_PERIOD,  # clock rate in Hz
+            cpol       = True,      # clock idle polarity
+            cpha       = True,      # clock phase (CPHA=True means data sampled on second edge)
+            msb_first  = True,      # the order that bits are clocked onto the wire
+            data_output_idle = 0,   # the idle value of the MOSI or MISO line
+            ignore_rx_value = None, # MISO value that should be ignored when received
+            cs_active_low = True    # the chip select is active low
+        )
+
+        self.spi_master = SpiMaster(self.spi_bus, self.spi_config)
+
+    async def spi_write_enable(self):
+        """EEPROM-like SPI write enable"""
+        self.spi_master.write_nowait([
+            0x06                    # Write enable cmd
+        ])
+        await self.spi_master.wait()
+        await self.spi_master.read()
+
+        await Timer(SPI_PERIOD*2, "ns")
+
+    async def spi_wait_ready(self):
+        """Wait for write busy status flag to be low"""
+        self.spi_master.write_nowait([
+            0x05,                   # Read status cmd
+            0x00
+        ])
+        await self.spi_master.wait()
+        read_bytes = await self.spi_master.read()
+
+        busy = bool(read_bytes[-1] & 0x1)
+
+        while busy:
+            await self.spi_master.write([0x00])
+            busy = bool((await self.spi_master.read())[-1] & 0x1)
+
+        await Timer(SPI_PERIOD*2, "ns")
+
+    async def spi_write(self, addr, data):
+        """EEPROM-like SPI write single byte"""
+        await self.spi_wait_ready()
+        self.spi_master.write_nowait([
+            0x02,                   # Write cmd
+            (addr >> 16) & 0xFF,    # High address byte
+            (addr >> 8) & 0xFF,     # Middle address byte
+            (addr >> 0) & 0xFF,     # Low address byte
+            data & 0xFF
+        ])
+        await self.spi_master.wait()
+        await self.spi_master.read()
+
+        await Timer(SPI_PERIOD*2, "ns")
+
+    async def spi_read(self, addr, nbytes=1):
+        """EEPROM-like SPI read n bytes"""
+        await self.spi_wait_ready()
+        self.spi_master.write_nowait([
+            0x03,                   # Read cmd
+            (addr >> 16) & 0xFF,    # High address byte
+            (addr >> 8) & 0xFF,     # Middle address byte
+            (addr >> 0) & 0xFF      # Low address byte
+        ] + [0x00] * nbytes)
+        await self.spi_master.wait()
+
+        read_bytes = await self.spi_master.read()
+
+        await Timer(SPI_PERIOD*2, "ns")
+
+        return int.from_bytes(read_bytes[-nbytes:])
+
+    async def reset(self):
+        self.dut.resetb.value = 0
+        await Timer(1, "us")
+        self.dut.resetb.value = 1
+        await Timer(1, "us")
+        await Timer(CLK_PERIOD/4, "ns") # for SPI to be not alligned with clock
+        self.logger.info("Reset deasserted")
+
+    async def run(self):
+        self.logger.info("Starting SPI eFuse test")
+
+        await self.reset()
+        await self.spi_write_enable()
+        await self.spi_write(0, 0xAA)
+        await self.spi_write(1, 0xBB)
+        read = await self.spi_read(0, 2)
+
+        assert(read == 0xAABB)
+
+        self.logger.info("SPI eFuse test completed")
+
+@cocotb.test(timeout_time=10, timeout_unit="ms")
+async def spi_efuse_test(dut):
+    """Test SPI eFuse block"""
+    test = SpiEfuseTest(dut)
+
+    await test.run()
 
 @cocotb.test(timeout_time=300, timeout_unit="us")
 async def spi_sram_test(dut):
@@ -36,18 +148,19 @@ async def spi_sram_test(dut):
     logger.info("Starting SRAM SPI test")
 
     # Clock & reset
-    cocotb.start_soon(Clock(dut.clock, 100, "ns").start())
+    cocotb.start_soon(Clock(dut.clock, CLK_PERIOD, "ns").start())
     dut.resetb.value = 0
     await Timer(1, "us")
     dut.resetb.value = 1
     await Timer(1, "us")
+    await Timer(CLK_PERIOD/4, "ns") # for SPI to be not alligned with clock
     logger.info("Reset deasserted")
 
-    spi_bus = SpiBus.from_prefix(dut, "sramtest", cs_name="cs")
+    spi_bus = SpiBus.from_prefix(dut, "spi", cs_name="cs_sram")
 
     spi_config = SpiConfig(
         word_width = 8,         # number of bits in a SPI transaction
-        sclk_freq  = 1e6,       # clock rate in Hz
+        sclk_freq  = 1e9 / SPI_PERIOD,  # clock rate in Hz
         cpol       = True,      # clock idle polarity
         cpha       = True,      # clock phase (CPHA=True means data sampled on second edge)
         msb_first  = True,      # the order that bits are clocked onto the wire
@@ -204,6 +317,7 @@ def test_chip_top_runner(test : str):
         sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.pnl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.pnl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.pnl.v")
+        sources.append(proj_path / "../ip/efuse_spi_mem_256x8/efuse_spi_mem_256x8.pnl.v")
         sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.pnl.v")
         sources.append(proj_path / "../uart2gpi/final/pnl/uart2gpi.pnl.v")
 
@@ -223,8 +337,13 @@ def test_chip_top_runner(test : str):
         sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.nl.v")
+        sources.append(proj_path / "../ip/efuse_spi_mem_256x8/efuse_spi_mem_256x8.nl.v")
         sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.v")
         sources.append(proj_path / "../uart2gpi/final/nl/uart2gpi.nl.v")
+        # !!!
+        # sources += ["/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/spi2wb.v", 
+        #     "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_spi_mem.v",
+        #     "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_wb_mem.v"]
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 

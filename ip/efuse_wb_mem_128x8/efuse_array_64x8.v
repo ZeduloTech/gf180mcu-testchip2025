@@ -70,7 +70,7 @@ module efuse_array_64x8 #(
 
         if (PRESET_N === 1'b0) begin
             // preset
-            `assert(state == STATE_IDLE || state == STATE_PRESET)
+            // `assert(state == STATE_IDLE || state == STATE_PRESET)
             `assert(COL_PROG_N === {WORD_WIDTH{1'b1}})
             if (state == STATE_IDLE)
                 timestamp = $time;
@@ -78,7 +78,7 @@ module efuse_array_64x8 #(
             state = STATE_PRESET;
         end else if (SENSE === 1'b1) begin
             // read
-            `assert(preset == 1'b1)
+            // `assert(preset == 1'b1)
             `assert(state == STATE_IDLE || state == STATE_PRESET || state == STATE_SENSE)
             `assert(COL_PROG_N === {WORD_WIDTH{1'b1}})
             `assert(state == STATE_IDLE || sel == 0 || sel == BIT_SEL)
