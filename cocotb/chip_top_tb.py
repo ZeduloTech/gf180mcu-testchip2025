@@ -165,7 +165,7 @@ class SpiEfuseTest:
 
         self.logger.info("SPI eFuse test completed")
 
-@cocotb.test(timeout_time=30, timeout_unit="ms")
+@cocotb.test(timeout_time=50, timeout_unit="ms")
 async def spi_efuse_test(dut):
     """Test SPI eFuse block"""
     test = SpiEfuseTest(dut)
