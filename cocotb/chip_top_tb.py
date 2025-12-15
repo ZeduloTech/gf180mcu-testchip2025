@@ -374,13 +374,9 @@ def test_chip_top_runner(test : str):
         sources.append(proj_path / "../ip/efuse_wb_mem_128x8/efuse_wb_mem_128x8.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_64x32/efuse_wb_mem_64x32.nl.v")
         sources.append(proj_path / "../ip/efuse_wb_mem_1024x32/efuse_wb_mem_1024x32.nl.v")
-        # sources.append(proj_path / "../ip/efuse_spi_mem_256x8/efuse_spi_mem_256x8.nl.v")
+        sources.append(proj_path / "../ip/efuse_spi_mem_256x8/efuse_spi_mem_256x8.nl.v")
         sources.append(proj_path / "../ip/efuse_async_mem_1x8/efuse_async_mem_1x8.v")
         sources.append(proj_path / "../uart2gpi/final/nl/uart2gpi.nl.v")
-        # !!!
-        sources += ["/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/spi2wb.v", 
-            "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_spi_mem.v",
-            "/home/egor/proj/waferspace/gf180_efuse_compiler/src/digital/efuse_wb_mem.v"]
 
         sources += (proj_path / "../caravel/verilog/").glob("*.v")
 
