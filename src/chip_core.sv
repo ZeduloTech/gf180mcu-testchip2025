@@ -67,6 +67,7 @@ module chip_core #(
     assign bidir_pd[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
     assign bidir_sl[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
     assign bidir_cs[`PAD_FLASH_IO1:`PAD_GPIO] = 5'b0000;
+    assign bidir_ie[`PAD_FLASH_CLK:`PAD_FLASH_CSB] = 2'b00;
 
     // Set pad config for SRAM test: MOSI MISO CLK CS DEBUG
     assign bidir_oe[`PAD_SRAM_HIGH:`PAD_SRAM_LOW] = 5'b01001;   // Output enable

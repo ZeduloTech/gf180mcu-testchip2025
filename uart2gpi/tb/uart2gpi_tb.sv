@@ -6,14 +6,20 @@
 
 `timescale 1ns/1ps
 
+`ifndef UART2GPIO_WRAPPED
+    `define UART2GPIO_MOD uart2gpio
+`else
+    `define UART2GPIO_MOD chip_wrapper_uart2gpi
+`endif
+
 module uart2gpi_tb;
 
     //=========================================
-    // Parameters
+    // Parameters (changed for 20MHz clk as set in Librelane config)
     //==============================
-    localparam CLK_PERIOD_NS = 20;  // 50 MHz
-    localparam BAUD_RATE     = 115200;
-    localparam BIT_PERIOD_NS = 1_000_000_000 / BAUD_RATE;  // ~8680ns
+    localparam CLK_PERIOD_NS = 50;  // 20 MHz
+    localparam BAUD_RATE     = 46080; //115200;
+    localparam BIT_PERIOD_NS = 1_000_000_000 / BAUD_RATE;  // ~21701ns
     
     // IP Select Code
     localparam [6:0] IP_UART = 7'h7F;
@@ -42,7 +48,8 @@ module uart2gpi_tb;
 
     // PWM OFFSET
     localparam [7:0] PWM_CFG_OFFSET = 8'h00;
-    localparam [7:0] PWM_DUTY_CYCLE_0_OFFSET = 8'hc;
+    localparam [7:0] PWM_PWM_EN_OFFSET = 8'h04;
+    localparam [7:0] PWM_DUTY_CYCLE_0_OFFSET = 8'h14;
 
     //=========================================
     // DUT Signals
@@ -72,6 +79,9 @@ module uart2gpi_tb;
 
     logic [31:0] tx_data;
 
+    // For chip-integrated testbench
+    logic        test_success = 1'b0;
+
     //=================================
     // Clock Generation - 50 MHz
     //==============================
@@ -83,7 +93,7 @@ module uart2gpi_tb;
     //==============================
     // DUT Instantiation
     //=======================
-    uart2gpi u_dut (
+    `UART2GPIO_MOD u_dut (
         .clk_i      (clk_i),
         .rst_ni     (rst_ni),
 
@@ -330,6 +340,8 @@ module uart2gpi_tb;
         read_reg(IP_GPIO, GPIO_DIRECT_OUT, tx_data);
         $display("[INFO] GPIO DIRECT_OUT = 0x%08X", tx_data);
 
+        assert(gpio_o[0] === 1'b1) else $fatal(1, "Incorrect GPIO out value");   // last bit of DEADBEEF
+
         //=============================================
         // TEST 3: I2C
         //===========================================
@@ -357,7 +369,7 @@ module uart2gpi_tb;
         decode_status1(tx_data);
 
          //=============================================
-        // TEST 3: PWM
+        // TEST 4: PWM
         //=============================================
         $display("\n-- Test 4: Test PWM");
 
@@ -369,14 +381,17 @@ module uart2gpi_tb;
         // write to duty cycle 0
         $display("\n WRITE PWM duty cycle 0");
         write_reg(IP_PWM, PWM_DUTY_CYCLE_0_OFFSET, 32'h9C40);
+        write_reg(IP_PWM, PWM_PWM_EN_OFFSET, 32'h3);
+        write_reg(IP_PWM, PWM_CFG_OFFSET, 32'h8000_0001);
 
         #(BIT_PERIOD_NS * 2);
 
         // read duty cycle 0
-         $display("\n Read PWM DUTY CYCLE");
+        $display("\n Read PWM DUTY CYCLE");
         read_reg(IP_PWM, PWM_DUTY_CYCLE_0_OFFSET, tx_data);
         $display("[INFO] PWM duty cycle = 0x%08X", tx_data);
-    
+        assert(pwm_o === 2'b01) else $fatal(1, "Incorrect PWM out value"); 
+
         // DONE
         $display("");
         $display("==============================================");
@@ -384,6 +399,7 @@ module uart2gpi_tb;
         $display("============================================");
         $display("");
         
+        test_success = 1'b1;
         #(BIT_PERIOD_NS * 10);
         $finish;
     end

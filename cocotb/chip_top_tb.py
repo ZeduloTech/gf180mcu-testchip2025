@@ -285,6 +285,19 @@ async def uart_monitor(uart_sink):
             # allow zero bytes at the beginning
             assert(not uart_recv)
 
+@cocotb.test(timeout_time=50, timeout_unit="ms")
+async def uart2gpi_test(dut):
+    """Run UART2GPI test"""
+
+    # Create a logger for this testbench
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    logger.info("Starting UART2GPI test")
+    
+    await RisingEdge(dut.test_success)
+
+    logger.info("Done!")
+
 @cocotb.test(timeout_time=200, timeout_unit="ms")
 async def caravel_test(dut):
     """Run the Caravel test"""
@@ -387,8 +400,10 @@ def test_chip_top_runner(test : str):
     includes.append(proj_path / "../caravel/sim/common/")
 
     sources += [
-        # Sim wrapper
+        # Sim wrapper & tb
         proj_path / "../src/sramtest/sim/sramtest_sim_wrapper.v",
+        proj_path / "../uart2gpi/tb/uart2gpi_sim_wrapper.v",
+        proj_path / "../uart2gpi/tb/uart2gpi_tb.sv",
 
         # IO pad models
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_io/verilog/gf180mcu_fd_io.v",
@@ -451,7 +466,15 @@ def test_chip_top_runner(test : str):
             extra_env.update({"EFUSE_HEX" : hex_prefix + attrib["efuse_hex"]})
         
         if "uart" in attrib:
-            extra_env.update({"EXPECT_UART" : attrib["uart"]})
+            extra_env.update({"EXPECT_UART" : attrib["uart"]})        
+
+        if "defines" in attrib:
+            defines.update(attrib["defines"])
+
+        if "top" in attrib:
+            top = attrib["top"]
+        else:
+            top = ""
 
         if test[:8] == "caravel_":
             caravel_test = test[8:]
@@ -465,7 +488,8 @@ def test_chip_top_runner(test : str):
 
         else:
             testcase = f"{test}_test"
-            top = "chip_wrapper"
+            if not top:
+                top = "chip_wrapper"
 
         runner = get_runner(sim)
         runner.build(
