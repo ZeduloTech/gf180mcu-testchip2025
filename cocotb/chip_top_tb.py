@@ -23,6 +23,7 @@ scl = os.getenv("SCL", "gf180mcu_fd_sc_mcu7t5v0")
 gl = os.getenv("GL", False)
 sdf = os.getenv("SDF", False)
 test_env = os.getenv("TEST", "all")
+short_tests = os.getenv("SHORT_TESTS", None)
 add_build_args = os.getenv("ADD_BUILD_ARGS", "").split()
 add_plus_args = os.getenv("ADD_PLUS_ARGS", "").split()
 
@@ -143,7 +144,7 @@ class SpiEfuseTest:
 
         self.logger.info("Writing to SPI eFuse...")
         await self.spi_write_enable()
-        TEST_SIZE = 256
+        TEST_SIZE = 256 if not short_tests else 32
         values = []
         for i in range(TEST_SIZE):
             v = random.randrange(256)
@@ -475,6 +476,9 @@ def test_chip_top_runner(test : str):
             top = attrib["top"]
         else:
             top = ""
+
+        if short_tests:
+            defines.update({"SHORT_TEST" : 1})
 
         if test[:8] == "caravel_":
             caravel_test = test[8:]

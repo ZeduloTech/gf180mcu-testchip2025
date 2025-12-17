@@ -86,8 +86,13 @@ module efuse_rw_tb;
         .resetb      (RSTB)
     );
 
+    `ifdef SHORT_TEST
+        `define HEX_FILE {`HEX_PREFIX, "efuse_rw_short.hex"}
+    `else
+        `define HEX_FILE {`HEX_PREFIX, "efuse_rw.hex"}
+    `endif
     spiflash #(
-        .FILENAME({`HEX_PREFIX, "efuse_rw.hex"})
+        .FILENAME(`HEX_FILE)
     ) spiflash (
         .csb(flash_csb),
         .clk(flash_clk),

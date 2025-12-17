@@ -5,12 +5,16 @@
 
 #include <defs.h>
 
+// Shorten test
+#define IS_SHORT_TEST (__FILE__[9] == 's')
+
 // User Wishbone address
 #define USER_WB_ADDR            0x30000000
 #define EFUSE_BLOCKS            4   // number of eFuse blocks on chip
 
 const uint32_t efuse_addr[EFUSE_BLOCKS]     = {USER_WB_ADDR, USER_WB_ADDR+0x1000, USER_WB_ADDR+0x2000, USER_WB_ADDR+0x3000};  // efuse block addresses on WB
 const uint32_t efuse_nwords[EFUSE_BLOCKS]   = {1024, 64, 128, 32};  // efuse block sizes
+const uint32_t efuse_nwords_s[EFUSE_BLOCKS] = {64, 64, 64, 32};     // efuse block sizes (short test)
 const uint32_t efuse_wdt[EFUSE_BLOCKS]      = {32, 32, 8, 8};       // efuse block widths
 
 // User wishbone access helpers
@@ -66,7 +70,7 @@ void main()
     reg_wb_enable = 1;
     
     for (int n = 0; n < EFUSE_BLOCKS; n++)
-        test_efuse(efuse_addr[n], efuse_nwords[n], (1ull<<efuse_wdt[n])-1);
+        test_efuse(efuse_addr[n], IS_SHORT_TEST ? efuse_nwords_s[n] : efuse_nwords[n], (1ull<<efuse_wdt[n])-1);
         
     success();
 }
