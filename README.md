@@ -42,7 +42,33 @@ For more info on eFuse, please check the documentation in the [eFuse compiler re
 
 ### UART2GPI
 
-TODO
+The UART2GPI IP is a UART-to-peripheral bridge that provides control of multiple IP blocks through a simple serial interface.
+The UART2GPI consists of the following IP blocks: UART, GPIO, PWM, and I2C IP. 
+All IPs are based on OpenTitan IP cores with 32-bit register interfaces compatible with OpenTitan register conventions.
+
+#### 6-Byte Protocol Structure
+
+The UART2GPI uses a 6-byte command protocol:
+
+| Byte            | Function                                                      |
+|-----------------|---------------------------------------------------------------|
+| First byte      | Identifies IP to enable and whether read/write command        |
+| Second byte     | Register address to write to                                  |
+| Third-sixth byte| Data to send (if write command)                               |
+
+#### IP Select Codes
+
+Each IP can be selected using its respective code:
+
+| IP Block | Select Code |
+|----------|-------------|
+| GPIO     | 0x01        |
+| PWM      | 0x02        |
+| I2C      | 0x03        |
+| UART     | 0x7F        |
+
+The UART2GPI connects to the following chip pads (see Chip pinout table for details)
+For detailed information on IP register configuration and usage, refer to the https://opentitan.org/book/hw/ip/.
 
 ### SPI SRAM
 
