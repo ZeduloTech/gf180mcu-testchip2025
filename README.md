@@ -20,6 +20,7 @@ Caravel CPU address map:
 
 | Base address | Function                            |
 |--------------|-------------------------------------|
+| 0x0000_0000  | SRAM (2 kBytes)                     |
 | 0x1000_0000  | SPI flash                           |
 | 0x2600_0000  | User project control                |
 | 0x2610_0000  | Housekeeping                        |
@@ -42,7 +43,7 @@ For more info on eFuse, please check the documentation in the [eFuse compiler re
 
 ### UART2GPI
 
-The UART2GPI IP is a UART-to-peripheral bridge that provides control of multiple IP blocks through a simple serial interface.
+The UART2GPI IP is an UART-to-peripheral bridge that provides control of multiple IP blocks through a simple serial interface.
 The UART2GPI consists of the following IP blocks: UART, GPIO, PWM, and I2C IP. 
 All IPs are based on OpenTitan IP cores with 32-bit register interfaces compatible with OpenTitan register conventions.
 
@@ -67,7 +68,7 @@ Each IP can be selected using its respective code:
 | I2C      | 0x03        |
 | UART     | 0x7F        |
 
-The UART2GPI connects to the following chip pads (see Chip pinout table for details)
+The UART2GPI connects to the following chip pads (see Chip pinout table for details).
 For detailed information on IP register configuration and usage, refer to the https://opentitan.org/book/hw/ip/.
 
 ### SPI SRAM
@@ -145,7 +146,7 @@ Test list:
 
 ## Chip pinout
 
-Pad numbering in the table starts from the lower left (with the default GDS orientation) and going to the right. Numbering should be compatible with the [wafer.space COB project](https://github.com/wafer-space/chip-on-board-wire-bonded-pcbs).
+Pad numbering in the table starts from the lower left (with the default GDS orientation) and proceeds counterclockwise. Numbering should be compatible with the [wafer.space COB project](https://github.com/wafer-space/chip-on-board-wire-bonded-pcbs).
 
 | Pad | Pad name       | IP             | Signal name        | Comment                                     |
 |-----|----------------|----------------|--------------------|---------------------------------------------|
@@ -174,7 +175,7 @@ Pad numbering in the table starts from the lower left (with the default GDS orie
 | 22  | bidir\[17\]    | Caravel        | caravel_flash_io1  | MISO                                        |
 | 23  | bidir\[18\]    | UART2GPI       | uart2gpi_gpio0     |                                             |
 | 24  | bidir\[19\]    | UART2GPI       | uart2gpi_gpio1     |                                             |
-| 25  | dvdd_pads\[1\] |                | VSS                |                                             |
+| 25  | dvdd_pads\[1\] |                | VDD                |                                             |
 | 26  | dvss_pads\[2\] |                | VSS                |                                             |
 | 27  | bidir\[20\]    | UART2GPI       | uart2gpi_gpio2     |                                             |
 | 28  | bidir\[21\]    | UART2GPI       | uart2gpi_gpio3     |                                             |
