@@ -16,29 +16,7 @@
  */
 
 #include <defs.h>
-
-void putchar(char c)
-{
-    if (c == '\n')
-        putchar('\r');
-    while (reg_uart_txfull == 1);
-        reg_uart_data = c;
-}
-
-void print_hex(uint32_t v, int digits)
-{
-	for (int i = digits - 1; i >= 0; i--) 
-    {
-		char c = "0123456789abcdef"[(v >> (4*i)) & 15];
-		putchar(c);
-	}
-}
-
-void print(const char *p)
-{
-    while (*p)
-        putchar(*(p++));
-}
+#include <utils.h>
 
 // --------------------------------------------------------
 

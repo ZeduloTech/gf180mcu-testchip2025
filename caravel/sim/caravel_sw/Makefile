@@ -13,7 +13,7 @@ ehex: $(PROG).ehex
 lst:  $(PROG).lst
 
 %.elf: %.c
-	$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)-gcc -I$(COMMON_DIR) -I$(COMMON_DIR)/generated/ -O2 $(ABI_FLAGS) -D__vexriscv__ -Wl,-Bstatic,-T,$(COMMON_DIR)/sections.lds,--strip-debug -ffreestanding -nostdlib -o $@ $(COMMON_DIR)/crt0_vex.S $(COMMON_DIR)/isr.c $<
+	$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)-gcc -I$(COMMON_DIR) -I$(COMMON_DIR)/generated/ -O2 $(ABI_FLAGS) -D__vexriscv__ -Wl,-Bstatic,-T,$(COMMON_DIR)/sections.lds,--strip-debug -ffreestanding -nostdlib -o $@ $(COMMON_DIR)/crt0_vex.S $(COMMON_DIR)/isr.c $(COMMON_DIR)/utils.c $<
 
 %.elf: %.S
 	$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)-gcc $(ABI_FLAGS) -ffreestanding -nostdlib -Wl,-Bstatic,-T,$(COMMON_DIR)/sections.lds,--strip-debug -o $@ $<
